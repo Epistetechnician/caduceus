@@ -1,0 +1,6 @@
+name: caduceus-governance
+version: 0.1.0
+description: "Observe (default) or gate Hermes skill mutations through the Caduceus ledger. Standalone plugin; no core changes."
+author: "Epistetechnician"
+hooks:
+  - pre_tool_call

@@ -1,0 +1,10 @@
+Copyright 2026 Epistetechnician and contributors
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+This repository is research software. Results recorded here are bounded local or
+synthetic observations governed by the claim boundaries in docs/CLAIMS.md.
+Nothing here is a security guarantee, a proof of production readiness, a
+benchmark result, or independent verification unless a record says so
+explicitly. Hermes Agent is a separate project by Nous Research (MIT); this
+repository contains none of its code.
