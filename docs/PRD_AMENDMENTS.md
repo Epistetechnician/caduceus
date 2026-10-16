@@ -62,3 +62,7 @@ points; this file is authoritative where they differ.
     single ablations against the previous rung (PRD 7.1). They report
     `Unavailable` as lanes until a model-backed result exists. The thesis is a
     hypothesis; no scaling relation is claimed.
+15. **Astral enters only as verified metacognition.** The self-model benchmark
+    (forecast calibration against verified outcomes) is a candidate ablation
+    rung (PRD 7.1, R-REC-10). The mechanistic Astral lane is closed after V48
+    and supplies no lanes; speculative channels are excluded.
