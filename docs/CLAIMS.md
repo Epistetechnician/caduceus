@@ -75,6 +75,11 @@ What this repository does establish (by tests in `tests/`):
   `fixed_policy` arm.
 * Phase 4 auto-apply therefore stays Blocked: 0 passing candidate experiments.
 
+* `adapter_update` candidates: `hsi_bridge.py` recomputes hsi-lab receipts with
+  their standalone validator and maps them to seven lanes; with hsi evidence alone
+  the verdict is quarantine, never accept (11 tests, incl. the real E6 verified and
+  pool-control receipts). This shows the plumbing, not that verified recursion works.
+
 What it does **not** establish:
 * anything about real Hermes skills' quality, or that gating improves Hermes;
 * that the review fork is gated under a real model or a live Hermes session;
@@ -101,3 +106,4 @@ What it does **not** establish:
   preregistered real-world test has run;
 * equivalence between the two canonical encoders on arbitrary input (only
   differential tests); a Lean/formal lane is not implemented.
+* that verified-data recursion compounds, that data proximity improves the learning ratio, or that hsi-lab's synthetic-world PROMOTE (single seed, verified arm below real-only, held-out-rule-types guardrail failed) transfers to real tasks.

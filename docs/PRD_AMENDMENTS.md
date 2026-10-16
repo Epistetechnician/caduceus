@@ -49,3 +49,16 @@ points; this file is authoritative where they differ.
 12. **Fast path stays deferred.** Amendment 2 holds: a switch-latency baseline
     is pinned (`baselines/`), but no fast path is built, because the only large
     win (skipping prompt rebuild) conflicts with Hermes' prompt-cache rule.
+13. **Admission extends to training data and adapters.** `adapter_update` is a
+    candidate kind, off by default (the default policy refuses it; roots must
+    include `adapters`). Evidence comes from hsi-lab receipts through
+    `hsi_bridge.py`, which recomputes each receipt with hsi-lab's standalone
+    validator in a separate process, converts to integer micro-units, and
+    requires the candidate's preregistration to bind the exact receipt digests.
+    Lanes the bridge cannot honestly fill stay `NotRun` (quarantine). A pipeline
+    `lock_digest` is not a prediction lock until a ledger proves ordering.
+14. **Recursion is evidence-gated, one layer at a time.** Ghost-state memory,
+    the AHCL monitor, interpretability checks and selection policies enter as
+    single ablations against the previous rung (PRD 7.1). They report
+    `Unavailable` as lanes until a model-backed result exists. The thesis is a
+    hypothesis; no scaling relation is claimed.

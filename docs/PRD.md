@@ -1,6 +1,6 @@
 # Caduceus — Verified Evolution for Hermes Agent
 
-**Product Requirements Document · Version 2.1 (integrated) · 15 October 2026 · Status: Draft for implementation review**
+**Product Requirements Document · Version 2.2 (integrated, closed-loop) · 16 October 2026 · Status: Draft for implementation review**
 **Claim ceiling of this document: design intent (Level 0).** No requirement here is evidence that it works. Reference tags like **[X4]** (external) and **[I5]** (our own research/code) resolve in §17. Every external number is author-reported and unreplicated by us.
 
 ---
@@ -17,6 +17,12 @@ An **Evolution Candidate** — a typed, digest-bound proposal for one change —
 
 **Where we expect the real leverage to be (from our own data, not hope).** Across our discovery programs, 12 of 14 preregistered experiments closed `NoCandidate` **[I7]**, and in `research-selection-os` the only positive effects came from **reusable learned abstractions**, while clever selection added little once its compute was charged **[I8]**. So v2.1 is **abstraction-first**: Caduceus invests first in skills as tested, composable units and in the admission machinery, and last in clever self-selection of what to improve (§12).
 
+### 1.1 The research hypothesis this product serves (v2.2)
+
+Caduceus is the admission authority of a larger loop whose hypothesis is that **capability gains come from how efficiently a system turns fresh real-world information into *validated* learning, not only from model size**. This is a hypothesis, not an established law. The "capability = F(model, compute, recipe, data, delay)" form and any "inverse-square" distance analogy are intuitions: none is a measured relationship here, and "effective data distance" has no validated formula. Related published work (selective online instruction tuning at ~25% of the data; adaptive reuse of components in continual learning) supports only the premise that data selection and reuse matter, not the thesis **[X18]**.
+
+The testable form is a ratio: validated competence gained on sealed held-out tasks per unit of compute + data acquisition + human effort, compared across learning mechanisms at matched budgets (frozen base, retrieval, curated verified synthetic data, continual adapters, full loop). The product question is whether that ratio improves when the learning system sits closer to the source of new information **and** the data passes an independent verifier. Proximity alone is not quality: a local model can learn from its own mistakes, irrelevant private data, or synthetic output it generated itself. Caduceus exists to stop that.
+
 ### Mythic mapping (UX layer only; never a control)
 | Myth | System component |
 |---|---|
@@ -28,7 +34,7 @@ An **Evolution Candidate** — a typed, digest-bound proposal for one change —
 
 ---
 
-## 2. What changed from v1.0 → v2.0 → v2.1
+## 2. What changed from v1.0 → v2.0 → v2.1 → v2.2
 
 | Problem in earlier drafts | Fix (and its source) |
 |---|---|
@@ -44,6 +50,11 @@ An **Evolution Candidate** — a typed, digest-bound proposal for one change —
 | Single process applies patches | Single-use capability + separate broker process **[I6]** |
 | Ledger tamper-evidence by hash chain only | Add inclusion/consistency proofs and external witness (split-view risk) **[X10]** |
 | Memory providers trusted directly | Behind source admission **[I12]** (Mem0, TencentDB memory) **[X9][X11]** |
+| **v2.2** Gate only covers skill text; proposers keep failing (exp-004, exp-005) | Extend admission to training data and adapters (`adapter_update`, §6.11); the training signal comes from an oracle-verified pipeline instead of a model proposer **[I20]** |
+| **v2.2** Recursion on a model's own output can reinforce its mistakes | Quality-data recursion rule: only independently verified, provenance-bound experience may enter training; ghost-state memory is non-authoritative **[I18]** (§6.11) |
+| **v2.2** Several layers (memory, monitor, interpretability) are synthetic-only | Each enters as a single ablation against the previous baseline, so a gain is attributable (§7.1) |
+| **v2.2** Receipts from other repos could be trusted by name | Every external receipt is recomputed by that repo's standalone validator in a separate process before it fills any lane (`hsi_bridge.py`) |
+| **v2.2** Thesis stated as a law | Restated as a hypothesis with a measurable ratio (§1.1) |
 
 ---
 
@@ -186,6 +197,29 @@ The gate is evaluated by code; a model may *propose* a verdict, never *decide* o
 - **Self-patch (supervised):** propose → allow-list check → focused regression suite + adversarial corpus → sandbox apply → lanes → human signature → canary → monitor → keep or auto-rollback. Candidate drop-in for the PR path: `no-mistakes` (local git proxy, disposable worktree, validation pipeline before forwarding upstream); verify license and treat its AI validators as proposal-only **[X15]**.
 - **Config routing (later):** `recursive-meta-harness` routes only among **admitted** full configurations (harness, model, memory, tools, context, retries, verification, budget) with full cost and a promotion preview that cannot grant authority **[I3]**.
 
+### 6.11 Closed-loop quality-data recursion (v2.2)
+
+**Purpose.** Close the loop experience → verification → learning → gated apply → better experience, so that each round's training data is better than raw volume, without letting the system reinforce its own errors.
+
+**Pipeline** (each arrow is a separate component; none may approve its own output):
+1. **Observe:** live agent work, tools, tests, documents become typed experiences (task family, environment version, seed, observation, action, outcome, source digest, parent ids, encoding version).
+2. **Validate:** an independent verifier (executable oracle, test suite, or independently governed source of truth) returns accepted / rejected / quarantined. A model's own label is never verification. Where no exact oracle exists the experience stays quarantined.
+3. **Select and encode:** only `accepted` experiences with a source digest are eligible; selection is scored by contribution to held-out competence per unit cost, not by dataset size.
+4. **Learn:** a learning controller chooses among no-update, retrieval, replay, verified-synthetic, verified-synthetic+replay. The base checkpoint is immutable; updates are candidate adapters.
+5. **Evaluate and gate:** the adapter is a Caduceus candidate of kind `adapter_update` and goes through the Exchange.
+6. **Apply and feed back:** on accept, the broker applies it; on reject, the identity closes and the next round starts from the last admitted state.
+
+**Requirements.**
+- **R-REC-1** `adapter_update` is a candidate kind. The default policy refuses it; it needs an explicit policy opt-in and an `adapters/` allow-list root. `content_digest` binds the exact adapter and training-set manifest.
+- **R-REC-2** Evidence from a training pipeline fills lanes only through a bridge that (a) recomputes each receipt with that pipeline's standalone validator in a separate `python -I` process, (b) requires the validator's digest to equal the receipt's, (c) reduces numbers to integer micro-units (no floats in ledger bodies), (d) requires the candidate's preregistration to name the exact receipt digests. Implemented for hsi-lab receipts in `caduceus/hsi_bridge.py`.
+- **R-REC-3** Lane mapping for `adapter_update`: `controls` = beats both the replay baseline and the pool-matched *unverified* control with lower CI bound > 0; `indispensability` = verified data beats pool-matched unverified data (ablating verification must hurt); `retention` = every guardrail held; `behavior_equivalence` = no held-out-type check returned `NO_CANDIDATE`; `independent_verification` = receipts recomputed. Lanes the bridge cannot honestly fill (`prediction_lock`, `holdout`, `non_inferiority`, `instrument_validity`, `signature`) stay `NotRun`, which quarantines. In particular a pipeline `lock_digest` is not a prediction lock until a ledger proves it preceded evaluation.
+- **R-REC-4** Recursion rounds: round k+1 may generate data using the round-k admitted adapter only. Each round has a fresh sealed holdout seed, its own budget, and entries on one chained ledger. A rejected round is never a parent.
+- **R-REC-5** Matched-volume rule: every arm (verified, unverified, replay, real-only) is compared at equal data volume and equal compute; pool-size and shared-definition confounds must be stated, not assumed away.
+- **R-REC-6** No quality-data claim without the falsifier: removing verification (pool-matched unverified control) must erase the gain.
+- **R-REC-7** Memory layer (ghost states): a compressed or private latent state is non-authoritative. It may influence operational state only by projecting into cited, policy-scoped evidence that passes the gate, and only with a recoverability certificate (the invariant survives compression, rewrite, perturbation and projection) **[I18]**.
+- **R-REC-8** Pre-apply predictors (monitor, interpretability checks) enter as Exchange lanes only after a model-backed result exists; until then they report `Unavailable`, never a pass **[I4][I21][I22]**.
+- **R-REC-9** Learning-architecture rule: acquiring information may be continuous; changing parameters may not. Persistent external knowledge + stable base + gated adapters is the default; parameter updates are candidates, never silent.
+
 ### 6.9 Mythic identity in prompt and memory
 The seed contract (Appendix A) sits in the immutable base prompt for legibility and reasoning style. It is explicitly **not a control**; no behavior may depend on the model honoring it.
 
@@ -205,6 +239,15 @@ Drop-in over `~/.hermes`. Each subsystem is separately toggleable (`telemetry`, 
 - **Terminal closure:** a failed gate closes that candidate identity; no threshold repair.
 - **Cost reporting:** report spend alongside accuracy; DGM's 80-iteration run cost roughly $22k in API fees (press-reported) which sets the scale for why compute budgets are a gate, not a footnote **[X4]**.
 
+### 7.1 Recursion experiment and ablation ladder (v2.2)
+
+- **Conditions** (same base model, compute, task families and data-acquisition budget wherever possible): frozen base · base + persistent retrieval · base + curated verified synthetic · base + continual adapters · full loop. Report task accuracy, held-out and unseen-family transfer, retention, calibration, latency and cost per successful task. The evaluation set must not leak into training (test required).
+- **Headline ratio:** Δ validated competence / (compute + data acquisition + human effort), per condition. The claim is about the ratio, not accuracy alone.
+- **Ablation ladder (attribution rule):** add exactly one layer at a time against the previous baseline: (0) verified-data adapter only → (1) + recoverability-certified ghost-state memory vs raw verified memory at matched data → (2) + pre-apply monitor lane, scored by whether it predicted the holdout outcome → (3) + selection policy vs random at equal cost. A layer that does not beat the previous rung is dropped, not retuned.
+- **Domain:** the recursion test must run where an executable oracle exists on real data (code with repository tests is the default). The synthetic rule world is a mechanism test; CL-bench has rubric grading and no oracle, so it is an out-of-domain retention check, not a training domain.
+- **Breakthrough criterion (preregister before running):** gains in at least two consecutive admitted rounds on a sealed real-task holdout; beats both the pool-matched unverified control and the fixed policy; retention non-negative; replicated on a second seed and a second base model; and the gain disappears when verification is removed. Failing any item closes that identity; no threshold repair. The claim ceiling is unchanged by passing it (§14).
+- **Known weaknesses of the current evidence [I20]:** E6 verified-synthetic PROMOTE (+0.141 vs pool-matched control) uses a single seed; the verified arm (~0.30) scores below real-only (~0.32); the held-out-rule-types guardrail failed (v10, `NO_CANDIDATE`); results are in a synthetic rule world with an exact oracle. Synthetic-to-real transfer is the most likely failure and is what the code-domain round tests.
+
 ---
 
 ## 8. Independent verification lanes
@@ -219,6 +262,9 @@ Agreement of two lanes sharing a bug proves little, so safety-critical invariant
 | Formal contract | Machine-check abstract gate contracts | `formal/hsai-gateway-digest` (Lean 4.30.0; set-permutation invariance) and `formal/math-discovery-*`; proves a **hand-written model**, not the implementation; no SHA-256 proof **[I10]** |
 | Adversarial corpus | Every seeded bad candidate must be rejected | Statebook P9–P22 TD-004 replays as a pattern: stale evidence, queued-value monetization, budget slow-drain, cancel races, model-confidence bypass **[I11]**; any miss blocks release |
 | Process isolation of tests | Each module in its own process; owner-env modules report `SKIPPED-OWNER-ENV`, never pass silently | Theseus `scripts/run_public_tests.sh` **[I5]** |
+| Recomputed external receipt (v2.2) | Re-derive a training pipeline's decision, CIs and guardrails from its frozen packet | hsi-lab `validator/recompute.py` run via `python -I` in a separate process; digest must match; imports nothing from the pipeline **[I20]** |
+| Pre-apply update predictor (v2.2) | Predict adaptation gain, retention, calibration and policy harm of an adapter before the holdout run | AHCL causal monitor **[I4][I21]**; `Unavailable` until a model-backed result exists |
+| Feature-stability / causal scrubbing (v2.2) | Evidence an adapter changed what it was meant to | `interpretability-lab-sandbox` **[I22]**; synthetic only, `Unavailable` for real models |
 | Temporal stress (advisory) | Forecast-driven load scenarios for canary sizing | `tools/timesfm3-temporal-stress-scenarios-v1` on `google/timesfm-3.0-pytorch`; outputs labeled `model_derived_synthetic_input`; never ground truth **[I15]** |
 
 ---
@@ -288,6 +334,15 @@ Each phase has an authorization text (permits/forbids), preregistered exit crite
 
 **Phase 5 — Optional lanes and upstream packaging.** Config routing, recirculation, temporal stress; modular patch series; publish honest negatives.
 
+**Phase 6 — Closed-loop quality-data recursion (v2.2).** Extend admission from skill text to training data and adapters (§6.11).
+- *6a Bridge (implemented, branch `adapter-update-bridge`):* `adapter_update` kind, `hsi_bridge.py`, 11 tests including real hsi-lab receipts. With only hsi evidence the verdict is quarantine, by design.
+- *6b Lock ordering:* the training pipeline writes its lock digest to a chained ledger before evaluation so `prediction_lock` and `holdout` can be Checked; add `fixed_policy` arm support (the gap exp-005 exposed on `preregistration`).
+- *6c Real-domain round:* one verified-recursion round on a code-with-tests domain; baseline for the ablation ladder (§7.1).
+- *6d Recursion:* round 2 generated by the admitted round-1 adapter; fresh sealed holdout per round; chained ledger.
+- *6e Ablations, one at a time:* ghost-state memory, pre-apply monitor, selection policy.
+- *6f Distributed/compute-market (deferred):* only after the off-chain loop passes; rewards depend on verified, independently evaluated work, never volume of generated data.
+*Exit:* the §7.1 breakthrough criterion, or a recorded negative that closes the identity. Phase 4 auto-apply remains blocked until a replicated candidate result beats the random control.
+
 ---
 
 ## 13. Threat model
@@ -303,6 +358,12 @@ Each phase has an authorization text (permits/forbids), preregistered exit crite
 | Runaway evolution | Budgets, rate limits, kill switch, terminal closure | Operator error |
 | Overclaiming | Claim ceiling + claim-text scan in release checks (pattern: `crates/hsai-e2e-harness/tests/claim_boundary_source_scan.rs`) | Reviewer discipline |
 | Cost blow-up | Compute/spend gate | Pricing drift |
+| Self-reinforcing data loop (model trains on its own errors) | Independent verifier, quarantine of unverifiable data, provenance, matched-volume unverified control, base checkpoint immutable | Oracle incompleteness (audit with mutation/distinguishability methods **[I9]**) |
+| Synthetic-to-real transfer failure | Real-domain round, out-of-domain retention check, held-out-type guardrail | Already observed once (v10 `NO_CANDIDATE`) **[I20]** |
+| Forged or stale pipeline receipt | Standalone recomputation in separate process, digest equality, receipt digests bound in preregistration | Validator and pipeline share an author; no independent party yet |
+| Incentives that reward unverified volume (compute market) | Rewards tied to verified work and independent evaluation; market deferred (6f) | Design only |
+| Leakage of evaluation data into training | `test_no_leakage`, sealed holdout commitment per round, proposer never sees assessment split | Same-author fixtures |
+| Layer-stacking hides attribution | One-layer-at-a-time ablation ladder (§7.1) | Discipline |
 
 ---
 
@@ -310,7 +371,7 @@ Each phase has an authorization text (permits/forbids), preregistered exit crite
 
 Evidence ladder: L0 design · L1 local replay · L2 reproducible artifact · L3 cross-environment replay · L4 formal property statement · L5 machine-checked scoped proof · L6 independently reproduced. **Launch ceiling:** L1 for behavior; L5 only for explicitly scoped *model* contracts.
 
-Caduceus makes **no** claim of: general self-improvement; introspection or consciousness; production readiness; SOTA; full security; semantic correctness; proof of the implementation (a proof of a model is not a proof of code); independent verification before a genuine independent party signs; or that telemetry/local benchmarks are official benchmark evidence. A benchmark pass is not a proof; a local replay is not independent replication; a forecast is not an observation; a machine-attested run is not an independent replication.
+Caduceus makes **no** claim of: general self-improvement; introspection or consciousness; production readiness; SOTA; full security; semantic correctness; proof of the implementation (a proof of a model is not a proof of code); independent verification before a genuine independent party signs; or that telemetry/local benchmarks are official benchmark evidence. v2.2 adds: no claim that data proximity, verified recursion or any scaling relation (including an "inverse-square" analogy) holds; no claim that frontier labs are disadvantaged; no claim that synthetic-world results transfer to real tasks; no claim that a recomputed receipt is independent replication (same author); no claim from ghost-state, monitor or interpretability components beyond their synthetic-only status; passing the §7.1 criterion would still be `LocalDevelopmentEvidenceOnly`. A benchmark pass is not a proof; a local replay is not independent replication; a forecast is not an observation; a machine-attested run is not an independent replication.
 
 ---
 
@@ -318,6 +379,7 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 
 *Resolved defaults:* allow-list v1 = skills, prompt fragments, config, memory policy (core-loop modules only by reviewed phase); `RUNTIME.md` = separate append-only namespace with hard size budget; diagnostics event-triggered; no auto-apply default; ledger = SQLite side tables + exported digest chain.
 *Open:* exact Hermes extension points for the Refinery (needs repo read); witness choice (self-hosted vs public log); size of the protected suite and per-skill probe counts (to be preregistered with power analysis in Phase 1); whether `hermes-agent-self-evolution` is vendored, depended on, or run out-of-process.
+*Open (v2.2):* which code-with-tests domain and repository is the real-domain oracle; how hsi-lab ledgers its lock before evaluation (and whether it moves onto the Caduceus ledger or is witnessed by it); what `adapter_update` apply means for the broker (adapter file swap, MLX adapter path, rollback to prior adapter digest); second base model and second seed for replication; whether the `smart-rsi` parameter-delta/canary logic is reused or Caduceus's broker/release machine is the single apply path (smart-rsi is synthetic with model execution closed, so default is no reuse); who the independent reviewer is (all components currently share an author); ghost-state recoverability certificate format; the compute-market repository (not identified; `esn-justnet` M0 is a candidate custody layer, `composed-*` repos are ZK benchmarks).
 
 ---
 
@@ -329,6 +391,13 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 4. Pin the performance baseline (commit, hardware, workload digest) and capture switch-latency distribution.
 5. Stand up the ledger + independent readback + adversarial corpus seeded with the Statebook-style cases.
 6. Preregister Phase 1 exit criteria and n.
+
+*v2.2 additions (in order):*
+7. Review and commit the `adapter_update` bridge (`caduceus/hsi_bridge.py`, `tests/test_hsi_bridge.py`) after the full validation commands pass.
+8. Make hsi-lab ledger its lock digest before evaluation (6b); add the `fixed_policy` arm to the CL-bench design.
+9. Choose the real-domain oracle (6c) and preregister the §7.1 breakthrough criterion before any run.
+10. Run one verified-recursion round with the verified-data adapter only; then add layers one at a time.
+11. Commit or discard the uncommitted exp-006 / bench changes in this tree (they appeared during the session and are not part of the bridge).
 
 ---
 
@@ -353,6 +422,7 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 | X13 | `GenericAgent-main` | ~3K-line self-evolving loop crystallizing tasks into skills; <30K context claim | Self-reported; comparator only |
 | X14 | `autoresearch-macos` | Bounded 5-minute modify→run→keep/discard loop with git-backed memory | Keep/discard replaced by our gate |
 | X15 | `no-mistakes-main` | Local git proxy → disposable worktree → validation pipeline → forward only after checks pass | License unchecked; AI validators are proposal-only |
+| X18 | OASIS (ACL 2026, selective online instruction tuning, ~25% of data at comparable performance in its settings); adaptive knowledge bases for continual learning (Nature, 2025) | Premise only: data selection and component reuse can matter as much as volume | Second-hand from a pasted summary; not read or verified by us; does not support the data-proximity thesis |
 | X17 | Network of Theseus (arXiv:2512.04198); Causal Distillation (NAACL 2022) | Prior art cited by Theseus Lab for staged replacement/aligned distillation | Cited second-hand via [I5] |
 
 ### 17.2 Our research and code (paths relative to `/Users/shaanp/Documents/GitHub/`)
@@ -360,7 +430,7 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 | Tag | Repo / path | What we use | Status / limit |
 |---|---|---|---|
 | I1 | `rlm-continual-harness` (stdlib Python, offline) · `docs/constitution.md` | Constitution C1–C8; Refinery; immutable base; four slots; retention 1.0 | Closest Python drop-in; local development |
-| I2 | `smart-rsi` · `docs/lane-evidence.md` | Memory→refinery→shadow→canary→promote/freeze/rollback; replay controller with Pareto report; terminal lane gating | Synthetic qualification; live model slots execution-closed |
+| I2 | `smart-rsi` · `docs/lane-evidence.md` | Memory→refinery→shadow→canary→promote/freeze/rollback; replay controller with Pareto report; terminal lane gating | Synthetic qualification (~12k lines); live model slots execution-closed; overlaps Caduceus's apply path, so no code reuse planned; uncommitted work in tree |
 | I3 | `recursive-meta-harness` (Rust) | Config routing among admitted configs, full cost, promotion preview without authority, license ledgers | Local bootstrap; no accepted evidence |
 | I4 | `continual-alignment-lab` | Monitor must change the update policy and beat strong baselines; five-seed replication with matched-progress gate | Synthetic |
 | I5 | `theseus-lab` · `RESEARCH.md`, `qualification_gate.py`, `scripts/run_public_tests.sh` | Behavior≠mechanism, instrument validity, constructed controls, narrow-replacement results | Bounded local; PyTorch-dependent tests CI-only |
@@ -376,9 +446,14 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 | I15 | `tools/timesfm3-temporal-stress-scenarios-v1` · [timesfm](https://github.com/google-research/timesfm) (local `331c6d3`) | Advisory load scenarios | Model-derived, not observations |
 | I16 | `tools/hsai-formal-preflight` | Bounded runner, raw archive validator, state machine | Python stdlib; process-group timeouts, byte caps |
 | I17 | `crates/serving-efficiency-lane`, `docs/799-…` | Reference-only serving candidates | Inert metadata |
-| I18 | `recoverable-ghost-states` | PCSM journals, process-recovery patterns | Imported only via pinned clean handoffs |
+| I18 | `recoverable-ghost-states-*` (external-validation, stable, cto releases) · `docs/ghoststates_drafted.md` | Ghost states: non-authoritative latent/private state that influences operational state only after projection into cited, gate-accepted evidence; recoverability certificates; hash-bound CL3–CL12 evidence; reviewer reproduction bundle; Qwen2.5-0.5B phase evidence | Bounded; working paper; model-backed evidence is small; PCSM journals imported only via pinned clean handoffs |
 | I19 | `openlibrary-self-teaching-lab` | Preregistered arms for self-teaching selection | Model-free so far |
-| I20 | `hsi-lab` | Frozen packets with independently recomputed receipts | Template for lyre-report receipts |
+| I20 | `hsi-lab` · `validator/recompute.py`, `packets/`, `docs/experiments/` | Verified-synthetic experience, MLX adapter training, frozen packets E1–E7 with recomputed receipts; E6 verified (PROMOTE), pool-matched control v9 (PROMOTE, +0.141), held-out rule types v10 (`NO_CANDIDATE`); clean-environment 7B reproduction | Single seed per receipt; synthetic rule world with exact oracle; verified arm below real-only; receipts use floats (converted to micro-units by the bridge) |
+| I21 | `aligned-holistic-continual-learning`, `continual-alignment-lab` | Fixed causal monitor predicting adaptation gain, retention/calibration/policy harm; locked base | Synthetic qualification only; model-backed v2 designed, not run |
+| I22 | `interpretability-lab-sandbox` | Feature stability, causal scrubbing, circuit lineage, matched-data accounting | Synthetic harness |
+| I23 | `composed-zk-benchmark-os` (oracle/mutation parts only) | Semantic IR + oracle, 14 mutation classes, oracle-completeness audit, distinguishability matrix, claim-ladder discipline | Level 1 local; ZK/Lean parts not used (Aeneas extraction ~80 phases stayed Level 1) |
+| I24 | `research-selection-os`, `openlibrary-self-teaching-lab`, `rlm-continual-harness`, `recursive-meta-harness` | Selection-vs-random benchmark (P4 data selection); question selection and recirculation; harness ideas; config routing after admission | Model-free / local bootstrap; rlm harness overlaps the skill gate |
+| I25 | `statefulai`, `esn-justnet`, `mesh-intelligence`, `mesh-qrc` | Statebook corpus (documentation only); user-owned network design with Rust/SQLite M0; remediation orchestration (a later experience source) | Deferred; no compute-market repo identified |
 
 ### 17.3 Requirement → evidence map
 
@@ -398,6 +473,11 @@ Caduceus makes **no** claim of: general self-improvement; introspection or consc
 | Memory providers behind admission | [X9][X11] | [I12] source admission |
 | Compute/spend budgets | DGM cost [X4] | [I11] budget patterns |
 | External held-out learning eval | [X12] | [I7] protocol style |
+| Verified data beats unverified at matched volume | — | [I20] v9 pool-matched control |
+| Non-authoritative memory with recoverability | — | [I18] |
+| Pre-apply update predictor | — | [I21] (synthetic) |
+| Oracle completeness / adversarial data | — | [I23] |
+| Recomputed external receipts | — | [I20] validator, `hsi_bridge.py` |
 
 ### 17.4 What this reference list does not establish
 No external figure above is reproduced by us; several are subset-based, author-run, press-reported, or domain-specific. None of our internal artifacts has been integrated with Hermes; each needs a Hermes adapter, a pinned baseline, a random-control arm and its own preregistered gate. Existing internal results are Level 1 or below (Level 5 only for scoped model theorems). I read repo READMEs and key-findings sections, not every experiment record; `docs/research/antithesis-inspired-exploration-v1.md` and several other local docs were not reviewed in this pass.

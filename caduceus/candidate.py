@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 
 from .digest import domain_digest, is_hex_digest
 
-KINDS = ("skill_create", "skill_refine", "prompt_fragment", "config", "memory_policy", "code_patch")
+KINDS = ("skill_create", "skill_refine", "prompt_fragment", "config", "memory_policy", "code_patch", "adapter_update")
 REQUIRED_ARMS = ("untouched_base", "fixed_policy", "candidate", "deterministic_random")
 REQUIRED_NONCLAIM = "LocalDevelopmentEvidenceOnly"
 PREREG_FIELDS = (
