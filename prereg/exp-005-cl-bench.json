@@ -1,0 +1,35 @@
+{
+  "schema": "caduceus.prereg.bench.v1",
+  "experiment_id": "exp-005-cl-bench-cl-001",
+  "hypothesis": "A context-learning skill refined by Hermes (Haiku) from FIT-split failures only raises the CL-bench all-or-nothing solve rate by at least 0.10 versus the untouched base skill AND versus a wrong-source skill (systematic-debugging), on Claude Haiku 5.5, over a sealed assessment split the proposer never saw.",
+  "benchmark": "CL-bench (Tencent, local checkout), single-turn tasks",
+  "dataset_sha256": "d5fc88d4b2eea75c61dd40862021b6ae2fba26bd21b58e8c5e18377a763943be",
+  "max_chars": 15000,
+  "exclude": [
+    0
+  ],
+  "split_seed": 20261016,
+  "n_fit": 20,
+  "n_assess": 60,
+  "assessment_commitment": "436156440f1d50b14912524d66cf2ab4a2f6b796cbca4e1dd602cbd9cd0a62ef",
+  "order_seed": 20261019,
+  "bootstrap_seed": 1016,
+  "bootstrap_resamples": 10000,
+  "min_effect_micro": 100000,
+  "alpha_micro": 50000,
+  "max_notrun_micro": 100000,
+  "executor": {
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "base_url": "https://api.anthropic.com",
+    "temperature": "provider_default"
+  },
+  "judge_primary": "claude-sonnet-5-5",
+  "judge_second": "claude-haiku-5-5",
+  "skill": "reasoning/context-learning",
+  "base_tree_digest": "7ec1fabd21980a19b93a248312f8e4fa1dd2c1e07f591a56ecf3e898001cbcab",
+  "random_skill": "software-development/systematic-debugging",
+  "max_category_loss": 3,
+  "decision_rule": "Units: assessment tasks, one run per arm. Score: primary judge all-or-nothing rubric grade (0/1). Contrasts: candidate minus untouched_base and candidate minus deterministic_random; cluster = task; seeded percentile bootstrap. Pass iff excluded/units <= max_notrun AND for BOTH contrasts lower bound > 0 AND mean >= min_effect. Second judge graded independently for instrument agreement. The Exchange then decides on all 13 lanes.",
+  "nonclaim": "LocalDevelopmentEvidenceOnly"
+}

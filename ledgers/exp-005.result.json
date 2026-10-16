@@ -1,0 +1,44 @@
+{
+ "benchmark": "CL-bench (Tencent, local checkout), single-turn tasks",
+ "by_category": {
+  "Domain Knowledge Reasoning": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "untouched_base": 0
+  },
+  "Procedural Task Execution": {
+   "candidate": 2,
+   "deterministic_random": 2,
+   "untouched_base": 2
+  },
+  "Rule System Application": {
+   "candidate": 1,
+   "deterministic_random": 2,
+   "untouched_base": 3
+  }
+ },
+ "clusters": 60,
+ "counts": {
+  "candidate": 3,
+  "deterministic_random": 4,
+  "untouched_base": 5
+ },
+ "design": "candidate",
+ "excluded": 0,
+ "experiment_id": "exp-005-cl-bench-cl-001",
+ "instrument": {
+  "agree": 169,
+  "total": 180
+ },
+ "lower_micro": -116667,
+ "mean_micro": -33333,
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "prereg_digest": "4d2ab1434bffb89ad52fe3227ab52601cfd992f70faa2aece29d66ec37cc21a5",
+ "reason": "decision_rule",
+ "units": 60,
+ "upper_micro": 50000,
+ "verdict": "Fail",
+ "vs_random_lower_micro": -83333,
+ "vs_random_mean_micro": -16667,
+ "vs_random_upper_micro": 33333
+}

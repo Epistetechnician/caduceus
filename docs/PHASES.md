@@ -6,7 +6,7 @@
 | 1 Skill substrate | contracts + probe kinds, identity by tree digest, behavior/composition/indispensability controls, protected suite + retention gate, switch fast path | **Implemented.** Contracts for 4 real skills; real executor; switch baseline pinned. Fast path deliberately not built (amendments 2, 12) |
 | 2 Admission + Refinery (propose-only) | typed candidates, deterministic gate, lanes, retention, random control, sealed holdout, adversarial corpus, wrap self-evolution output | **Implemented.** Corpus: 43/43 attacks refused, gate deterministic. Strict intake; source admission; generic proposal wrapper (amendment 9); three-arm random-control design |
 | 3 Supervised apply | broker process, single-use capabilities, staged release, canary, breakers, rollback drills, human signature, budgets | **Implemented on a sandbox.** Broker process (only writer, rollback included; macOS Seatbelt sandbox); release state machine; HMAC signatures (amendment 8); freeze/kill switch/toggles; drills pass (`caduceus drill`). Not yet: kernel sandbox for the broker, asymmetric signatures, a live Hermes install in enforce mode |
-| 4 Auto-apply | blocked until a replicated result beats the random control | **Gate implemented, report-only; Blocked.** Counts only candidate experiments (refinement vs current vs random); the one so far (exp-004) failed |
+| 4 Auto-apply | blocked until a replicated result beats the random control | **Gate implemented, report-only; Blocked.** Counts only candidate experiments (refinement vs current vs random); exp-004 and exp-005 (clean, CL-bench) both failed |
 | 5 Optional lanes / upstream | Bend, Lean, temporal stress, config routing | Not started; reported `Unavailable` |
 
 ## Done 2026-10-15
@@ -37,11 +37,12 @@
   custody + LLM-judge second instrument; lineage/tenant topology; broker
   sandbox (macOS); O(1) plugin hot path.
 * exp-004, first real candidate through the Exchange: **Fail** (closed).
+* exp-005, first clean candidate, on CL-bench (`caduceus/bench.py`,
+  `scripts/bench_cl.py`): **Fail** (closed); Exchange rejected.
 
 ## Next concrete steps
-1. A clean candidate: have Hermes (or self-evolution) propose a refinement
-   for a skill with headroom, against a contract whose held-out probes the
-   proposer has never seen. Preregister it as a candidate experiment.
+1. Next clean candidate on CL-bench: add the `fixed_policy` arm the PRD
+   requires, and a stronger proposer or more fit data (new id, new split seed).
 2. Install the plugin into the live `~/.hermes` in observe mode (operator step).
 3. Ed25519 signatures and a Linux broker sandbox.
 4. Re-pin the switch baseline on a clean Hermes checkout.

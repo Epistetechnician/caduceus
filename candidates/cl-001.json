@@ -1,0 +1,45 @@
+{
+  "candidate": {
+    "candidate_id": "skill:reasoning/context-learning:cl-001",
+    "compute_budget": 800,
+    "content_digest": "ac1a0525a161d0949304766c58fea64b5190d3b8b5c64a77a74144c7fc1d4598",
+    "kind": "skill_refine",
+    "nonclaims": [
+      "LocalDevelopmentEvidenceOnly"
+    ],
+    "parent_digest": "7ec1fabd21980a19b93a248312f8e4fa1dd2c1e07f591a56ecf3e898001cbcab",
+    "paths": [
+      "skills/reasoning/context-learning/SKILL.md"
+    ],
+    "preregistration": {
+      "alpha_micro": 50000,
+      "arms": [
+        "untouched_base",
+        "deterministic_random",
+        "candidate"
+      ],
+      "experiment_id": "exp-005-cl-bench-cl-001",
+      "experiment_prereg_digest": "4d2ab1434bffb89ad52fe3227ab52601cfd992f70faa2aece29d66ec37cc21a5",
+      "holdout_commitment": "436156440f1d50b14912524d66cf2ab4a2f6b796cbca4e1dd602cbd9cd0a62ef",
+      "max_search_cost_units": 800,
+      "metric": "cl_bench_solve_rate",
+      "min_effect_micro": 100000,
+      "n": 60,
+      "seeds": [
+        20261016,
+        20261019,
+        1016
+      ],
+      "threshold_micro": 0
+    },
+    "proposer": "hermes-haiku-proposer",
+    "required_signer_roles": [],
+    "rollback_plan_digest": "07be6ade90e5393fc32ca9932361761d2b6a141ac44824e628a0e77b8b0bb76f",
+    "spend_budget_micro_usd": 0,
+    "tenant_scope": "local"
+  },
+  "candidate_digest": "dd1274cb555da449fff4f90762750a719840a7e09145dcd325497c0d467ef786",
+  "paths": [
+    "skills/reasoning/context-learning/SKILL.md"
+  ]
+}

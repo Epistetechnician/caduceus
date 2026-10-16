@@ -63,6 +63,17 @@ What this repository does establish (by tests in `tests/`):
   Checked (`ledgers/governance.jsonl`). Second instrument: a Claude Sonnet 5.5
   judge with rubrics agreed with the regex judge on 136/150 outputs (90.7%,
   threshold 90%); 13 of the 14 disagreements were on the wrong-source arm.
+* exp-005, the first clean candidate, ran on CL-bench (external benchmark,
+  single-turn tasks <= 15k chars, all-or-nothing rubric grading). Hermes on
+  Haiku 5.5 proposed `context-learning` 1.1.0 from 18 failures on a 20-task
+  FIT split; the 60-task assessment split was sealed by digest before the
+  proposer ran and never shown to it. Result on Haiku 5.5: base 5/60, random
+  skill 4/60, candidate 3/60; -0.033 [-0.117, +0.05] vs base. **Fail**,
+  closed. Judges: Sonnet 5.5 primary, Haiku 5.5 second, 169/180 agreement.
+  The Exchange rejected it on `controls`, `indispensability` and
+  `preregistration`. The last is a real gap: the bench design has no
+  `fixed_policy` arm.
+* Phase 4 auto-apply therefore stays Blocked: 0 passing candidate experiments.
 
 What it does **not** establish:
 * anything about real Hermes skills' quality, or that gating improves Hermes;
