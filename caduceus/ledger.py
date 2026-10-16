@@ -211,3 +211,60 @@ class Ledger:
         expected = sum(len(canonical_bytes(e)) + 1 for e in self._entries)
         if not os.path.exists(self.path) or os.path.getsize(self.path) != expected:
             raise LedgerError("ledger file changed underneath this writer")
+
+
+def append_fast(path: str, kind: str, body: Dict[str, Any]) -> Dict[str, Any]:
+    """Append one entry in O(1) under an exclusive file lock.
+
+    Only the last line is re-checked (canonical form, fields, digest); the
+    full chain is not re-verified here. That is the job of `readback` /
+    `caduceus verify-ledger` / `diagnostics`, run on a schedule. Used on hot
+    paths (the plugin's observe mode) where O(ledger) verification per call
+    was measured at ~31 ms p50 at 2,000 entries.
+    """
+    import fcntl
+
+    if kind not in KINDS:
+        raise LedgerError("unknown kind %r" % kind)
+    if not isinstance(body, dict):
+        raise LedgerError("body must be an object")
+    _scan_body(body)
+    try:
+        body_bytes = canonical_bytes(body)
+    except DigestError as exc:
+        raise LedgerError(str(exc)) from exc
+    if len(body_bytes) > MAX_BODY_BYTES:
+        raise LedgerError("body exceeds %d bytes" % MAX_BODY_BYTES)
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    fd = os.open(path, os.O_RDWR | os.O_APPEND | os.O_CREAT, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        size = os.fstat(fd).st_size
+        if size == 0:
+            seq, prev = 0, GENESIS_PREV
+        else:
+            chunk, pos = b"", size
+            while pos > 0:
+                step = min(4096, pos)
+                pos -= step
+                chunk = os.pread(fd, step, pos) + chunk
+                if chunk.count(b"\n") >= 2 or pos == 0:
+                    break
+            if not chunk.endswith(b"\n"):
+                raise LedgerError("last line missing trailing newline")
+            last_line = chunk[:-1].rsplit(b"\n", 1)[-1] + b"\n"
+            try:
+                last = loads_strict(last_line.decode("ascii"))
+            except (DigestError, UnicodeDecodeError) as exc:
+                raise LedgerError("last line: %s" % exc) from exc
+            if canonical_bytes(last) + b"\n" != last_line:
+                raise LedgerError("last line not in canonical form")
+            Ledger._check_entry(last, last.get("seq", -1) + 1, last.get("prev"))
+            seq, prev = last["seq"] + 1, last["digest"]
+        entry = {"seq": seq, "kind": kind, "prev": prev, "body": body,
+                 "digest": entry_digest(seq, kind, prev, body)}
+        os.write(fd, canonical_bytes(entry) + b"\n")
+        os.fsync(fd)
+        return entry
+    finally:
+        os.close(fd)

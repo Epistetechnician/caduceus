@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "boundary": "ok",
+      "case": "MEMORY.md:edit",
+      "negative_control": "stale_at_boundary",
+      "new_session_current": true,
+      "turn1_has_old": true,
+      "turn2_frozen": true,
+      "within_session": "drift_within_session_expected"
+    },
+    {
+      "boundary": "ok",
+      "case": "MEMORY.md:append",
+      "negative_control": "stale_at_boundary",
+      "new_session_current": true,
+      "turn1_has_old": true,
+      "turn2_frozen": true,
+      "within_session": "drift_within_session_expected"
+    },
+    {
+      "boundary": "ok",
+      "case": "USER.md:edit",
+      "negative_control": "stale_at_boundary",
+      "new_session_current": true,
+      "turn1_has_old": true,
+      "turn2_frozen": true,
+      "within_session": "drift_within_session_expected"
+    },
+    {
+      "boundary": "ok",
+      "case": "USER.md:remove",
+      "negative_control": "stale_at_boundary",
+      "new_session_current": true,
+      "turn1_has_old": true,
+      "turn2_frozen": true,
+      "within_session": "drift_within_session_expected"
+    }
+  ],
+  "hermes_commit": "b20cc5f787ea816ea8645603b7b2ac8234dcb8b4",
+  "negative_controls_caught": true,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "passed": true,
+  "schema": "caduceus.baseline.freshness.v1",
+  "silent_stale_injections": [],
+  "within_session_frozen_as_designed": true
+}

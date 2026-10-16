@@ -1,0 +1,108 @@
+{
+  "budget_us": 2839,
+  "delta_us": {
+    "read_file": {
+      "p50": 47,
+      "p95": 54,
+      "p99": 106
+    },
+    "skill_manage": {
+      "p50": 164,
+      "p95": 186,
+      "p99": 290
+    }
+  },
+  "gated_calls_ledgered": 2050,
+  "hermes_commit": "b20cc5f787ea816ea8645603b7b2ac8234dcb8b4",
+  "latency_us": {
+    "off": {
+      "read_file": {
+        "p50": {
+          "lower": 51,
+          "n": 2000,
+          "point": 51,
+          "upper": 51
+        },
+        "p95": {
+          "lower": 62,
+          "n": 2000,
+          "point": 63,
+          "upper": 64
+        },
+        "p99": {
+          "lower": 88,
+          "n": 2000,
+          "point": 92,
+          "upper": 104
+        }
+      },
+      "skill_manage": {
+        "p50": {
+          "lower": 51,
+          "n": 2000,
+          "point": 51,
+          "upper": 51
+        },
+        "p95": {
+          "lower": 63,
+          "n": 2000,
+          "point": 64,
+          "upper": 65
+        },
+        "p99": {
+          "lower": 88,
+          "n": 2000,
+          "point": 91,
+          "upper": 98
+        }
+      }
+    },
+    "on": {
+      "read_file": {
+        "p50": {
+          "lower": 98,
+          "n": 2000,
+          "point": 98,
+          "upper": 99
+        },
+        "p95": {
+          "lower": 116,
+          "n": 2000,
+          "point": 117,
+          "upper": 119
+        },
+        "p99": {
+          "lower": 144,
+          "n": 2000,
+          "point": 198,
+          "upper": 240
+        }
+      },
+      "skill_manage": {
+        "p50": {
+          "lower": 214,
+          "n": 2000,
+          "point": 215,
+          "upper": 215
+        },
+        "p95": {
+          "lower": 248,
+          "n": 2000,
+          "point": 250,
+          "upper": 257
+        },
+        "p99": {
+          "lower": 342,
+          "n": 2000,
+          "point": 381,
+          "upper": 406
+        }
+      }
+    }
+  },
+  "n_per_tool": 2000,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "pass_rule": "read_file p99 delta <= 8% of pinned switch p50",
+  "passed": true,
+  "schema": "caduceus.baseline.plugin_overhead.v1"
+}

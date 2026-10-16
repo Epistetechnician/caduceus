@@ -1,0 +1,133 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-16",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "requesting-code-review",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)sql[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\"). One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1",
+        "rubric": "The answer identifies that building the SQL query by interpolating user_id into the string lets an attacker alter the query (SQL injection)."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(shell|command)[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: subprocess.run(f\"ls {path}\", shell=True). One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2",
+        "rubric": "The answer identifies that passing an interpolated path to a shell (shell=True) lets an attacker run extra commands (shell or command injection)."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)git diff"
+        },
+        "input": "I am about to commit. What is the first command you run to see exactly what you are reviewing? Reply with only the command.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3",
+        "rubric": "The answer is a git command that shows the pending changes (a diff of working tree or staged changes)."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(deserializ|untrusted|arbitrary code|insecure|remote code)"
+        },
+        "input": "Review this Python line before I commit it: data = pickle.loads(request.body). One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1",
+        "rubric": "The answer warns that unpickling data from an HTTP request body is unsafe because untrusted input can execute arbitrary code."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(hard-?coded|secret|credential|leak|environment variable)"
+        },
+        "input": "Review this Python line before I commit it: API_KEY = \"sk-live-4f9a8b7c6d5e\". One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2",
+        "rubric": "The answer flags that a live API key is written directly in source code and should come from a secret store or environment instead."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(arbitrary code|code injection|untrusted|unsafe|dangerous|security)"
+        },
+        "input": "Review this Python line before I commit it: result = eval(user_input). One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3",
+        "rubric": "The answer warns that calling eval on user input is dangerous because it can run arbitrary code."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)sql[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: cursor.execute(\"SELECT * FROM users WHERE name = '%s'\" % name). One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1",
+        "rubric": "The answer identifies that formatting name into the SQL string with % lets an attacker alter the query (SQL injection)."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(shell|command)[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: os.system(\"rm -rf \" + user_dir). One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2",
+        "rubric": "The answer identifies that concatenating user_dir into an os.system command lets an attacker run extra shell commands (command injection)."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Review before commit: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,)). Is this line vulnerable to SQL injection? Start your answer with Yes or No.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1",
+        "rubric": "The answer says the line is NOT vulnerable to SQL injection, because the value is passed as a bound parameter."
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Review before commit: subprocess.run([\"ls\", path]). Is this line vulnerable to shell injection? Start your answer with Yes or No.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2",
+        "rubric": "The answer says the line is NOT vulnerable to shell injection, because a list of arguments is passed without a shell."
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "requesting-code-review",
+  "skill_rel_dir": "software-development/requesting-code-review",
+  "written_against_tree_digest": "e3905f287928cd24366db1ee94c03f60d2c72230ebf75f7ad3389c25da3ab32a"
+}

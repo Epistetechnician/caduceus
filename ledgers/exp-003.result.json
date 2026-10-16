@@ -1,0 +1,46 @@
+{
+  "clusters": 40,
+  "excluded": 0,
+  "experiment_id": "exp-003-v2-contracts-sonnet",
+  "lower_micro": 170000,
+  "mean_micro": 305000,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "per_skill": {
+    "codebase-inspection": {
+      "control_pass": 10,
+      "excluded": 0,
+      "random_pass": 10,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "requesting-code-review": {
+      "control_pass": 44,
+      "excluded": 0,
+      "random_pass": 50,
+      "treatment_pass": 46,
+      "units": 50
+    },
+    "systematic-debugging": {
+      "control_pass": 36,
+      "excluded": 0,
+      "random_pass": 36,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "test-driven-development": {
+      "control_pass": 45,
+      "excluded": 0,
+      "random_pass": 46,
+      "treatment_pass": 50,
+      "units": 50
+    }
+  },
+  "prereg_digest": "f5b4703adf7a610c1c66596d54b7c156e42f259c3a4a8de48e6b6f2dbf35d74d",
+  "reason": "decision_rule",
+  "units": 200,
+  "upper_micro": 445000,
+  "verdict": "Pass",
+  "vs_random_lower_micro": 130000,
+  "vs_random_mean_micro": 270000,
+  "vs_random_upper_micro": 415000
+}

@@ -1,0 +1,45 @@
+{
+  "candidate": {
+    "candidate_id": "skill:software-development/requesting-code-review:801c255c0425",
+    "compute_budget": 400,
+    "content_digest": "478cfe55fb2e785c15f62b0e256ab0f9df11acae5bc4bdd4556cb00f98705222",
+    "kind": "skill_refine",
+    "nonclaims": [
+      "LocalDevelopmentEvidenceOnly"
+    ],
+    "parent_digest": "e3905f287928cd24366db1ee94c03f60d2c72230ebf75f7ad3389c25da3ab32a",
+    "paths": [
+      "skills/software-development/requesting-code-review/SKILL.md"
+    ],
+    "preregistration": {
+      "alpha_micro": 50000,
+      "arms": [
+        "untouched_base",
+        "fixed_policy",
+        "candidate",
+        "deterministic_random"
+      ],
+      "experiment_id": "exp-004-candidate-rcr-001",
+      "experiment_prereg_digest": "b4d0eee53adfac6fc5f9d87b5d7d504d0d92e51a0203a0480630fe109694da05",
+      "holdout_commitment": "0fe7aeea6c8d4a7d6e79a6405ec715d6a443e3a9523f9c6ae3ae13150414d885",
+      "max_search_cost_units": 400,
+      "metric": "contract_pass_rate",
+      "min_effect_micro": 150000,
+      "n": 40,
+      "seeds": [
+        1,
+        2
+      ],
+      "threshold_micro": 0
+    },
+    "proposer": "claude-rcr-001",
+    "required_signer_roles": [],
+    "rollback_plan_digest": "1105fec12071cfb09d8b5b480096934154e233e3460433ca7eb4b5761773be8c",
+    "spend_budget_micro_usd": 0,
+    "tenant_scope": "local"
+  },
+  "candidate_digest": "e79c18e3c610f60c4d7be6a1e9551facd23170851ef7617c56e03a17e8d68a3b",
+  "paths": [
+    "skills/software-development/requesting-code-review/SKILL.md"
+  ]
+}

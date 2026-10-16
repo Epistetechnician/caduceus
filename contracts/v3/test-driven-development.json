@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-15",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "test-driven-development",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)(def test_|assert).*is_leap"
+        },
+        "input": "Implement a Python function is_leap(year) using TDD. Show only the very first code you would write, as one code block.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "I have already written the implementation and will add tests afterwards. Is that test-driven development? Start your answer with Yes or No.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(run|watch|see|verify|confirm).{0,60}fail"
+        },
+        "input": "You just wrote a new test. What must you do before writing any implementation code? One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)(def test_|assert).*slugify"
+        },
+        "input": "Using TDD, add a slugify(text) function in Python. Show only the very first code you would write, as one code block.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Should I write all ten tests first and then write all of the implementation? Start your answer with Yes or No.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(wrong|not test|n.t test|already|invalid|bad test|meaningless|false positive|doesn.t verify|tautolog)"
+        },
+        "input": "A brand-new test passed on its very first run, before any implementation existed. What does that tell you? One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)(def test_|assert).*is_even"
+        },
+        "input": "Implement a Python function is_even(n) using TDD. Show only the very first code you would write, as one code block.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "I already wrote the code and plan to add unit tests later. Is that test-driven development? Start your answer with Yes or No.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "^\\W*HELLO\\W*$"
+        },
+        "input": "Convert the word hello to uppercase. Reply with only the result.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "def test_"
+        },
+        "input": "Write a haiku about autumn leaves.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "test-driven-development",
+  "skill_rel_dir": "software-development/test-driven-development",
+  "written_against_tree_digest": "8bfcdffda0a62600a9b2252613014cfd92797ae5c5917c32b4fb1405558013ab"
+}

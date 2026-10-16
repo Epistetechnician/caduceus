@@ -116,3 +116,18 @@ def evaluate(candidate: Candidate, policy: AdmissionPolicy, evidence: Dict[str, 
         reasons.extend("lane_not_checked:%s:%s" % (lane, lanes[lane]) for lane in unready)
         return done("quarantine")
     return done("accept")
+
+
+def verdict_from_dict(d: Any) -> Verdict:
+    keys = {"decision", "reason_codes", "lane_results", "candidate_digest", "policy_digest", "grants_authority"}
+    if not isinstance(d, dict) or set(d) != keys:
+        raise ValueError("verdict must have exactly fields %s" % sorted(keys))
+    if d["grants_authority"] is not False:
+        raise ValueError("a verdict never grants authority")
+    if d["decision"] not in ("accept", "reject", "quarantine"):
+        raise ValueError("unknown decision")
+    if not isinstance(d["lane_results"], dict) or not isinstance(d["reason_codes"], list):
+        raise ValueError("malformed verdict")
+    return Verdict(d["decision"], tuple(str(r) for r in d["reason_codes"]),
+                   tuple(sorted((str(k), str(v)) for k, v in d["lane_results"].items())),
+                   str(d["candidate_digest"]), str(d["policy_digest"]))

@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-15",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "requesting-code-review",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)sql[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\"). One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(shell|command)[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: subprocess.run(f\"ls {path}\", shell=True). One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)git diff"
+        },
+        "input": "I am about to commit. What is the first command you run to see exactly what you are reviewing? Reply with only the command.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(deserializ|untrusted|arbitrary code|insecure|remote code)"
+        },
+        "input": "Review this Python line before I commit it: data = pickle.loads(request.body). One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(hard-?coded|secret|credential|leak|environment variable)"
+        },
+        "input": "Review this Python line before I commit it: API_KEY = \"sk-live-4f9a8b7c6d5e\". One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(arbitrary code|code injection|untrusted|unsafe|dangerous|security)"
+        },
+        "input": "Review this Python line before I commit it: result = eval(user_input). One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)sql[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: cursor.execute(\"SELECT * FROM users WHERE name = '%s'\" % name). One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(shell|command)[- ]injection"
+        },
+        "input": "Review this Python line before I commit it: os.system(\"rm -rf \" + user_dir). One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Review before commit: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,)). Is this line vulnerable to SQL injection? Start your answer with Yes or No.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Review before commit: subprocess.run([\"ls\", path]). Is this line vulnerable to shell injection? Start your answer with Yes or No.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "requesting-code-review",
+  "skill_rel_dir": "software-development/requesting-code-review",
+  "written_against_tree_digest": "e3905f287928cd24366db1ee94c03f60d2c72230ebf75f7ad3389c25da3ab32a"
+}

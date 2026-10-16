@@ -37,9 +37,13 @@ class Candidate:
     nonclaims: Tuple[str, ...]
     proposer: str
     required_signer_roles: Tuple[str, ...] = ()
+    # Digest of the exact file contents to write (`writes_digest`). Omitted from
+    # the dict when empty so pre-existing candidate digests are unchanged; the
+    # broker refuses to apply a candidate without one.
+    content_digest: str = ""
 
     def as_dict(self) -> Dict[str, Any]:
-        return {
+        d = {
             "candidate_id": self.candidate_id,
             "kind": self.kind,
             "parent_digest": self.parent_digest,
@@ -53,6 +57,9 @@ class Candidate:
             "proposer": self.proposer,
             "required_signer_roles": list(self.required_signer_roles),
         }
+        if self.content_digest:
+            d["content_digest"] = self.content_digest
+        return d
 
     def digest(self) -> str:
         return domain_digest("caduceus.candidate.v1", self.as_dict())
@@ -109,6 +116,73 @@ def validate_candidate(c: Candidate, allowed_roots: Tuple[str, ...]) -> List[str
             problems.append("prereg_%s_invalid" % f)
     if not is_hex_digest(pr["holdout_commitment"]):
         problems.append("prereg_holdout_commitment_invalid")
+    if c.content_digest and not is_hex_digest(c.content_digest):
+        problems.append("content_digest_invalid")
     if c.kind == "code_patch" and not c.required_signer_roles:
         problems.append("code_patch_requires_signer_roles")
     return problems
+
+
+# --- untrusted intake -------------------------------------------------------
+
+class CandidateParseError(ValueError):
+    pass
+
+
+_FIELDS = {
+    "candidate_id", "kind", "parent_digest", "tenant_scope", "paths", "preregistration",
+    "compute_budget", "spend_budget_micro_usd", "rollback_plan_digest", "nonclaims",
+    "proposer", "required_signer_roles",
+}
+
+
+def _no_dupes(pairs):
+    out = {}
+    for k, v in pairs:
+        if k in out:
+            raise CandidateParseError("duplicate JSON key: %s" % k)
+        out[k] = v
+    return out
+
+
+def _no_float(s):
+    raise CandidateParseError("floats are not allowed; use *_micro integers")
+
+
+def parse_json_strict(text: str) -> Any:
+    """json.loads that rejects duplicate keys, floats, NaN and Infinity."""
+    import json
+
+    def _const(name):
+        raise CandidateParseError("non-finite number: %s" % name)
+
+    return json.loads(text, object_pairs_hook=_no_dupes, parse_float=_no_float, parse_constant=_const)
+
+
+def writes_digest(writes: Dict[str, str]) -> str:
+    """Binds a candidate to exact file contents (path -> text)."""
+    return domain_digest("caduceus.writes.v1", {k: writes[k] for k in sorted(writes)})
+
+
+def candidate_from_dict(d: Any) -> Candidate:
+    if not isinstance(d, dict) or not (set(d) == _FIELDS or set(d) == _FIELDS | {"content_digest"}):
+        raise CandidateParseError("candidate must have exactly fields %s" % sorted(_FIELDS))
+    for f in ("candidate_id", "kind", "parent_digest", "tenant_scope", "rollback_plan_digest", "proposer"):
+        if not isinstance(d[f], str):
+            raise CandidateParseError("%s must be a string" % f)
+    for f in ("paths", "nonclaims", "required_signer_roles"):
+        if not isinstance(d[f], list) or not all(isinstance(x, str) for x in d[f]):
+            raise CandidateParseError("%s must be a list of strings" % f)
+    for f in ("compute_budget", "spend_budget_micro_usd"):
+        if not isinstance(d[f], int) or isinstance(d[f], bool):
+            raise CandidateParseError("%s must be an integer" % f)
+    if not isinstance(d["preregistration"], dict):
+        raise CandidateParseError("preregistration must be an object")
+    return Candidate(
+        candidate_id=d["candidate_id"], kind=d["kind"], parent_digest=d["parent_digest"],
+        tenant_scope=d["tenant_scope"], paths=tuple(d["paths"]), preregistration=d["preregistration"],
+        compute_budget=d["compute_budget"], spend_budget_micro_usd=d["spend_budget_micro_usd"],
+        rollback_plan_digest=d["rollback_plan_digest"], nonclaims=tuple(d["nonclaims"]),
+        proposer=d["proposer"], required_signer_roles=tuple(d["required_signer_roles"]),
+        content_digest=str(d.get("content_digest", "")),
+    )

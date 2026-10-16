@@ -10,6 +10,9 @@ Uses only the documented `pre_tool_call` hook. Modes (read from
            internal error blocks (fail closed), matching Hermes' policy-hook
            semantics.
 
+Operator controls (`control.json`, see caduceus/control.py): admission off
+makes this a no-op; frozen makes enforce mode block every mutation.
+
 Only the `skill_manage` tool is gated. Its schema (verified against a Hermes
 checkout) is an `operations` array whose ops are create / patch / delete /
 write_file / remove_file; every op mutates, and the legacy flat shape is still
@@ -77,18 +80,32 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
     """Pure decision function (testable). Returns a Hermes directive or None."""
     if tool_name != GATED_TOOL or not isinstance(args, dict):
         return None
+    from caduceus import control
     from caduceus.ledger import Ledger
-    from caduceus.digest import sha256_hex
 
-    ledger = Ledger(os.path.join(base, "ledger.jsonl"))
+    ctl = control.load(base)
+    if not ctl.enabled("admission"):
+        return None  # admission off: upstream-equivalent, nothing recorded
+    from caduceus.ledger import append_fast
+
+    path = os.path.join(base, "ledger.jsonl")
     digest = args_digest(tool_name, args)
     mode = _mode(base)
+    if ctl.frozen and mode == "enforce":
+        append_fast(
+            path,
+            "audit_note",
+            {"event": "skill_mutation_blocked", "args_digest": digest, "actions": _actions(args), "frozen": True},
+        )
+        return {"action": "block", "message": "Caduceus: evolution is frozen by the operator"}
     if mode == "observe":
-        ledger.append(
+        append_fast(
+            path,
             "audit_note",
             {"event": "skill_mutation_intent", "args_digest": digest, "actions": _actions(args)},
         )
         return None
+    ledger = Ledger(path)  # enforce mode needs the full, verified history
     issued = [e for e in ledger.find("capability_issued") if e["body"].get("args_digest") == digest]
     consumed = {e["body"].get("token_sha256") for e in ledger.find("capability_consumed")}
     for entry in issued:

@@ -49,3 +49,35 @@ def wilson(k: int, n: int, z: float = 1.959963984540054) -> Dict[str, int]:
         "lower_micro": int(round((centre - half) * MICRO)),
         "upper_micro": int(round((centre + half) * MICRO)),
     }
+
+
+def quantile(sorted_values: Sequence[float], q: float) -> float:
+    """Nearest-rank quantile of an already sorted sample (q in (0, 1])."""
+    if not sorted_values:
+        raise ValueError("empty sample")
+    rank = max(1, math.ceil(q * len(sorted_values)))
+    return sorted_values[rank - 1]
+
+
+def quantile_bootstrap(
+    values: Sequence[int], q: float, seed: int, resamples: int = 2000, alpha: float = 0.05
+) -> Dict[str, int]:
+    """Point estimate and seeded percentile-bootstrap CI for one quantile.
+
+    Values are integers (e.g. microseconds) and so are the results. Note the
+    nearest-rank p99 of a sample of n < 100 is its maximum.
+    """
+    n = len(values)
+    if n == 0:
+        raise ValueError("empty sample")
+    rng = random.Random(seed)
+    stats = []
+    for _ in range(resamples):
+        stats.append(quantile(sorted(values[rng.randrange(n)] for _ in range(n)), q))
+    stats.sort()
+    return {
+        "n": n,
+        "point": int(quantile(sorted(values), q)),
+        "lower": int(stats[int((alpha / 2) * resamples)]),
+        "upper": int(stats[min(resamples - 1, int((1 - alpha / 2) * resamples))]),
+    }

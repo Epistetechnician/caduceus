@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-16",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "test-driven-development",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(delete|throw (it )?away|discard|start over|bin it)"
+        },
+        "input": "I wrote 200 lines of implementation before writing any tests. Under strict TDD, what should I do with that code? Answer in at most 8 words.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*yes\\b"
+        },
+        "input": "In the GREEN step of TDD, is it acceptable to hardcode the return value just to make the current test pass? Start your answer with Yes or No.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(undo|revert|roll ?back)"
+        },
+        "input": "During the REFACTOR step a previously passing test starts failing. What do you do immediately? Answer in at most 6 words.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "Can I keep my pre-written implementation open as a reference while I write the tests first? Start your answer with Yes or No.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(coupl|design|dependency injection)"
+        },
+        "input": "A test is very hard to write because you have to mock almost everything. What is that telling you? One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*yes\\b"
+        },
+        "input": "In the GREEN step, is copy-pasting duplicate code acceptable to get the test passing quickly? Start your answer with Yes or No.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(delete|throw (it )?away|discard|start over|bin it)"
+        },
+        "input": "I already wrote 50 lines of code before writing tests. Under strict TDD, what do I do with that code? Answer in at most 8 words.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*yes\\b"
+        },
+        "input": "In TDD's GREEN phase, may I return a hardcoded constant just to pass the test I am working on? Start your answer with Yes or No.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "^\\W*HELLO\\W*$"
+        },
+        "input": "Convert the word hello to uppercase. Reply with only the result.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "def test_"
+        },
+        "input": "Write a haiku about autumn leaves.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "test-driven-development",
+  "skill_rel_dir": "software-development/test-driven-development",
+  "written_against_tree_digest": "8bfcdffda0a62600a9b2252613014cfd92797ae5c5917c32b4fb1405558013ab"
+}

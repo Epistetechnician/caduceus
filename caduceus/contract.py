@@ -36,18 +36,25 @@ class Probe:
     input: str
     expect: Tuple[Tuple[str, str], ...]  # sorted (key, value) pairs, hashable
     neighbor_of: Optional[str] = None
+    # Natural-language grading rubric for a second, independent instrument
+    # (an LLM judge). Omitted from the dict when empty, so existing contract
+    # digests are unchanged.
+    rubric: str = ""
 
     def expect_dict(self) -> Dict[str, str]:
         return dict(self.expect)
 
     def as_dict(self) -> Dict[str, Any]:
-        return {
+        d = {
             "probe_id": self.probe_id,
             "kind": self.kind,
             "input": self.input,
             "expect": self.expect_dict(),
             "neighbor_of": self.neighbor_of,
         }
+        if self.rubric:
+            d["rubric"] = self.rubric
+        return d
 
 
 def make_probe(
@@ -175,3 +182,114 @@ def validate_contract(c: SkillContract, policy: ContractPolicy = ContractPolicy(
         if counts[kind] < minimum:
             problems.append("too_few_%s_probes:%d<%d" % (kind, counts[kind], minimum))
     return problems
+
+
+# --- contract files ---------------------------------------------------------
+#
+# A contract for a real Hermes skill lives in `contracts/<skill>.json`:
+#   {"schema": CONTRACT_FILE_SCHEMA, "skill": <name>, "skill_rel_dir": <cat/name>,
+#    "written_against_tree_digest": <hex>, "contract": {...as_dict()...}}
+# The pinned tree digest records which skill version the probes were written
+# against; a different digest means the contract needs review, not that it holds.
+
+CONTRACT_FILE_SCHEMA = "caduceus.contract.file.v1"
+_FILE_KEYS = {"schema", "skill", "skill_rel_dir", "written_against_tree_digest", "contract"}
+_CONTRACT_KEYS = {
+    "name", "io_schema", "preconditions", "side_effect_class",
+    "max_output_chars", "probes", "expiry_review_date",
+}
+_PROBE_KEYS = {"probe_id", "kind", "input", "expect", "neighbor_of"}
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+
+class ContractFileError(ValueError):
+    pass
+
+
+def _exact_keys(obj: Any, keys: set, where: str) -> Dict[str, Any]:
+    if not isinstance(obj, dict) or set(obj) != keys:
+        raise ContractFileError("%s: expected exactly keys %s" % (where, sorted(keys)))
+    return obj
+
+
+def contract_from_dict(d: Dict[str, Any]) -> SkillContract:
+    d = _exact_keys(d, _CONTRACT_KEYS, "contract")
+    probes = []
+    for i, p in enumerate(d["probes"] if isinstance(d["probes"], list) else []):
+        if isinstance(p, dict) and "rubric" in p:
+            rubric = p["rubric"]
+            if not isinstance(rubric, str) or not rubric or len(rubric) > 1000:
+                raise ContractFileError("probe[%d].rubric must be a non-empty string <= 1000 chars" % i)
+            p = {k: v for k, v in p.items() if k != "rubric"}
+        else:
+            rubric = ""
+        p = _exact_keys(p, _PROBE_KEYS, "probe[%d]" % i)
+        expect = _exact_keys(p["expect"], {"type", "value"}, "probe[%d].expect" % i)
+        if not all(isinstance(p[k], str) for k in ("probe_id", "kind", "input")):
+            raise ContractFileError("probe[%d]: id/kind/input must be strings" % i)
+        if not all(isinstance(v, str) for v in expect.values()):
+            raise ContractFileError("probe[%d].expect: values must be strings" % i)
+        if p["neighbor_of"] is not None and not isinstance(p["neighbor_of"], str):
+            raise ContractFileError("probe[%d].neighbor_of: string or null" % i)
+        probe = make_probe(p["probe_id"], p["kind"], p["input"], expect["type"], expect["value"], p["neighbor_of"])
+        if rubric:
+            from dataclasses import replace
+
+            probe = replace(probe, rubric=rubric)
+        probes.append(probe)
+    if not isinstance(d["io_schema"], dict) or not isinstance(d["preconditions"], list):
+        raise ContractFileError("contract: io_schema must be an object, preconditions a list")
+    if not isinstance(d["max_output_chars"], int) or isinstance(d["max_output_chars"], bool):
+        raise ContractFileError("contract: max_output_chars must be an integer")
+    return SkillContract(
+        name=str(d["name"]),
+        io_schema=tuple(sorted((str(k), str(v)) for k, v in d["io_schema"].items())),
+        preconditions=tuple(str(x) for x in d["preconditions"]),
+        side_effect_class=str(d["side_effect_class"]),
+        max_output_chars=d["max_output_chars"],
+        probes=tuple(probes),
+        expiry_review_date=str(d["expiry_review_date"]),
+    )
+
+
+@dataclass(frozen=True)
+class ContractFile:
+    skill: str
+    skill_rel_dir: str
+    written_against_tree_digest: str
+    contract: SkillContract
+
+
+def load_contract_file(path: str, policy: ContractPolicy = ContractPolicy()) -> ContractFile:
+    """Load and validate a contract file. Any unknown field or problem raises."""
+    import json
+
+    with open(path, "r", encoding="utf-8") as fh:
+        raw = json.load(fh, parse_float=lambda s: (_ for _ in ()).throw(ContractFileError("float in contract")))
+    raw = _exact_keys(raw, _FILE_KEYS, path)
+    if raw["schema"] != CONTRACT_FILE_SCHEMA:
+        raise ContractFileError("%s: unknown schema %r" % (path, raw["schema"]))
+    if not isinstance(raw["written_against_tree_digest"], str) or not _HEX64.match(raw["written_against_tree_digest"]):
+        raise ContractFileError("%s: written_against_tree_digest must be 64 hex chars" % path)
+    contract = contract_from_dict(raw["contract"])
+    if contract.name != raw["skill"]:
+        raise ContractFileError("%s: contract.name != skill" % path)
+    problems = validate_contract(contract, policy)
+    if problems:
+        raise ContractFileError("%s: %s" % (path, ", ".join(problems)))
+    return ContractFile(str(raw["skill"]), str(raw["skill_rel_dir"]), raw["written_against_tree_digest"], contract)
+
+
+def load_contracts_dir(directory: str) -> Dict[str, ContractFile]:
+    """Load every `*.json` contract in a directory; fails on the first bad file."""
+    import os
+
+    out: Dict[str, ContractFile] = {}
+    for fname in sorted(os.listdir(directory)):
+        if not fname.endswith(".json"):
+            continue
+        cf = load_contract_file(os.path.join(directory, fname))
+        if cf.skill in out:
+            raise ContractFileError("duplicate contract for skill %r" % cf.skill)
+        out[cf.skill] = cf
+    return out

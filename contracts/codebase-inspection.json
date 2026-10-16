@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-15",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "codebase-inspection",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*--folders-to-skip"
+        },
+        "input": "How many lines of Python code are in the repository at ./myrepo? Reply with only the shell command you would run.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*node_modules"
+        },
+        "input": "Give me a language breakdown of this JavaScript project; it has a node_modules folder. Reply with only the shell command you would run.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*--format[= ]json"
+        },
+        "input": "I need per-language line counts for this repo as machine-readable JSON for a script. Reply with only the shell command you would run.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*--format[= ]summary"
+        },
+        "input": "How big is the codebase in /srv/app, split into code and comment lines? Reply with only the shell command you would run.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*--suffix[= ]\\S*py"
+        },
+        "input": "Count only the Python and YAML lines in this repository. Reply with only the shell command you would run.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)comment"
+        },
+        "input": "Why does pygount report 0 code lines for my Markdown files? Answer in one sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*--folders-to-skip"
+        },
+        "input": "How many lines of Python code are in the repo at ./my-repo? Reply with only the shell command you would run.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)pygount.*node_modules"
+        },
+        "input": "Give me a language breakdown of this TypeScript project; it has node_modules and dist folders. Reply with only the shell command you would run.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "pygount"
+        },
+        "input": "How many words are in the sentence 'the cat sat'? Reply with only the number.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "pygount"
+        },
+        "input": "Reply with only the shell command that lists the files in the current directory.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "codebase-inspection",
+  "skill_rel_dir": "software-development/codebase-inspection",
+  "written_against_tree_digest": "f955813c7158ed098a202e32d51edba81d65144496fe14fdc542f90f81b66538"
+}

@@ -2,19 +2,46 @@
 
 | Phase | Scope | Status |
 |---|---|---|
-| 0 Foundation | digest-chained ledger, Merkle proofs, witness, independent readback, read-only Hermes audit, freshness checker | **Implemented, tested** |
-| 1 Skill substrate | contracts + probe kinds, identity by tree digest, behavior/composition/indispensability controls, protected suite + retention gate | **Implemented on synthetic skills**. Not yet: contracts for real Hermes skills; a real executor (running a Hermes skill requires an agent/model call) |
-| 2 Admission + Refinery (propose-only) | typed candidates, deterministic gate, lanes, sandbox apply with single-use capability and rollback | **Implemented** (sandbox only; refuses a real Hermes home) |
-| 3 Supervised apply | separate broker process, canary/breaker, human `approve` signature, witness hosted elsewhere | Not started. Plugin `observe` mode exists; `enforce` mode is implemented but unproven in a live Hermes |
-| 4 Auto-apply | blocked until a replicated result beats the random control | Blocked by design |
-| 5 Optional lanes / upstream | Bend, Lean, temporal stress, config routing | Not started |
+| 0 Foundation | digest-chained ledger, Merkle proofs, witness, independent readback, read-only Hermes audit, freshness checker, diagnostics | **Implemented, tested.** `caduceus diagnostics` reports the lane vector. Freshness checked against real Hermes memory injection (`baselines/freshness-*.json`) |
+| 1 Skill substrate | contracts + probe kinds, identity by tree digest, behavior/composition/indispensability controls, protected suite + retention gate, switch fast path | **Implemented.** Contracts for 4 real skills; real executor; switch baseline pinned. Fast path deliberately not built (amendments 2, 12) |
+| 2 Admission + Refinery (propose-only) | typed candidates, deterministic gate, lanes, retention, random control, sealed holdout, adversarial corpus, wrap self-evolution output | **Implemented.** Corpus: 43/43 attacks refused, gate deterministic. Strict intake; source admission; generic proposal wrapper (amendment 9); three-arm random-control design |
+| 3 Supervised apply | broker process, single-use capabilities, staged release, canary, breakers, rollback drills, human signature, budgets | **Implemented on a sandbox.** Broker process (only writer, rollback included; macOS Seatbelt sandbox); release state machine; HMAC signatures (amendment 8); freeze/kill switch/toggles; drills pass (`caduceus drill`). Not yet: kernel sandbox for the broker, asymmetric signatures, a live Hermes install in enforce mode |
+| 4 Auto-apply | blocked until a replicated result beats the random control | **Gate implemented, report-only; Blocked.** Counts only candidate experiments (refinement vs current vs random); the one so far (exp-004) failed |
+| 5 Optional lanes / upstream | Bend, Lean, temporal stress, config routing | Not started; reported `Unavailable` |
+
+## Done 2026-10-15
+1. Background-review fork routes `skill_manage` through `pre_tool_call`
+   (`scripts/probe_background_review.py`, observe + enforce).
+2. Contracts for `systematic-debugging`, `test-driven-development`,
+   `requesting-code-review`, `codebase-inspection` (high use, zero patches).
+3. `HermesExecutor` + `experiment.py`; exp-001 locked and run on Claude Haiku 5.5
+   via the Hermes login: **Pass** (+0.245, CI [+0.12, +0.38]); ledger in
+   `ledgers/exp-001.jsonl`. Plumbing check: `scripts/smoke_executor.py`.
+4. Switch-latency baseline pinned: `baselines/switch-latency-b20cc5f787.json`
+   (Hermes tree had pre-existing uncommitted edits; recorded as dirty).
+
+## Done 2026-10-15 (PRD build-out)
+* Phase 2: corpus (43/43), strict intake, source admission, proposal wrapper,
+  three-arm random control. exp-002 **Pass** vs both controls
+  (`ledgers/exp-002.jsonl`).
+* Phase 3: broker process with restore, release state machine, HMAC review
+  signatures, operator controls, drills.
+* Phase 4: eligibility gate (report-only). Status: **Blocked**, 1 of 2
+  qualifying three-arm experiments (exp-001 has no random arm).
+* Lanes now Checked against real Hermes: overhead
+  (`baselines/plugin-overhead-*.json`), freshness (`baselines/freshness-*.json`).
+
+## Done 2026-10-16
+* exp-003 **Pass** on Sonnet 5.5 with contract v2 (`contracts/v2/`).
+* Exchange (`exchange.py`): all 13 lanes from artifacts; content binding;
+  custody + LLM-judge second instrument; lineage/tenant topology; broker
+  sandbox (macOS); O(1) plugin hot path.
+* exp-004, first real candidate through the Exchange: **Fail** (closed).
 
 ## Next concrete steps
-1. Install the plugin in `observe` mode into a throw-away `HERMES_HOME` and
-   confirm intents are recorded, including from the background-review fork.
-2. Write contracts for 3-5 of the most-used, least-patched skills (see
-   `python -m caduceus audit`; high use with zero patches are the safest start).
-3. Build a real executor adapter that runs a Hermes skill under a fixed model
-   and temperature in an isolated `HERMES_HOME`, then preregister the first
-   real paired test (n, minimum effect, seeds) before running it.
-4. Pin the switch-latency baseline before touching any fast-path work.
+1. A clean candidate: have Hermes (or self-evolution) propose a refinement
+   for a skill with headroom, against a contract whose held-out probes the
+   proposer has never seen. Preregister it as a candidate experiment.
+2. Install the plugin into the live `~/.hermes` in observe mode (operator step).
+3. Ed25519 signatures and a Linux broker sandbox.
+4. Re-pin the switch baseline on a clean Hermes checkout.

@@ -76,7 +76,12 @@ def check_curator_entries(lines: List[bytes]) -> Dict[str, Any]:
     }
 
 
-def audit_hermes_home(hermes_home: str, min_use_for_protected: int = 3) -> Dict[str, Any]:
+def audit_hermes_home(
+    hermes_home: str, min_use_for_protected: int = 3, contracts_dir: Optional[str] = None
+) -> Dict[str, Any]:
+    from .contract import load_contracts_dir
+
+    contracts = load_contracts_dir(contracts_dir) if contracts_dir else {}
     root = os.path.join(os.path.expanduser(hermes_home), "skills")
     report: Dict[str, Any] = {"skills_root_exists": os.path.isdir(root)}
     if not report["skills_root_exists"]:
@@ -87,6 +92,7 @@ def audit_hermes_home(hermes_home: str, min_use_for_protected: int = 3) -> Dict[
     by_creator: Counter = Counter()
     protected: List[Dict[str, Any]] = []
     errors = 0
+    with_contract = 0
     digests: Dict[str, List[str]] = {}
     for rel in rel_dirs:
         try:
@@ -95,6 +101,7 @@ def audit_hermes_home(hermes_home: str, min_use_for_protected: int = 3) -> Dict[
             errors += 1
             continue
         digests.setdefault(rec.tree_digest, []).append(rec.name)
+        with_contract += rec.name in contracts
         u = usage.get(rec.name) or usage.get(os.path.basename(rel)) or {}
         by_state[str(u.get("state", "unknown"))] += 1
         by_creator[str(u.get("created_by") or "unset")] += 1
@@ -109,7 +116,11 @@ def audit_hermes_home(hermes_home: str, min_use_for_protected: int = 3) -> Dict[
                     "tree_digest": rec.tree_digest,
                     "use_count": int(u.get("use_count", 0)),
                     "patch_count": int(u.get("patch_count", 0)),
-                    "has_contract": False,
+                    "has_contract": rec.name in contracts,
+                    "contract_pin_matches": (
+                        contracts[rec.name].written_against_tree_digest == rec.tree_digest
+                        if rec.name in contracts else None
+                    ),
                 }
             )
     protected.sort(key=lambda p: (-p["use_count"], p["name"]))
@@ -124,7 +135,7 @@ def audit_hermes_home(hermes_home: str, min_use_for_protected: int = 3) -> Dict[
             "protected_candidates": protected,
             "curator_ledger": check_curator_entries(ledger_lines),
             "curator_anchor": anchor_lines(ledger_lines),
-            "skills_without_contracts": len(rel_dirs) - errors,
+            "skills_without_contracts": len(rel_dirs) - errors - with_contract,
             "claim": "LocalDevelopmentAudit; counts and digests only; read-only",
         }
     )

@@ -73,6 +73,9 @@ class Refinery:
     def _files(self) -> Dict[str, str]:
         out: Dict[str, str] = {}
         for base, dirs, files in os.walk(self.root, followlinks=False):
+            for d in dirs:
+                if os.path.islink(os.path.join(base, d)):
+                    raise RefineryError("symlink in governed tree: %s" % os.path.join(base, d))
             dirs.sort()
             for f in sorted(files):
                 full = os.path.join(base, f)

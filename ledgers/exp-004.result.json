@@ -1,0 +1,25 @@
+{
+  "clusters": 10,
+  "excluded": 0,
+  "experiment_id": "exp-004-candidate-rcr-001",
+  "lower_micro": 0,
+  "mean_micro": 80000,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "per_skill": {
+    "requesting-code-review": {
+      "control_pass": 46,
+      "excluded": 0,
+      "random_pass": 35,
+      "treatment_pass": 50,
+      "units": 50
+    }
+  },
+  "prereg_digest": "b4d0eee53adfac6fc5f9d87b5d7d504d0d92e51a0203a0480630fe109694da05",
+  "reason": "decision_rule",
+  "units": 50,
+  "upper_micro": 240000,
+  "verdict": "Fail",
+  "vs_random_lower_micro": 60000,
+  "vs_random_mean_micro": 300000,
+  "vs_random_upper_micro": 560000
+}

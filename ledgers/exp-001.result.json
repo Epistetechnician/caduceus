@@ -1,0 +1,39 @@
+{
+  "clusters": 40,
+  "excluded": 0,
+  "experiment_id": "exp-001-skill-vs-noskill",
+  "lower_micro": 120000,
+  "mean_micro": 245000,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "per_skill": {
+    "codebase-inspection": {
+      "control_pass": 10,
+      "excluded": 0,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "requesting-code-review": {
+      "control_pass": 37,
+      "excluded": 0,
+      "treatment_pass": 48,
+      "units": 50
+    },
+    "systematic-debugging": {
+      "control_pass": 50,
+      "excluded": 0,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "test-driven-development": {
+      "control_pass": 49,
+      "excluded": 0,
+      "treatment_pass": 47,
+      "units": 50
+    }
+  },
+  "prereg_digest": "92df7dd7951ede7aa3bde5b8b1ee7548825d461ab0847a7b5b0d7a3dbee4b6ca",
+  "reason": "decision_rule",
+  "units": 200,
+  "upper_micro": 380000,
+  "verdict": "Pass"
+}

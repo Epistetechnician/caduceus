@@ -1,0 +1,38 @@
+{
+  "schema": "caduceus.prereg.v1",
+  "experiment_id": "exp-004-candidate-rcr-001",
+  "hypothesis": "Candidate rcr-001 (requesting-code-review plus a 'one-line review' section) raises the contract v3 pass rate by at least 0.15 versus the untouched current skill AND versus a wrong-source skill, on Claude Haiku 5.5. DISCLOSURE: the proposer (Claude) also authored this contract's held-out probes, so the candidate is contaminated; this run demonstrates the Exchange mechanism and is not evidence about the refinement.",
+  "arms": [
+    "untouched_base",
+    "deterministic_random",
+    "candidate"
+  ],
+  "skills": [
+    {
+      "skill": "requesting-code-review",
+      "contract_digest": "239e4502d583b3ce6a720a7fb0f8ca92577b974e4bb0e61726ecbcfddaf08fd7",
+      "tree_digest": "e3905f287928cd24366db1ee94c03f60d2c72230ebf75f7ad3389c25da3ab32a"
+    }
+  ],
+  "probe_kinds": [
+    "visible",
+    "held_out",
+    "perturbation",
+    "negative"
+  ],
+  "reps": 5,
+  "order_seed": 20261018,
+  "bootstrap_seed": 1018,
+  "bootstrap_resamples": 10000,
+  "executor": {
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "base_url": "https://api.anthropic.com",
+    "temperature": "provider_default"
+  },
+  "min_effect_micro": 150000,
+  "alpha_micro": 50000,
+  "max_notrun_micro": 50000,
+  "decision_rule": "Units: (probe, rep) for the one skill. Contrasts: candidate minus untouched_base, and candidate minus deterministic_random (another contracted skill, chosen by order_seed). Cluster = probe; seeded percentile bootstrap over clusters. Pass iff excluded/units <= max_notrun AND for BOTH contrasts lower bound > 0 AND mean >= min_effect. Otherwise Fail (closes this id) or NotRun. Raw outputs kept in owner-only custody for the second instrument (LLM judge, Claude Sonnet 5.5, rubric-only). The Exchange then decides on all 13 lanes.",
+  "nonclaim": "LocalDevelopmentEvidenceOnly"
+}

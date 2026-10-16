@@ -1,0 +1,24 @@
+{
+  "agree": 136,
+  "disagreements": [
+    "p1:deterministic_random:1",
+    "p1:deterministic_random:2",
+    "p2:deterministic_random:0",
+    "p2:deterministic_random:1",
+    "p2:deterministic_random:2",
+    "p2:deterministic_random:3",
+    "p2:deterministic_random:4",
+    "v1:deterministic_random:1",
+    "v1:deterministic_random:3",
+    "v1:deterministic_random:4",
+    "v2:untouched_base:0",
+    "v2:untouched_base:2",
+    "v2:untouched_base:3",
+    "v2:untouched_base:4"
+  ],
+  "experiment_id": "exp-004-candidate-rcr-001",
+  "invalid_replies": 0,
+  "judge_model": "claude-sonnet-5-5",
+  "skipped_no_rubric": 0,
+  "total": 150
+}

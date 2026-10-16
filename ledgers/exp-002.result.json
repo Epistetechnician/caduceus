@@ -1,0 +1,46 @@
+{
+  "clusters": 40,
+  "excluded": 0,
+  "experiment_id": "exp-002-skill-vs-random-control",
+  "lower_micro": 110000,
+  "mean_micro": 245000,
+  "nonclaim": "LocalDevelopmentEvidenceOnly",
+  "per_skill": {
+    "codebase-inspection": {
+      "control_pass": 10,
+      "excluded": 0,
+      "random_pass": 10,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "requesting-code-review": {
+      "control_pass": 36,
+      "excluded": 0,
+      "random_pass": 40,
+      "treatment_pass": 46,
+      "units": 50
+    },
+    "systematic-debugging": {
+      "control_pass": 50,
+      "excluded": 0,
+      "random_pass": 45,
+      "treatment_pass": 50,
+      "units": 50
+    },
+    "test-driven-development": {
+      "control_pass": 48,
+      "excluded": 0,
+      "random_pass": 50,
+      "treatment_pass": 47,
+      "units": 50
+    }
+  },
+  "prereg_digest": "816ee4694153dc74a42caca9282e0f23d8a709a661a4d6eb9124d8c0cda4c7bf",
+  "reason": "decision_rule",
+  "units": 200,
+  "upper_micro": 390000,
+  "verdict": "Pass",
+  "vs_random_lower_micro": 95000,
+  "vs_random_mean_micro": 240000,
+  "vs_random_upper_micro": 390000
+}

@@ -29,3 +29,23 @@ points; this file is authoritative where they differ.
    here and are reported as such, never as passes.
 7. **Capabilities are in-process in Phase 1.** Single-use, expiring, ledgered
    tokens exist (`refinery.py`), but not yet in a separate sandboxed process.
+8. **Signatures are HMAC (stdlib).** PRD 5.4/6.7.12 assume asymmetric signing.
+   Python's standard library has none, so `signing.py` uses per-signer
+   HMAC-SHA256 keys in an owner-only keyring. This proves "a keyring holder
+   approved", not who; Ed25519/Sigstore is the hardening step.
+9. **Self-evolution is wrapped generically.** `hermes-agent-self-evolution` is
+   not vendored or fetched (no network, no new dependencies). `propose.py`
+   turns any proposed skill directory, including that tool's output branch, into
+   a typed candidate; the producer is never the gate.
+10. **Random control = wrong-source skill.** PRD 7's "deterministic random arm
+    with matched compute" is realised for skills as another skill from the same
+    contract set (seeded derangement): same prompt size and cost, wrong content.
+11. **Broker scope.** The broker is a separate OS process with byte caps,
+    timeout and process-group kill. On macOS it runs under a `sandbox-exec`
+    (Seatbelt) profile: network denied, file writes allowed only under the
+    request's root, store and ledger directory. `sandbox-exec` is deprecated by
+    Apple but present; on other platforms there is no kernel sandbox yet. It is
+    the only writer of governed state and the only path for rollback.
+12. **Fast path stays deferred.** Amendment 2 holds: a switch-latency baseline
+    is pinned (`baselines/`), but no fast path is built, because the only large
+    win (skipping prompt rebuild) conflicts with Hermes' prompt-cache rule.

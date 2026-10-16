@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-16",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "systematic-debugging",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)architect"
+        },
+        "input": "I have now tried three different fixes for this bug and each one exposed a new problem somewhere else. What should we do next? One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(unique (prefix|tag|marker)|\\[debug-|tag (each|every)|prefix)"
+        },
+        "input": "You are adding temporary debug log lines to track down a bug. How do you format them so cleanup is easy later? One sentence.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "^\\W*(3|three)\\s*(-|\u2013|\u2014|to)\\s*(5|five)\\W*$"
+        },
+        "input": "Before testing any single hypothesis about a bug's cause, how many hypotheses should you write down? Reply with only a number or a range.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(minimi[sz]|shrink|smallest|reduce|cut)"
+        },
+        "input": "Your reproduction of a bug finally fails reliably. What do you do to that reproduction before forming hypotheses? One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?is)root cause.*pattern.*hypothes.*implement"
+        },
+        "input": "Name the four phases of systematic debugging in order, comma-separated, nothing else.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "^\\W*(1|one)\\W*$"
+        },
+        "input": "When you test a debugging hypothesis, how many variables do you change at once? Reply with only a number.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)architect"
+        },
+        "input": "Four separate fixes for this bug have failed, and each revealed new coupling in a different module. What should we do next? One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(unique (prefix|tag|marker)|\\[debug-|tag (each|every)|prefix)"
+        },
+        "input": "You are sprinkling temporary print statements through the code to debug something. How should you mark them so they are easy to remove later? One sentence.",
+        "kind": "perturbation",
+        "neighbor_of": "v2",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*paris\\W*$"
+        },
+        "input": "What is the capital of France? Reply with one word.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "hypothes"
+        },
+        "input": "Rename the variable foo to bar in this line: foo = 1. Reply with only the new line of code.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "systematic-debugging",
+  "skill_rel_dir": "software-development/systematic-debugging",
+  "written_against_tree_digest": "e9d1db01bd93facf295e8cda949a405016a124f34a3feeab98791be970cc1682"
+}

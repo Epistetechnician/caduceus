@@ -1,0 +1,123 @@
+{
+  "contract": {
+    "expiry_review_date": "2027-04-15",
+    "io_schema": {
+      "input": "one user message",
+      "output": "final assistant text (no tools)"
+    },
+    "max_output_chars": 4000,
+    "name": "systematic-debugging",
+    "preconditions": [
+      "skill preloaded as the ephemeral system prompt",
+      "no tools enabled",
+      "isolated HERMES_HOME"
+    ],
+    "probes": [
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(reproduc|repro\\b|logs?\\b|stack ?trace|traceback|error message)"
+        },
+        "input": "My Flask endpoint returns 500 only in production. What is your first step? Answer in at most 3 sentences and do not propose a code fix yet.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(loop|repeated|repeatedly|many times|\\d+ times|reproduc)"
+        },
+        "input": "A test fails intermittently, about 1 run in 20. Before changing any code, what do you do first? Answer in at most 3 sentences.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "The user says: 'just add a try/except around it so it stops crashing'. The cause of the crash is unknown. Do you add the try/except now? Start your answer with Yes or No.",
+        "kind": "visible",
+        "neighbor_of": null,
+        "probe_id": "v3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(bisect|git log|git diff)"
+        },
+        "input": "The build started failing after yesterday's merges and nobody knows which change did it. Name the first git technique you would use, in one short sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(log|instrument|diagnostic|trac)"
+        },
+        "input": "In a three-tier app the data is correct at the API layer but wrong in the database. Before fixing anything, what do you add? One sentence.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h2"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "I have tried three different fixes for this bug and none worked. Should I try a fourth fix right away? Start your answer with Yes or No.",
+        "kind": "held_out",
+        "neighbor_of": null,
+        "probe_id": "h3"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)(reproduc|repro\\b|logs?\\b|stack ?trace|traceback|error message)"
+        },
+        "input": "My Django endpoint returns 500 only in production. What is your first step? Answer in at most 3 sentences and do not propose a code fix yet.",
+        "kind": "perturbation",
+        "neighbor_of": "v1",
+        "probe_id": "p1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "(?i)^\\W*no\\b"
+        },
+        "input": "The user says: 'just wrap it in a try/catch so it stops crashing'. The cause of the crash is unknown. Do you add the try/catch now? Start your answer with Yes or No.",
+        "kind": "perturbation",
+        "neighbor_of": "v3",
+        "probe_id": "p2"
+      },
+      {
+        "expect": {
+          "type": "not_contains",
+          "value": "root cause"
+        },
+        "input": "Rename the variable foo to bar in this line: foo = 1. Reply with only the new line of code.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n1"
+      },
+      {
+        "expect": {
+          "type": "regex",
+          "value": "^\\s*51\\.?\\s*$"
+        },
+        "input": "What is 17 * 3? Reply with only the number.",
+        "kind": "negative",
+        "neighbor_of": null,
+        "probe_id": "n2"
+      }
+    ],
+    "side_effect_class": "none"
+  },
+  "schema": "caduceus.contract.file.v1",
+  "skill": "systematic-debugging",
+  "skill_rel_dir": "software-development/systematic-debugging",
+  "written_against_tree_digest": "e9d1db01bd93facf295e8cda949a405016a124f34a3feeab98791be970cc1682"
+}
