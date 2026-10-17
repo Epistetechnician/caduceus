@@ -1,0 +1,48 @@
+{
+ "benchmark": "CL-bench (Tencent, local checkout), single-turn tasks",
+ "by_category": {
+  "Domain Knowledge Reasoning": {
+   "candidate": 2,
+   "deterministic_random": 0,
+   "fixed_policy": 1,
+   "untouched_base": 2
+  },
+  "Empirical Discovery & Simulation": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "Procedural Task Execution": {
+   "candidate": 0,
+   "deterministic_random": 2,
+   "fixed_policy": 1,
+   "untouched_base": 0
+  },
+  "Rule System Application": {
+   "candidate": 3,
+   "deterministic_random": 2,
+   "fixed_policy": 3,
+   "untouched_base": 4
+  }
+ },
+ "clusters": 59,
+ "counts": {
+  "candidate": 5,
+  "deterministic_random": 4,
+  "fixed_policy": 5,
+  "untouched_base": 6
+ },
+ "design": "candidate",
+ "excluded": 21,
+ "experiment_id": "exp-006-cl-bench-cl-002",
+ "instrument": {
+  "agree": 222,
+  "total": 241
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "prereg_digest": "ffdfc593e45df0d767dd4c4216c03bc890c98944b0ba86c3083902057a6fad46",
+ "reason": "too_many_excluded_units",
+ "units": 80,
+ "verdict": "NotRun"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "caduceus.prereg.bench.v1",
+  "experiment_id": "exp-006-cl-bench-cl-002",
+  "hypothesis": "A context-learning skill refined by Hermes on Claude Sonnet 5.5 (proposer) from FIT-split failures only (40 fit tasks) raises the CL-bench all-or-nothing solve rate by at least 0.10 versus the untouched base skill, a hand-written fixed-policy refinement (requirements checklist, written before any data), AND a wrong-source skill (systematic-debugging), on Claude Haiku 5.5 (executor), over a sealed 80-task assessment split the proposer never saw. Follows exp-005 (Fail); new id, new split seed, adds the fixed_policy arm.",
+  "benchmark": "CL-bench (Tencent, local checkout), single-turn tasks",
+  "dataset_sha256": "d5fc88d4b2eea75c61dd40862021b6ae2fba26bd21b58e8c5e18377a763943be",
+  "max_chars": 15000,
+  "exclude": [
+    0
+  ],
+  "split_seed": 20261020,
+  "n_fit": 40,
+  "n_assess": 80,
+  "assessment_commitment": "8678776417bf8052b03923fb55443e4cc8ee143a913f56557805d76cbd59f4a2",
+  "order_seed": 20261021,
+  "bootstrap_seed": 1020,
+  "bootstrap_resamples": 10000,
+  "min_effect_micro": 100000,
+  "alpha_micro": 50000,
+  "max_notrun_micro": 100000,
+  "executor": {
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "base_url": "https://api.anthropic.com",
+    "temperature": "provider_default"
+  },
+  "judge_primary": "claude-sonnet-5-5",
+  "judge_second": "claude-haiku-5-5",
+  "skill": "reasoning/context-learning",
+  "base_tree_digest": "7ec1fabd21980a19b93a248312f8e4fa1dd2c1e07f591a56ecf3e898001cbcab",
+  "random_skill": "software-development/systematic-debugging",
+  "max_category_loss": 3,
+  "decision_rule": "Units: assessment tasks, one run per arm. Score: primary judge all-or-nothing rubric grade (0/1). Contrasts: candidate minus untouched_base, minus fixed_policy, and minus deterministic_random; cluster = task; seeded percentile bootstrap. Pass iff excluded/units <= max_notrun AND for ALL three contrasts lower bound > 0 AND mean >= min_effect. Second judge graded independently for instrument agreement. The Exchange then decides on all 13 lanes.",
+  "nonclaim": "LocalDevelopmentEvidenceOnly"
+}

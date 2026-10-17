@@ -65,7 +65,8 @@ def fit(args):
                 "rubrics": t["rubrics"], "system_head": t["system"][:1500], "category": t["category"]}
     with ThreadPoolExecutor(6) as pool:
         rows = list(pool.map(one, fit_set))
-    path = os.path.join(WORK, "fit.json")
+    os.makedirs(os.path.join(WORK, args.candidate), mode=0o700, exist_ok=True)
+    path = os.path.join(WORK, args.candidate, "fit.json")
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w") as fh:
         json.dump({"assessment_commitment": raw["assessment_commitment"], "rows": rows}, fh)
@@ -75,7 +76,7 @@ def fit(args):
 
 def propose(args):
     raw = json.load(open(args.prereg))
-    fitlog = json.load(open(os.path.join(WORK, "fit.json")))
+    fitlog = json.load(open(os.path.join(WORK, args.candidate, "fit.json")))
     base_md = open(os.path.join(WORK, "base/skills", SKILL_REL, "SKILL.md")).read()
     fails = [r for r in fitlog["rows"] if r.get("score") == 0]
     parts = []
@@ -88,7 +89,7 @@ def propose(args):
          "improved SKILL.md. Keep the same frontmatter name; bump version to 1.1.0; keep it under 60 lines; "
          "give concrete, checkable habits. Output ONLY the SKILL.md file content.\n\nCURRENT SKILL.md:\n%s\n\n"
          "FAILURES:\n\n%s" % (len(fails), base_md, "\n---\n".join(parts)))
-    out = model(raw["executor"]["model"])(p).strip()
+    out = model(args.proposer_model)(p).strip()
     if out.startswith("```"):
         out = out.split("\n", 1)[1].rsplit("```", 1)[0]
     if not out.startswith("---"):
@@ -110,6 +111,7 @@ def run(args):
     ledger = Ledger(args.ledger)
     m = raw["executor"]["model"]
     arms = {"untouched_base": model(m, os.path.join(WORK, "base/skills"), SKILL_REL),
+            "fixed_policy": model(m, os.path.join(WORK, "fixed/skills"), SKILL_REL),
             "deterministic_random": model(m, RANDOM_ROOT, RANDOM_REL),
             "candidate": model(m, os.path.join(WORK, args.candidate, "skills"), SKILL_REL)}
     res = bench.run(raw, DATA, ledger, arms, model(raw["judge_primary"]), model(raw["judge_second"]),
@@ -128,10 +130,10 @@ def exchange(args):
     pre = {"metric": "cl_bench_solve_rate", "threshold_micro": 0, "min_effect_micro": raw["min_effect_micro"],
            "alpha_micro": raw["alpha_micro"], "n": raw["n_assess"],
            "seeds": [raw["split_seed"], raw["order_seed"], raw["bootstrap_seed"]], "arms": list(bench.ARMS),
-           "holdout_commitment": raw["assessment_commitment"], "max_search_cost_units": 800,
+           "holdout_commitment": raw["assessment_commitment"], "max_search_cost_units": 1500,
            "experiment_id": raw["experiment_id"], "experiment_prereg_digest": bench.prereg_digest(raw)}
     cand, _ = propose_skill(os.path.join(WORK, "base/skills"), SKILL_REL,
-                            os.path.join(WORK, args.candidate, "skills", SKILL_REL), "hermes-haiku-proposer", pre,
+                            os.path.join(WORK, args.candidate, "skills", SKILL_REL), "hermes-%s-proposer" % args.proposer_model, pre,
                             candidate_id="skill:%s:%s" % (SKILL_REL, args.candidate))
     log = json.load(open(os.path.join(WORK, args.candidate, "proposer_log.json")))
     out = bench.assemble(cand, raw, args.ledger, REPO, log)
@@ -149,6 +151,7 @@ def main():
     ap.add_argument("--ledger")
     ap.add_argument("--candidate", default="cl-001")
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--proposer-model", default="claude-haiku-5-5")
     args = ap.parse_args()
     try:
         {"fit": fit, "propose": propose, "run": run, "exchange": exchange}[args.phase](args)

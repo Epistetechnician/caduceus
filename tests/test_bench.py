@@ -40,7 +40,7 @@ class BenchTest(unittest.TestCase):
         self.assertEqual(idx, list(range(1, 40)))
 
     def test_requires_lock_and_passes_real_effect(self):
-        arms = {"untouched_base": lambda p: "bad", "deterministic_random": lambda p: "bad",
+        arms = {"untouched_base": lambda p: "bad", "deterministic_random": lambda p: "bad", "fixed_policy": lambda p: "bad",
                 "candidate": lambda p: "GOOD"}
         with self.assertRaises(bench.BenchError):
             bench.run(self.raw, self.data, self.ledger, arms, self.judge, self.judge)

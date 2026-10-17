@@ -12,13 +12,14 @@ Design (preregistered in `caduceus.prereg.bench.v1`):
   * a seeded shuffle splits them into a FIT set (the proposer may see base
     results on it) and a sealed ASSESSMENT set (committed by digest before the
     proposer runs; never shown to it);
-  * arms: untouched_base (current skill), deterministic_random (a different,
-    unrelated skill), candidate (proposed refinement); one run per task per
-    arm; cluster = task;
+  * arms: untouched_base (current skill), fixed_policy (a hand-written,
+    non-learned refinement fixed before any data), deterministic_random (a
+    different, unrelated skill), candidate (proposed refinement); one run per
+    task per arm; cluster = task;
   * primary instrument: judge model A with the rubric grader below; second
     instrument: judge model B, same rubrics, graded independently;
   * decision: the same rule as `experiment.run_paired` (bootstrap lower bound
-    > 0 and mean >= min effect, against BOTH controls).
+    > 0 and mean >= min effect, against ALL three controls).
 """
 
 from __future__ import annotations
@@ -38,7 +39,7 @@ from .ledger import Ledger
 from .stats import MICRO, paired_bootstrap
 
 SCHEMA = "caduceus.prereg.bench.v1"
-ARMS = ("untouched_base", "deterministic_random", "candidate")
+ARMS = ("untouched_base", "fixed_policy", "deterministic_random", "candidate")
 _KEYS = {"schema", "experiment_id", "hypothesis", "benchmark", "dataset_sha256", "max_chars", "exclude",
          "split_seed", "n_fit", "n_assess", "assessment_commitment", "order_seed", "bootstrap_seed",
          "bootstrap_resamples", "min_effect_micro", "alpha_micro", "max_notrun_micro", "executor",
@@ -192,13 +193,13 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         results = dict(zip([(j[0]["idx"], j[1]) for j in jobs], pool.map(one, jobs)))
-    diffs_b, diffs_r = [], []
+    diffs_b, diffs_r, diffs_f = [], [], []
     total = excluded = agree = graded = 0
     counts = {arm: 0 for arm in ARMS}
     by_cat: Dict[str, Dict[str, int]] = {}
     per_task: Dict[str, List[int]] = {}
     out_parts = []
-    for t, arm0 in jobs[::3]:
+    for t, arm0 in jobs[::len(ARMS)]:
         total += 1
         scores: Dict[str, Optional[int]] = {}
         for arm in ARMS:
@@ -220,13 +221,14 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
         c = by_cat.setdefault(t["category"], {arm: 0 for arm in ARMS})
         for arm in ARMS:
             c[arm] += scores[arm]
-        per_task[str(t["idx"])] = [scores["untouched_base"], scores["deterministic_random"], scores["candidate"]]
+        per_task[str(t["idx"])] = [scores[arm] for arm in ARMS]
         diffs_b.append(scores["candidate"] - scores["untouched_base"])
         diffs_r.append(scores["candidate"] - scores["deterministic_random"])
+        diffs_f.append(scores["candidate"] - scores["fixed_policy"])
     ledger.append("assessment", {
         "experiment_id": eid, "benchmark": raw["benchmark"], "units": total, "excluded": excluded,
         "control_pass": counts["untouched_base"], "random_pass": counts["deterministic_random"],
-        "treatment_pass": counts["candidate"], "by_category": by_cat,
+        "treatment_pass": counts["candidate"], "fixed_pass": counts["fixed_policy"], "by_category": by_cat,
         "instrument_agree": agree, "instrument_total": graded,
         "outputs_digest": sha256_hex("\n".join(out_parts).encode("utf-8")),
         "per_task_digest": domain_digest("caduceus.bench.per_task.v1", per_task),
@@ -240,10 +242,12 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
         alpha = raw["alpha_micro"] / MICRO
         b = paired_bootstrap(diffs_b, raw["bootstrap_seed"], raw["bootstrap_resamples"], alpha)
         r = paired_bootstrap(diffs_r, raw["bootstrap_seed"] + 1, raw["bootstrap_resamples"], alpha)
-        ok = all(x["lower_micro"] > 0 and x["mean_micro"] >= raw["min_effect_micro"] for x in (b, r))
+        f = paired_bootstrap(diffs_f, raw["bootstrap_seed"] + 2, raw["bootstrap_resamples"], alpha)
+        ok = all(x["lower_micro"] > 0 and x["mean_micro"] >= raw["min_effect_micro"] for x in (b, r, f))
         result.update(mean_micro=b["mean_micro"], lower_micro=b["lower_micro"], upper_micro=b["upper_micro"],
                       vs_random_mean_micro=r["mean_micro"], vs_random_lower_micro=r["lower_micro"],
-                      vs_random_upper_micro=r["upper_micro"], verdict="Pass" if ok else "Fail",
+                      vs_random_upper_micro=r["upper_micro"], vs_fixed_mean_micro=f["mean_micro"],
+                      vs_fixed_lower_micro=f["lower_micro"], vs_fixed_upper_micro=f["upper_micro"], verdict="Pass" if ok else "Fail",
                       reason="decision_rule")
     ledger.append("verdict", result)
     result.update(counts=counts, by_category=by_cat, instrument={"agree": agree, "total": graded})
@@ -291,7 +295,8 @@ def assemble(candidate: Candidate, raw: Dict[str, Any], ledger_path: str, repo: 
         ev["controls"] = lanes._r("NotRun", "no verdict" if v is None else "NotRun")
     else:
         ev["controls"] = (lanes._r("Checked") if v["verdict"] == "Pass" else
-                          lanes._r("Failed", "mean %d vs base, %d vs random (micro)" % (v["mean_micro"], v["vs_random_mean_micro"])))
+                          lanes._r("Failed", "mean %d vs base, %d vs random, %d vs fixed (micro)" % (
+                              v["mean_micro"], v["vs_random_mean_micro"], v["vs_fixed_mean_micro"])))
     fr, ov = _baseline(repo, "freshness-*.json"), _baseline(repo, "plugin-overhead-*.json")
     ev["non_inferiority"] = (lanes._r("NotRun", "baselines missing") if fr is None or ov is None else
                              lanes._r("Checked") if fr["passed"] and ov["passed"] else lanes._r("Failed", "baseline fails"))
@@ -314,7 +319,7 @@ def assemble(candidate: Candidate, raw: Dict[str, Any], ledger_path: str, repo: 
         ev["behavior_equivalence"] = lanes._r("Failed", "loses on " + ",".join(lost)) if lost else lanes._r("Checked")
     ev["instrument_validity"] = (lanes._r("NotRun", "no assessment") if a is None else
                                  lanes.lane_instrument_validity(a["instrument_agree"], a["instrument_total"]))
-    cost = (proposer_log.get("model_calls", 0) + (a["units"] * 3 * 3 if a else 0))
+    cost = (proposer_log.get("model_calls", 0) + (a["units"] * len(ARMS) * 3 if a else 0))
     ev["search_cost"] = lanes.lane_search_cost(cost, int(pr.get("max_search_cost_units", 0)))
     if v is None or "vs_random_lower_micro" not in v:
         ev["indispensability"] = lanes._r("NotRun", "no random contrast")
@@ -324,7 +329,7 @@ def assemble(candidate: Candidate, raw: Dict[str, Any], ledger_path: str, repo: 
     report = None
     if v is not None and a is not None:
         report = {"candidate_digest": candidate.digest(), "experiment_id": eid, "before": a["control_pass"],
-                  "after": a["treatment_pass"], "random_control": a["random_pass"], "n": a["units"],
+                  "after": a["treatment_pass"], "random_control": a["random_pass"], "fixed_policy": a["fixed_pass"], "n": a["units"],
                   "seeds": [raw["split_seed"], raw["order_seed"], raw["bootstrap_seed"]],
                   "environment_digest": domain_digest("caduceus.lyre.environment.v1", raw["executor"]),
                   "search_cost_units": cost, "controls": {k: v.get(k) for k in v if k.endswith("_micro")},
