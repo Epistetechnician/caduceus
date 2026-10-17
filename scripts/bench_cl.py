@@ -56,7 +56,7 @@ def model(name, root=None, rel=None):
 
 def fit(args):
     raw = json.load(open(args.prereg))
-    tasks = bench.load_tasks(DATA, raw["max_chars"], raw["exclude"])
+    tasks = bench.load_tasks(DATA, raw["max_chars"], raw["exclude"], raw.get("categories"))
     fit_set, assess = bench.split(tasks, raw["split_seed"], raw["n_fit"], raw["n_assess"])
     assert bench.commitment(assess) == raw["assessment_commitment"]
     base = model(raw["executor"]["model"], os.path.join(WORK, "base/skills"), SKILL_REL)

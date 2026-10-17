@@ -81,7 +81,11 @@ What this repository does establish (by tests in `tests/`):
   **Fail**, closed. Judges agreed on 288/320. The Exchange rejected it on
   `controls` and `indispensability` only; the other 11 lanes, including
   `preregistration`, were Checked.
-* Across three clean CL-bench attempts, no skill text (learned, hand-written
+* exp-008, restricted to Procedural Task Execution and Rule System
+  Application: base 11/80, fixed policy 11/80, random skill 10/80, candidate
+  9/80; -0.025 [-0.0875, +0.0375] vs base. **Fail**, closed; Exchange
+  rejected on `controls` and `indispensability`. Judges agreed on 290/320.
+* Across four clean CL-bench attempts, no skill text (learned, hand-written
   or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
   this benchmark.
 * Phase 4 auto-apply therefore stays Blocked: 0 passing candidate experiments.

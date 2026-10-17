@@ -69,7 +69,8 @@ def file_sha256(path: str) -> str:
     return h.hexdigest()
 
 
-def load_tasks(path: str, max_chars: int, exclude: List[int]) -> List[Dict[str, Any]]:
+def load_tasks(path: str, max_chars: int, exclude: List[int],
+               categories: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     out = []
     with open(path, "r", encoding="utf-8") as fh:
         for idx, line in enumerate(fh):
@@ -80,6 +81,9 @@ def load_tasks(path: str, max_chars: int, exclude: List[int]) -> List[Dict[str, 
             if [m["role"] for m in msgs] != ["system", "user"]:
                 continue
             if sum(len(m["content"]) for m in msgs) > max_chars:
+                continue
+            cat = row.get("metadata", {}).get("context_category", "unknown")
+            if categories is not None and cat not in categories:
                 continue
             rubrics = [r.get("rubric_criteria", "") if isinstance(r, dict) else str(r) for r in row["rubrics"]]
             out.append({"idx": idx, "system": msgs[0]["content"], "user": msgs[1]["content"],
@@ -129,7 +133,7 @@ def parse_grade(text: str) -> Optional[int]:
 def load_prereg(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as fh:
         raw = json.load(fh, parse_float=lambda s: (_ for _ in ()).throw(BenchError("floats not allowed")))
-    if set(raw) != _KEYS or raw["schema"] != SCHEMA or raw["nonclaim"] != REQUIRED_NONCLAIM:
+    if set(raw) - {"categories"} != _KEYS or raw["schema"] != SCHEMA or raw["nonclaim"] != REQUIRED_NONCLAIM:
         raise BenchError("bench prereg: expected exactly keys %s, schema %s, nonclaim" % (sorted(_KEYS), SCHEMA))
     return raw
 
@@ -141,7 +145,7 @@ def prereg_digest(raw: Dict[str, Any]) -> str:
 def verify_split(raw: Dict[str, Any], dataset_path: str) -> Tuple[List[Dict], List[Dict]]:
     if file_sha256(dataset_path) != raw["dataset_sha256"]:
         raise BenchError("dataset changed since preregistration")
-    tasks = load_tasks(dataset_path, raw["max_chars"], raw["exclude"])
+    tasks = load_tasks(dataset_path, raw["max_chars"], raw["exclude"], raw.get("categories"))
     fit, assess = split(tasks, raw["split_seed"], raw["n_fit"], raw["n_assess"])
     if commitment(assess) != raw["assessment_commitment"]:
         raise BenchError("assessment split does not match its commitment")

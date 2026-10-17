@@ -68,6 +68,10 @@ class BenchTest(unittest.TestCase):
         with self.assertRaises(bench.BenchError):
             bench.verify_split(dict(self.raw, assessment_commitment="f" * 64), self.data)
 
+    def test_category_filter(self):
+        idx = [t["idx"] for t in bench.load_tasks(self.data, 1000, [0], ["A"])]
+        self.assertEqual(idx, list(range(1, 40, 2)))
+
     def test_parse_grade_strict(self):
         self.assertEqual(bench.parse_grade('x {"score": 1} y'), 1)
         for bad in ("nothing", '{"score": true}', '{"score": 2}', "{bad"):
