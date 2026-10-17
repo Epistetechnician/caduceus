@@ -22,6 +22,11 @@ class Edit(unittest.TestCase):
         self.assertIsNone(b.apply_edit("a\n", "z", "c"))
         self.assertIsNone(b.apply_edit("a\n", "a", "a"))
 
+    def test_apply_tolerates_indentation(self):
+        src = "def f(x):\n    if x < 1:\n        return 0\n"
+        self.assertEqual(b.apply_edit(src, "if x < 1:", "if x <= 1:"), "def f(x):\n    if x <= 1:\n        return 0\n")
+        self.assertIsNone(b.apply_edit("a\n  a\n", "a", "b"))
+
     def test_diff_edit_reproduces_fix(self):
         bug, fix = "def f(x):\n    if x > 1:\n        return 1\n    return 0\n", "def f(x):\n    if x <= 1:\n        return 1\n    return 0\n"
         s, r = b.diff_edit(bug, fix)

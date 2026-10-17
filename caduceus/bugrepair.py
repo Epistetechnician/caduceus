@@ -64,10 +64,24 @@ def parse_edit(text: str) -> Optional[Tuple[str, str]]:
 
 
 def apply_edit(source: str, search: str, replace: str) -> Optional[str]:
-    """Apply only if the search text occurs exactly once and the edit changes something."""
-    if not search or search == replace or source.count(search) != 1:
+    """Apply only if the search text matches exactly once and the edit changes something.
+    Exact text first; failing that, a unique whole-line match ignoring indentation and
+    trailing space, with the replacement re-indented to the matched block."""
+    if not search or search == replace:
         return None
-    return source.replace(search, replace)
+    if source.count(search) == 1:
+        return source.replace(search, replace)
+    lines, want = source.split("\n"), [ln.strip() for ln in search.split("\n")]
+    hits = [i for i in range(len(lines) - len(want) + 1) if [ln.strip() for ln in lines[i:i + len(want)]] == want]
+    if len(hits) != 1 or not any(want):
+        return None
+    i = hits[0]
+    rep = replace.split("\n")
+    first = next((ln for ln in rep if ln.strip()), "")
+    delta = (len(lines[i]) - len(lines[i].lstrip())) - (len(first) - len(first.lstrip()))
+    rep = [(" " * delta + ln if delta > 0 else ln[-delta:] if ln[:-delta].strip() == "" else ln) if ln.strip() else ln for ln in rep]
+    out = lines[:i] + rep + lines[i + len(want):]
+    return "\n".join(out) if "\n".join(out) != source else None
 
 
 def diff_edit(buggy: str, fixed: str) -> Optional[Tuple[str, str]]:
