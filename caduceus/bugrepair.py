@@ -14,8 +14,9 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from .digest import domain_digest
 
 SYSTEM = ("You repair one injected bug in a Python file. The file's unit tests currently fail. "
-          "Reply with exactly one edit block and nothing else:\n"
-          "<<<<<<< SEARCH\n<exact lines to replace>\n=======\n<replacement lines>\n>>>>>>> REPLACE")
+          "Reply with exactly one edit block and nothing else, no code fences. Copy the SEARCH lines exactly "
+          "from the file, include at least one full line, and keep the block small. Example reply:\n"
+          "<<<<<<< SEARCH\n    if count > limit:\n=======\n    if count >= limit:\n>>>>>>> REPLACE")
 OPEN, MID, CLOSE = "<<<<<<< SEARCH\n", "\n=======\n", "\n>>>>>>> REPLACE"
 MICRO = 1000000
 
@@ -28,9 +29,28 @@ def format_edit(search: str, replace: str) -> str:
     return OPEN + search + MID + replace + CLOSE
 
 
+def _diff_edit(text: str) -> Optional[Tuple[str, str]]:
+    """Fallback: a unified-diff-style reply ('-'/'+' lines) read as one search/replace pair."""
+    minus, plus = [], []
+    for ln in text.splitlines():
+        if ln.startswith(("---", "+++", "@@")):
+            continue
+        if ln.startswith("-"):
+            minus.append(ln[1:])
+        elif ln.startswith("+"):
+            plus.append(ln[1:])
+    if not minus or not plus:
+        return None
+    return "\n".join(minus), "\n".join(plus)
+
+
 def parse_edit(text: str) -> Optional[Tuple[str, str]]:
-    """The first well-formed block, or None. Anything outside the block is ignored."""
+    """The first well-formed block, or None. Code fences and prose outside the block are ignored;
+    a unified-diff-style reply is accepted when no block is present."""
+    text = "\n".join(ln for ln in text.splitlines() if not ln.strip().startswith("```"))
     a = text.find(OPEN)
+    if a < 0:
+        return _diff_edit(text)
     if a < 0:
         return None
     a += len(OPEN)

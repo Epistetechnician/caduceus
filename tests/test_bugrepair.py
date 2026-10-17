@@ -8,6 +8,10 @@ class Edit(unittest.TestCase):
         t = "noise\n" + b.format_edit("x < 3", "x >= 3") + "\ntrailer"
         self.assertEqual(b.parse_edit(t), ("x < 3", "x >= 3"))
 
+    def test_fences_and_diff_style_accepted(self):
+        self.assertEqual(b.parse_edit("```diff\n-    a < 1\n+    a >= 1\n```"), ("    a < 1", "    a >= 1"))
+        self.assertEqual(b.parse_edit("```\n" + b.format_edit("x", "y") + "\n```"), ("x", "y"))
+
     def test_malformed_is_none(self):
         self.assertIsNone(b.parse_edit("<<<<<<< SEARCH\na\n=======\nb"))
         self.assertIsNone(b.parse_edit("no block"))
