@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from caduceus import hsi_bridge
+from caduceus.ledger import Ledger
 from caduceus.admission import REQUIRED_LANES, AdmissionPolicy
 from caduceus.candidate import Candidate
 from caduceus.digest import domain_digest
@@ -27,7 +28,8 @@ def receipt(digest, baseline, low, decision="PROMOTE", held=True, **kw):
     r = {
         "schema_version": "hsi-receipt-v1", "receipt_digest": digest, "packet_digest": H,
         "decision": decision, "guardrails_held": held, "seeds": [0],
-        "budget_used": {"wall_seconds": 100.0},
+        "budget_used": {"wall_seconds": 100.0}, "lock_digest": "cd" * 32,
+        "guardrail_values": {"eval_consistent_frozen_base": 0.0, "eval_consistent_d2_verified": 0.3},
         "comparisons": [{"treatment_arm": "d2_verified", "baseline_arm": baseline,
                          "paired_diff": low + 0.05, "ci_low": low, "ci_high": low + 0.1, "pairs": []}],
     }
@@ -126,6 +128,71 @@ class Bridge(unittest.TestCase):
         ev = self.both()
         out = hsi_bridge.assemble_adapter(candidate([e["receipt_digest"] for e in ev], kind="skill_refine"), ev, POLICY)
         self.assertEqual(out["evidence"]["preregistration"]["status"], "Failed")
+
+    def lock_file(self, commitment="ee" * 32, tamper=False):
+        import hashlib
+        lk = {"packet_digest": H, "n_per_family": 4, "commitment": commitment}
+        lk["lock_digest"] = hashlib.sha256(json.dumps(lk, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        if tamper:
+            lk["commitment"] = "ff" * 32
+        p = os.path.join(self.d, "lock.public.json")
+        with open(p, "w") as fh:
+            json.dump(lk, fh)
+        return p, lk["lock_digest"]
+
+    def locked(self, order="lock_first", commitment_ok=True):
+        lp, ld = self.lock_file()
+        led = Ledger(os.path.join(self.d, "l.jsonl"))
+        a = self.imp("a.json", receipt("11" * 32, "d2_replay", 0.2, lock_digest=ld))
+        b = self.imp("b.json", receipt("22" * 32, "d2_poolctl", 0.1, lock_digest=ld))
+        if order == "lock_first":
+            hsi_bridge.witness_lock(led, lp, "e")
+            hsi_bridge.record_evaluation(led, [a, b], "e")
+        elif order == "eval_first":
+            hsi_bridge.record_evaluation(led, [a, b], "e")
+            hsi_bridge.witness_lock(led, lp, "e")
+        c = candidate([a["receipt_digest"], b["receipt_digest"]])
+        com = hsi_bridge.holdout_commitment_of(["ee" * 32] if commitment_ok else ["00" * 32])
+        c.preregistration["holdout_commitment"] = com
+        return hsi_bridge.assemble_adapter(c, [a, b], POLICY, ledger=led)["evidence"]
+
+    def test_lock_witnessed_before_assessment_checks_lock_and_holdout(self):
+        ev = self.locked()
+        self.assertEqual(ev["prediction_lock"]["status"], "Checked")
+        self.assertEqual(ev["holdout"]["status"], "Checked")
+
+    def test_assessment_before_lock_fails(self):
+        self.assertEqual(self.locked("eval_first")["prediction_lock"]["status"], "Failed")
+
+    def test_unwitnessed_lock_is_notrun(self):
+        self.assertEqual(self.locked("none")["prediction_lock"]["status"], "NotRun")
+        self.assertEqual(self.locked("none")["holdout"]["status"], "NotRun")
+
+    def test_wrong_holdout_commitment_fails(self):
+        self.assertEqual(self.locked(commitment_ok=False)["holdout"]["status"], "Failed")
+
+    def test_tampered_lock_file_refused_and_no_double_witness(self):
+        lp, _ = self.lock_file(tamper=True)
+        led = Ledger(os.path.join(self.d, "t.jsonl"))
+        with self.assertRaises(hsi_bridge.ReceiptError):
+            hsi_bridge.witness_lock(led, lp, "e")
+        lp, _ = self.lock_file()
+        hsi_bridge.witness_lock(led, lp, "e")
+        with self.assertRaises(hsi_bridge.ReceiptError):
+            hsi_bridge.witness_lock(led, lp, "e")
+
+    def test_arm_map_must_name_all_roles(self):
+        ev = self.both()
+        c = candidate([e["receipt_digest"] for e in ev])
+        c.preregistration["arm_map"] = {"candidate": "d2_verified"}
+        out = hsi_bridge.assemble_adapter(c, ev, POLICY)
+        self.assertEqual(out["evidence"]["preregistration"]["status"], "Failed")
+
+    def test_candidate_not_above_untouched_base_is_notrun_controls(self):
+        a = self.imp("a.json", receipt("11" * 32, "d2_replay", 0.2, guardrail_values={
+            "eval_consistent_frozen_base": 0.5, "eval_consistent_d2_verified": 0.3}))
+        out = hsi_bridge.assemble_adapter(candidate([a["receipt_digest"]]), [a], POLICY)
+        self.assertNotEqual(out["evidence"]["controls"]["status"], "Checked")
 
     @unittest.skipUnless(os.path.isdir(HSI_LAB), "hsi-lab checkout not present")
     def test_real_hsi_receipts(self):
