@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import threading
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -42,7 +43,14 @@ def model(name, root=None, rel=None):
         if not hasattr(local, "ex"):
             local.ex = HermesExecutor(cfg, root, rel, allow_model_calls=True)
             _opened.append(local.ex)
-        return local.ex(p)
+        for attempt in range(4):  # transient provider errors: retry with backoff, log every failure
+            try:
+                return local.ex(p)
+            except Exception as e:  # noqa: BLE001
+                print("call_error model=%s attempt=%d %s" % (name, attempt, str(e)[:160]), file=sys.stderr, flush=True)
+                if attempt == 3:
+                    raise
+                time.sleep(20 * (attempt + 1))
     return call
 
 

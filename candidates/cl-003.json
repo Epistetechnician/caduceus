@@ -1,0 +1,46 @@
+{
+  "candidate": {
+    "candidate_id": "skill:reasoning/context-learning:cl-003",
+    "compute_budget": 1500,
+    "content_digest": "8dcbea42ed8786c18e247296cbbc2fc726e536e5c1e3953b34b678a7559c5639",
+    "kind": "skill_refine",
+    "nonclaims": [
+      "LocalDevelopmentEvidenceOnly"
+    ],
+    "parent_digest": "7ec1fabd21980a19b93a248312f8e4fa1dd2c1e07f591a56ecf3e898001cbcab",
+    "paths": [
+      "skills/reasoning/context-learning/SKILL.md"
+    ],
+    "preregistration": {
+      "alpha_micro": 50000,
+      "arms": [
+        "untouched_base",
+        "fixed_policy",
+        "deterministic_random",
+        "candidate"
+      ],
+      "experiment_id": "exp-007-cl-bench-cl-003",
+      "experiment_prereg_digest": "9a6dc613483939c8937853a0ae0b18912019e2ac5ef136235d747df4096788c1",
+      "holdout_commitment": "f636cb71f5033fc5a6de646f422bc52f001f9499cafe191439e8b344f0343bfb",
+      "max_search_cost_units": 1500,
+      "metric": "cl_bench_solve_rate",
+      "min_effect_micro": 100000,
+      "n": 80,
+      "seeds": [
+        20261022,
+        20261023,
+        1022
+      ],
+      "threshold_micro": 0
+    },
+    "proposer": "hermes-claude-haiku-5-5-proposer",
+    "required_signer_roles": [],
+    "rollback_plan_digest": "07be6ade90e5393fc32ca9932361761d2b6a141ac44824e628a0e77b8b0bb76f",
+    "spend_budget_micro_usd": 0,
+    "tenant_scope": "local"
+  },
+  "candidate_digest": "0d29bb6b3cb645714e03758092d4c7f1a262017eb3a485eeccf2372c27c5449e",
+  "paths": [
+    "skills/reasoning/context-learning/SKILL.md"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+ "benchmark": "CL-bench (Tencent, local checkout), single-turn tasks",
+ "by_category": {
+  "Domain Knowledge Reasoning": {
+   "candidate": 2,
+   "deterministic_random": 4,
+   "fixed_policy": 4,
+   "untouched_base": 2
+  },
+  "Empirical Discovery & Simulation": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "Procedural Task Execution": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "Rule System Application": {
+   "candidate": 7,
+   "deterministic_random": 6,
+   "fixed_policy": 6,
+   "untouched_base": 8
+  }
+ },
+ "clusters": 80,
+ "counts": {
+  "candidate": 9,
+  "deterministic_random": 10,
+  "fixed_policy": 10,
+  "untouched_base": 10
+ },
+ "design": "candidate",
+ "excluded": 0,
+ "experiment_id": "exp-007-cl-bench-cl-003",
+ "instrument": {
+  "agree": 288,
+  "total": 320
+ },
+ "lower_micro": -62500,
+ "mean_micro": -12500,
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "prereg_digest": "9a6dc613483939c8937853a0ae0b18912019e2ac5ef136235d747df4096788c1",
+ "reason": "decision_rule",
+ "units": 80,
+ "upper_micro": 37500,
+ "verdict": "Fail",
+ "vs_fixed_lower_micro": -75000,
+ "vs_fixed_mean_micro": -12500,
+ "vs_fixed_upper_micro": 50000,
+ "vs_random_lower_micro": -75000,
+ "vs_random_mean_micro": -12500,
+ "vs_random_upper_micro": 50000
+}

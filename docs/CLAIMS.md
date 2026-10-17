@@ -73,6 +73,17 @@ What this repository does establish (by tests in `tests/`):
   The Exchange rejected it on `controls`, `indispensability` and
   `preregistration`. The last is a real gap: the bench design has no
   `fixed_policy` arm.
+* exp-006 (adds the `fixed_policy` arm, Sonnet proposer, 40 fit / 80
+  assessment) was **NotRun**: 21/80 tasks lost to executor errors (limit 10%).
+* exp-007, same design with retried and logged executor calls: no call
+  errors, 0 excluded. Haiku 5.5 solved base 10/80, fixed policy 10/80,
+  random skill 10/80, candidate 9/80; -0.0125 [-0.0625, +0.0375] vs base.
+  **Fail**, closed. Judges agreed on 288/320. The Exchange rejected it on
+  `controls` and `indispensability` only; the other 11 lanes, including
+  `preregistration`, were Checked.
+* Across three clean CL-bench attempts, no skill text (learned, hand-written
+  or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
+  this benchmark.
 * Phase 4 auto-apply therefore stays Blocked: 0 passing candidate experiments.
 
 * `adapter_update` candidates: `hsi_bridge.py` recomputes hsi-lab receipts with
