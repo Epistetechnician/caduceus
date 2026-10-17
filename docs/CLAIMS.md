@@ -80,6 +80,12 @@ What this repository does establish (by tests in `tests/`):
   the verdict is quarantine, never accept (11 tests, incl. the real E6 verified and
   pool-control receipts). This shows the plumbing, not that verified recursion works.
 
+* the bug-repair oracle (`bugtasks.py`): mutants are generated deterministically,
+  only those killed by covering tests within 60 s become tasks, a repair passes
+  only if the covering tests are green and nothing else changed, and the proposer
+  view hides the mutation and the original. n=33 assess tasks is small; nothing
+  here says any model can repair them.
+
 What it does **not** establish:
 * anything about real Hermes skills' quality, or that gating improves Hermes;
 * that the review fork is gated under a real model or a live Hermes session;
