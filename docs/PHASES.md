@@ -8,7 +8,7 @@
 | 3 Supervised apply | broker process, single-use capabilities, staged release, canary, breakers, rollback drills, human signature, budgets | **Implemented on a sandbox.** Broker process (only writer, rollback included; macOS Seatbelt sandbox); release state machine; HMAC signatures (amendment 8); freeze/kill switch/toggles; drills pass (`caduceus drill`). Not yet: kernel sandbox for the broker, asymmetric signatures, a live Hermes install in enforce mode |
 | 4 Auto-apply | blocked until a replicated result beats the random control | **Gate implemented, report-only; Blocked.** Counts only candidate experiments (refinement vs current vs random); exp-004, exp-005, exp-007 and exp-008 (CL-bench) failed; exp-006 NotRun |
 | 5 Optional lanes / upstream | Bend, Lean, temporal stress, config routing | Not started; reported `Unavailable` |
-| 6 Closed-loop quality-data recursion | `adapter_update` admission, hsi-lab bridge, lock ordering, real-domain round, recursion, one-layer ablations (PRD 6.11, 7.1) | **6a bridge and 6b lock witnessing implemented** (branch `adapter-update-bridge`); 6c oracle + task manifest + exp-008 prereg built (model run pending); 6d-6f not started |
+| 6 Closed-loop quality-data recursion | `adapter_update` admission, hsi-lab bridge, lock ordering, real-domain round, recursion, one-layer ablations (PRD 6.11, 7.1) | **6a bridge and 6b lock witnessing implemented** (branch `adapter-update-bridge`); 6c run (exp-008-bugrepair-round1: Fail, closed; base yield too low to train on); 6d-6f not started |
 
 ## Done 2026-10-15
 1. Background-review fork routes `skill_manage` through `pre_tool_call`
