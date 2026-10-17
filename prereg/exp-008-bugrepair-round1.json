@@ -23,6 +23,7 @@
   "mutated assess sources not written to disk; regenerated at eval time from (module, op, ordinal)",
   "tests directory unwritable by repair (verifier refuses other files)"
  ],
+ "manifest_note": "Regenerated at a1f0e46 before any lock or model run: the first manifest no longer reproduced after later code changes (broker task), and the new bugrepair module joined the assess split.",
  "matched": [
   "data volume (examples and tokens)",
   "optimizer steps",
@@ -33,7 +34,7 @@
  "metric": "repair_pass_rate_micro (tests green / attempts)",
  "min_effect_micro": 100000,
  "n_by_split": {
-  "assess": 33,
+  "assess": 36,
   "fit": 36,
   "tune": 21
  },
@@ -49,13 +50,13 @@
   20261019
  ],
  "split_commitments": {
-  "assess": "0f0830846c292a4390cbf8175064298cc0b672fa27b6dc2ebfc8102c6199ec79",
+  "assess": "d8d9d41e4390ccea581247fec5b09ce85fff2b3c4e6d6ce01a46b81427b7ef7c",
   "fit": "182fa66322808a59ede35378acd3fffddfa57b0226c351b9c8fd36db2fb8c3cc",
-  "tune": "01790d3ce70d95df502880ee06de2361bc7d4eee2daa1384db188960ec2e74ff"
+  "tune": "928f3d4ba34b1b5194f129e7423a838e3237bdb8f6263a0f50f00c854d2ecd1e"
  },
  "split_seed": 20261017,
  "status": "Drafted, not locked. Lock = witness_lock on the Caduceus ledger plus this file's digest, before any model sees any task.",
  "task_manifest": "tasks/bugtasks-v1.manifest.json",
- "task_manifest_digest": "068bbd9bb2aeae620dbfd6fc5941ac94ac4bbe41c3aefc4a799df49c1c91435a",
+ "task_manifest_digest": "6c6c3c3dd21bf2dc4a8e498b7eba87b0e4a3ca603c2b285ffccff94590af44c3",
  "unit": "assess task, one attempt per arm per seed"
 }

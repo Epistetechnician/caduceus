@@ -1,16 +1,16 @@
 {
  "by_split": {
-  "assess": 33,
+  "assess": 36,
   "fit": 36,
   "tune": 21
  },
  "commitments": {
-  "assess": "0f0830846c292a4390cbf8175064298cc0b672fa27b6dc2ebfc8102c6199ec79",
+  "assess": "d8d9d41e4390ccea581247fec5b09ce85fff2b3c4e6d6ce01a46b81427b7ef7c",
   "fit": "182fa66322808a59ede35378acd3fffddfa57b0226c351b9c8fd36db2fb8c3cc",
-  "tune": "01790d3ce70d95df502880ee06de2361bc7d4eee2daa1384db188960ec2e74ff"
+  "tune": "928f3d4ba34b1b5194f129e7423a838e3237bdb8f6263a0f50f00c854d2ecd1e"
  },
- "manifest_digest": "068bbd9bb2aeae620dbfd6fc5941ac94ac4bbe41c3aefc4a799df49c1c91435a",
- "n": 90,
+ "manifest_digest": "6c6c3c3dd21bf2dc4a8e498b7eba87b0e4a3ca603c2b285ffccff94590af44c3",
+ "n": 93,
  "per_module": 3,
  "split_seed": 20261017,
  "tasks": [
@@ -79,6 +79,13 @@
   },
   {
    "module": "broker",
+   "mutated_digest": "48edf3e091209e556fd3ed8b219c240c31ab3f1761542bb677d2a93c1181ccb9",
+   "original_digest": "575278dbf3cb26e9244f00c05fc7b82a8652c76511968f9c77cee3e3d448a689",
+   "split": "tune",
+   "task_id": "f0277229c3a76807"
+  },
+  {
+   "module": "broker",
    "mutated_digest": "c53e11e49440308d439e6f6d944ecab866aab4f2c32874decc734d4bec8f6081",
    "original_digest": "575278dbf3cb26e9244f00c05fc7b82a8652c76511968f9c77cee3e3d448a689",
    "split": "tune",
@@ -92,11 +99,25 @@
    "task_id": "ee030c7f3474e1a4"
   },
   {
-   "module": "broker",
-   "mutated_digest": "d16ab0bb6dcf8c09c217d47b5a206282b77f562862e9b6c02a33f876ec88163c",
-   "original_digest": "575278dbf3cb26e9244f00c05fc7b82a8652c76511968f9c77cee3e3d448a689",
-   "split": "tune",
-   "task_id": "7a32e1a55704d382"
+   "module": "bugrepair",
+   "mutated_digest": "15acff0a20f002beaadd2448bcffb8510d61742f99cec2021983d0894b1aa194",
+   "original_digest": "8fc63383686b9793c05d2c1bd4e798b7c69e9cc28393f53848b5106de974e35d",
+   "split": "assess",
+   "task_id": "77e1278f52bb456b"
+  },
+  {
+   "module": "bugrepair",
+   "mutated_digest": "38bc6bbc45b3101d9283f6925c2a9593334d94e154ad835453ed5053c288b070",
+   "original_digest": "8fc63383686b9793c05d2c1bd4e798b7c69e9cc28393f53848b5106de974e35d",
+   "split": "assess",
+   "task_id": "e276321faf2f5374"
+  },
+  {
+   "module": "bugrepair",
+   "mutated_digest": "8aef8f95b68cd1348a123872ad5323ea8d1119d05ced03c58c164f0195a755b2",
+   "original_digest": "8fc63383686b9793c05d2c1bd4e798b7c69e9cc28393f53848b5106de974e35d",
+   "split": "assess",
+   "task_id": "f68ded29fd8fd10c"
   },
   {
    "module": "candidate",
