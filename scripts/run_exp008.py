@@ -24,11 +24,11 @@ from caduceus import bugrepair as br, bugtasks  # noqa: E402
 from caduceus.digest import domain_digest  # noqa: E402
 from caduceus.ledger import Ledger  # noqa: E402
 
-WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-008"))
-PREREG = os.path.join(REPO, "prereg", "exp-008-bugrepair-round1.json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v1.manifest.json")
-LEDGER = os.path.join(REPO, "ledgers", "exp-008-bugrepair.jsonl")
-EID = "exp-008-bugrepair-round1"
+WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
+N = os.environ.get("EXP", "008")
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % (1 if N == "008" else 2))
+LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = 12, 0.8, 400
 RANK, LAYERS, LR, SCALE = 8, 16, 1e-4, 20.0
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
@@ -52,6 +52,9 @@ def jdump(path, obj):
 
 def prereg():
     return jload(PREREG)
+
+
+EID = prereg()["experiment_id"]
 
 
 def modules_of(split):
@@ -230,8 +233,9 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if not ver:
-            sys.exit("no verified repairs: base solved nothing on fit; experiment cannot train a candidate")
+        if len(ver) < (30 if N == "009" else 1):
+            Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
+            sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
             key = "%s-%d" % (arm, seed)
             if key in meta:
@@ -328,7 +332,7 @@ def stage_report():
                 contrasts={str(s): c for s, c in zip(pr["seeds"], per_seed)},
                 adapters={k: {"adapter_digest": v["adapter_digest"], "examples": v["examples"]} for k, v in meta.items()})
     led.append("verdict", body)
-    jdump(os.path.join(REPO, "ledgers", "exp-008-bugrepair.result.json"), body)
+    jdump(os.path.join(REPO, "ledgers", "exp-%s-bugrepair.result.json" % N), body)
     print(json.dumps(body, indent=1, sort_keys=True))
 
 
