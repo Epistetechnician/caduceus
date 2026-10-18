@@ -86,6 +86,7 @@ What this repository does establish (by tests in `tests/`):
   9/80; -0.025 [-0.0875, +0.0375] vs base. **Fail**, closed; Exchange
   rejected on `controls` and `indispensability`. Judges agreed on 290/320.
 * exp-008-bugrepair-round1 (injected-bug repair on this repo, Qwen2.5-7B 4-bit, 36 sealed assess bugs, three seeds): base 4/36, fixed policy 2/36, verified-data adapter 0-2/36, pool-matched adapter 0/36. **Fail**, closed (candidate mean below base, retention broke). Training set was 8 verified repairs, so this is a null on a tiny-data regime, not evidence about verified recursion at scale.
+* exp-010-bugrepair-round3 (same task set, 34 verified repairs from a 32B proposer, 52 sealed assess bugs): base 6/52, verified adapter 0-3/52. **Fail**, closed. Series total: three rounds, no positive result.
 * Across four clean CL-bench attempts, no skill text (learned, hand-written
   or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
   this benchmark.
