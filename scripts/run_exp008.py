@@ -26,7 +26,7 @@ from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2"}[N] + ".json")
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3"}[N] + ".json")
 MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % (1 if N == "008" else 2))
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = 12, 0.8, 400
@@ -147,6 +147,26 @@ def judge_all(tasks_by_id, recs):
         r.update(parsed=pa, passed=ok, reason=why, repaired_digest=dg)
 
 
+def stage_export():
+    from transformers import AutoTokenizer
+    from hsi.learning.llm import model_path
+    tok = AutoTokenizer.from_pretrained(str(model_path("qwen2.5-7b")))
+    with open(p("prompts.jsonl"), "w") as fh:
+        for t in tasks_for("fit"):
+            msgs = messages_for(bugtasks.proposer_view(t))
+            if len(tok.encode(tok.apply_chat_template(msgs, add_generation_prompt=True, tokenize=False))) <= MAX_TRAIN_PROMPT:
+                fh.write(json.dumps({"task_id": t["task_id"], "messages": msgs}) + "\n")
+    print("exported", sum(1 for _ in open(p("prompts.jsonl"))))
+
+
+def stage_ingest():
+    recs = [json.loads(ln) for ln in open(sys.argv[2])]
+    tasks = {t["task_id"]: t for t in tasks_for("fit")}
+    judge_all(tasks, recs)
+    jdump(p("attempts_fit.json"), recs)
+    print("attempts", len(recs), "verified", sum(r["passed"] for r in recs))
+
+
 def stage_gen():
     tasks = tasks_for("fit")
     llm = load_llm()
@@ -233,7 +253,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < (30 if N == "009" else 1):
+        if len(ver) < (30 if N in ("009", "010") else 1):
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -337,4 +357,4 @@ def stage_report():
 
 
 if __name__ == "__main__":
-    {"lock": stage_lock, "gen": stage_gen, "train": stage_train, "eval": stage_eval, "report": stage_report}[sys.argv[1]]()
+    {"lock": stage_lock, "export": stage_export, "ingest": stage_ingest, "gen": stage_gen, "train": stage_train, "eval": stage_eval, "report": stage_report}[sys.argv[1]]()
