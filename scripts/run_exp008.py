@@ -26,11 +26,11 @@ from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = 12, 0.8, 400
-RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") == "011" else (8, 16, 1e-4, 20.0)
+RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") in ("011", "012") else (8, 16, 1e-4, 20.0)
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
 ARMS = ("untouched_base", "fixed_policy", "candidate", "deterministic_random")
 
@@ -199,7 +199,7 @@ def training_sets(seed):
     seen, ver = set(), []
     per_task = {}
     for r in recs:
-        if r["passed"] and (r["task_id"], r["repaired_digest"]) not in seen and per_task.get(r["task_id"], 0) < (3 if N == "011" else 2):
+        if r["passed"] and (r["task_id"], r["repaired_digest"]) not in seen and per_task.get(r["task_id"], 0) < (3 if N in ("011", "012") else 2):
             seen.add((r["task_id"], r["repaired_digest"]))
             per_task[r["task_id"]] = per_task.get(r["task_id"], 0) + 1
             e = br.parse_edit(r["text"])
@@ -242,7 +242,7 @@ def train_one(llm, examples, tasks, seed):
         mx.eval(llm.model.parameters(), opt.state, loss)
         last = float(loss.item())
         first = first if s else last
-        if N == "011" and last > max(2.0, 5 * first):
+        if N in ("011", "012") and last > max(2.0, 5 * first):
             raise SystemExit("loss spike %.3f at step %d (first %.3f): training aborted" % (last, s, first))
         if s % 10 == 0:
             print("  step", s, "/", steps, round(last, 4), "peak_gb", round(llm.peak_gb(), 1), flush=True)
@@ -256,7 +256,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -310,7 +310,7 @@ def stage_eval():
             llm.set_adapter(True)
         else:
             llm.set_adapter(False)
-        for split, ts in (("assess", assess), ("tune", tune if (N != "011" or arm in ("untouched_base", "candidate")) else [])):
+        for split, ts in (("assess", assess), ("tune", tune if (N not in ("011", "012") or arm in ("untouched_base", "candidate")) else [])):
             for t in ts:
                 if (arm, seed, split, t["task_id"]) in done:
                     continue
