@@ -199,8 +199,8 @@ def training_sets(seed):
     seen, ver = set(), []
     per_task = {}
     for r in recs:
-        if r["passed"] and r["repaired_digest"] not in seen and per_task.get(r["task_id"], 0) < (3 if N == "011" else 2):
-            seen.add(r["repaired_digest"])
+        if r["passed"] and (r["task_id"], r["repaired_digest"]) not in seen and per_task.get(r["task_id"], 0) < (3 if N == "011" else 2):
+            seen.add((r["task_id"], r["repaired_digest"]))
             per_task[r["task_id"]] = per_task.get(r["task_id"], 0) + 1
             e = br.parse_edit(r["text"])
             ver.append({"task_id": r["task_id"], "completion": br.format_edit(*e)})
