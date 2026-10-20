@@ -56,6 +56,21 @@ class BugrepairBridge(unittest.TestCase):
         self.assertEqual(bb.non_inferiority_from_outcomes(bad)["status"], "Failed")
         self.assertEqual(bb.non_inferiority_from_outcomes([])["status"], "NotRun")
 
+    def test_owner_waiver_is_recorded_and_labelled(self):
+        import shutil, tempfile
+        from caduceus.ledger import Ledger
+        d = tempfile.mkdtemp()
+        p = os.path.join(d, "l.jsonl")
+        shutil.copy(LEDGER, p)
+        n = len(Ledger(p).entries)
+        lane = bb.owner_waiver(Ledger(p), "exp-012-gentle-replication", "independent_verification", "owner", "no second reviewer")
+        self.assertIn("WAIVED", lane["detail"])
+        L = Ledger(p)
+        self.assertEqual(len(L.entries), n + 1)
+        self.assertEqual(L.entries[-1]["body"]["waived_lane"], "independent_verification")
+        with self.assertRaises(ValueError):
+            bb.owner_waiver(L, "x", "nope", "owner", "r")
+
 
 if __name__ == "__main__":
     unittest.main()

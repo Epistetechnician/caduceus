@@ -92,3 +92,16 @@ def non_inferiority_from_outcomes(outcomes: list, tolerance_micro: int = 20000) 
     b = base[0][0] * 1000000 // base[0][1]
     return lanes.lane_non_inferiority({str(s): b for s in cand},
                                       {str(s): v[0] * 1000000 // v[1] for s, v in cand.items()}, tolerance_micro)
+
+
+def owner_waiver(ledger: Ledger, experiment_id: str, lane: str, owner: str, reason: str) -> Dict[str, str]:
+    """Record an explicit owner waiver of one lane on the ledger and return the lane entry.
+
+    The waiver is not evidence: the lane reads Checked only so admission can proceed,
+    its detail says WAIVED, and the audit_note on the ledger is the durable record.
+    """
+    if lane not in REQUIRED_LANES:
+        raise ValueError("unknown lane")
+    ledger.append("audit_note", {"experiment_id": experiment_id, "waived_lane": lane, "waived_by": owner,
+                                 "note": "owner waiver, not evidence: " + reason[:160]})
+    return _r("Checked", ("WAIVED by %s: %s" % (owner, reason))[:200])
