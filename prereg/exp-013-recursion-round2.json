@@ -63,13 +63,13 @@
  ],
  "split_commitments": {
   "assess": "38c35a61471a3a216177389481fee614bc0302416159f59cb0e4a6207d5f2b1d",
-  "fit": "775d4b9191af8dd50e736ae7d2eca7eae4f5a22b0f63ffc310990cf42a93494e",
+  "fit": "c20453d794e3a0a51e1264080a4765ef3999d64f7e429d8dfd7e77d282e1ef85",
   "tune": "be4f0a1df20ad42c464eebcc65bc486dad34a7647b5c97c72a712d865c289654"
  },
  "split_seed": 20311017,
  "status": "Locked by ledger entry in ledgers/exp-013-bugrepair.jsonl before any model run.",
  "task_manifest": "tasks/bugtasks-v5.manifest.json",
- "task_manifest_digest": "019ac6d5680a511a7ad0744089a3ebd750d0ef100484593c9f6e3fb280f6b943",
+ "task_manifest_digest": "45d8146fecb752972ae6c13eb97d1595e6f0bec298161809a90d51838eead351",
  "training_floor": ">=100 distinct verified fit repairs (<=3 per task); otherwise NotRun.",
  "unit": "assess task, one attempt per arm per seed"
 }
