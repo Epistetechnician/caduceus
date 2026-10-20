@@ -47,6 +47,15 @@ class BugrepairBridge(unittest.TestCase):
         e = bb.assemble_bugrepair(cand(self.res, bugrepair_experiment="x"), self.res, LEDGER, POLICY)["evidence"]
         self.assertEqual(e["preregistration"]["status"], "Failed")
 
+    def test_non_inferiority_from_outcomes(self):
+        def rec(arm, seed, k, n):
+            return [{"split": "tune", "arm": arm, "seed": seed, "passed": i < k} for i in range(n)]
+        good = rec("untouched_base", 0, 3, 10) + rec("candidate", 1, 5, 10)
+        self.assertEqual(bb.non_inferiority_from_outcomes(good)["status"], "Checked")
+        bad = rec("untouched_base", 0, 5, 10) + rec("candidate", 1, 1, 10)
+        self.assertEqual(bb.non_inferiority_from_outcomes(bad)["status"], "Failed")
+        self.assertEqual(bb.non_inferiority_from_outcomes([])["status"], "NotRun")
+
 
 if __name__ == "__main__":
     unittest.main()

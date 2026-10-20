@@ -72,3 +72,23 @@ def assemble_bugrepair(candidate: Candidate, result: Dict[str, Any], ledger_path
             ev[k] = v
     verdict: Verdict = evaluate(candidate, policy, ev)
     return {"verdict": verdict, "evidence": ev}
+
+
+def non_inferiority_from_outcomes(outcomes: list, tolerance_micro: int = 20000) -> Dict[str, str]:
+    """Tune-split (retention) lane: candidate must not fall below untouched_base in any seed.
+
+    `outcomes` are the runner's per-task records; only counts are used, integer math.
+    """
+    rate: Dict[Any, Any] = {}
+    for r in outcomes:
+        if r.get("split") == "tune":
+            p = rate.setdefault((r["arm"], r["seed"]), [0, 0])
+            p[0] += 1 if r["passed"] else 0
+            p[1] += 1
+    base = [v for (a, _), v in rate.items() if a == "untouched_base"]
+    cand = {s: v for (a, s), v in rate.items() if a == "candidate"}
+    if not base or not cand:
+        return _r("NotRun", "tune outcomes missing for base or candidate")
+    b = base[0][0] * 1000000 // base[0][1]
+    return lanes.lane_non_inferiority({str(s): b for s in cand},
+                                      {str(s): v[0] * 1000000 // v[1] for s, v in cand.items()}, tolerance_micro)
