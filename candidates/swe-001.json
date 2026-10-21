@@ -1,0 +1,46 @@
+{
+  "candidate": {
+    "candidate_id": "skill:software-development/patch-writing:swe-001",
+    "compute_budget": 1500,
+    "content_digest": "f32d9ba3017d080a9f46da100dda35cd40d7b76f0acaf958f73daeabafa6d4c7",
+    "kind": "skill_refine",
+    "nonclaims": [
+      "LocalDevelopmentEvidenceOnly"
+    ],
+    "parent_digest": "958553c17373d74858576b25f2cb11450e6643decc93191ab73514b34d13e477",
+    "paths": [
+      "skills/software-development/patch-writing/SKILL.md"
+    ],
+    "preregistration": {
+      "alpha_micro": 50000,
+      "arms": [
+        "untouched_base",
+        "fixed_policy",
+        "deterministic_random",
+        "candidate"
+      ],
+      "experiment_id": "exp-009-swe-bench-lite-swe-001",
+      "experiment_prereg_digest": "eca1d836e0746cfedd1c66e2f6dc357d22ad50b052a3e8c971a093687045fda5",
+      "holdout_commitment": "488a5a97dbea43b97334d6193bf043d34d590f02c1d432443925822382a7ed69",
+      "max_search_cost_units": 1500,
+      "metric": "cl_bench_solve_rate",
+      "min_effect_micro": 100000,
+      "n": 80,
+      "seeds": [
+        20261021,
+        20261022,
+        1021
+      ],
+      "threshold_micro": 0
+    },
+    "proposer": "hermes-claude-sonnet-5-5-proposer",
+    "required_signer_roles": [],
+    "rollback_plan_digest": "8b4d4762c44000c30625b37077f53b108b5af20713988548f55b46375a08f1be",
+    "spend_budget_micro_usd": 0,
+    "tenant_scope": "local"
+  },
+  "candidate_digest": "efd8c47928e4276944ad83ed5573b64fb6f0a29cb7725f15c8e5c72aa7ad83d5",
+  "paths": [
+    "skills/software-development/patch-writing/SKILL.md"
+  ]
+}

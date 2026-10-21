@@ -142,10 +142,31 @@ def prereg_digest(raw: Dict[str, Any]) -> str:
     return domain_digest(SCHEMA, raw)
 
 
+def load_swe_tasks(path: str, max_chars: int, exclude: List[int],
+                   categories: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    """SWE-bench oracle rows: the prompt is `text`; grading is the benchmark's own tests (done by the caller)."""
+    out = []
+    with open(path, "r", encoding="utf-8") as fh:
+        for idx, line in enumerate(fh):
+            row = json.loads(line)
+            if idx in exclude or len(row["text"]) > max_chars or (categories is not None and row["repo"] not in categories):
+                continue
+            out.append({"idx": idx, "system": "", "user": row["text"], "rubrics": [row["instance_id"]],
+                        "category": row["repo"], "instance_id": row["instance_id"]})
+    return out
+
+
+LOADERS = {"cl-bench": load_tasks, "swe-bench": load_swe_tasks}
+
+
+def _loader(raw: Dict[str, Any]):
+    return LOADERS["swe-bench" if raw["benchmark"].lower().startswith("swe-bench") else "cl-bench"]
+
+
 def verify_split(raw: Dict[str, Any], dataset_path: str) -> Tuple[List[Dict], List[Dict]]:
     if file_sha256(dataset_path) != raw["dataset_sha256"]:
         raise BenchError("dataset changed since preregistration")
-    tasks = load_tasks(dataset_path, raw["max_chars"], raw["exclude"], raw.get("categories"))
+    tasks = _loader(raw)(dataset_path, raw["max_chars"], raw["exclude"], raw.get("categories"))
     fit, assess = split(tasks, raw["split_seed"], raw["n_fit"], raw["n_assess"])
     if commitment(assess) != raw["assessment_commitment"]:
         raise BenchError("assessment split does not match its commitment")
@@ -167,7 +188,10 @@ Model = Callable[[str], str]
 
 
 def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, Model],
-        judge_a: Model, judge_b: Model, custody: Any = None, workers: int = 6) -> Dict[str, Any]:
+        judge_a: Optional[Model], judge_b: Optional[Model], custody: Any = None, workers: int = 6,
+        batch_grade: Optional[Callable[[List[Tuple[Dict[str, Any], str, str]]], Dict[Tuple[int, str], Tuple[Optional[int], Optional[int]]]]] = None) -> Dict[str, Any]:
+    """Per-output judges (judge_a primary, judge_b second), or `batch_grade` for benchmarks graded by
+    their own harness: it receives every (task, arm, text) and returns (primary, second) per (idx, arm)."""
     eid = raw["experiment_id"]
     locks = [e for e in ledger.find("prediction_lock") if e["body"].get("experiment_id") == eid]
     if len(locks) != 1 or locks[0]["body"]["prereg_digest"] != prereg_digest(raw):
@@ -185,9 +209,11 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
     def one(job):
         t, arm = job
         try:
-            text = arms[arm](prompt(t))
+            text = arms[arm](prompt(t) if t["system"] else t["user"])
         except Exception:
             return None, None, None
+        if batch_grade is not None:
+            return text, None, None
         try:
             a = parse_grade(judge_a(grade_prompt(t, text)))
             b = parse_grade(judge_b(grade_prompt(t, text)))
@@ -197,6 +223,10 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         results = dict(zip([(j[0]["idx"], j[1]) for j in jobs], pool.map(one, jobs)))
+    if batch_grade is not None:
+        graded_map = batch_grade([(t, arm, results[(t["idx"], arm)][0]) for t, arm in jobs
+                                  if results[(t["idx"], arm)][0] is not None])
+        results = {k: (v[0],) + tuple(graded_map.get(k, (None, None))) for k, v in results.items()}
     diffs_b, diffs_r, diffs_f = [], [], []
     total = excluded = agree = graded = 0
     counts = {arm: 0 for arm in ARMS}

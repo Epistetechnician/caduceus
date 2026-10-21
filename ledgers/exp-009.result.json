@@ -1,0 +1,84 @@
+{
+ "benchmark": "SWE-bench Lite (oracle retrieval), SWE-bench/SWE-bench_Lite harness",
+ "by_category": {
+  "django/django": {
+   "candidate": 19,
+   "deterministic_random": 18,
+   "fixed_policy": 18,
+   "untouched_base": 19
+  },
+  "matplotlib/matplotlib": {
+   "candidate": 1,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "mwaskom/seaborn": {
+   "candidate": 1,
+   "deterministic_random": 1,
+   "fixed_policy": 1,
+   "untouched_base": 1
+  },
+  "pallets/flask": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "psf/requests": {
+   "candidate": 1,
+   "deterministic_random": 1,
+   "fixed_policy": 1,
+   "untouched_base": 1
+  },
+  "pylint-dev/pylint": {
+   "candidate": 1,
+   "deterministic_random": 2,
+   "fixed_policy": 0,
+   "untouched_base": 1
+  },
+  "pytest-dev/pytest": {
+   "candidate": 2,
+   "deterministic_random": 2,
+   "fixed_policy": 2,
+   "untouched_base": 2
+  },
+  "scikit-learn/scikit-learn": {
+   "candidate": 1,
+   "deterministic_random": 0,
+   "fixed_policy": 1,
+   "untouched_base": 1
+  },
+  "sphinx-doc/sphinx": {
+   "candidate": 1,
+   "deterministic_random": 2,
+   "fixed_policy": 3,
+   "untouched_base": 3
+  },
+  "sympy/sympy": {
+   "candidate": 6,
+   "deterministic_random": 6,
+   "fixed_policy": 7,
+   "untouched_base": 6
+  }
+ },
+ "clusters": 46,
+ "counts": {
+  "candidate": 33,
+  "deterministic_random": 32,
+  "fixed_policy": 33,
+  "untouched_base": 34
+ },
+ "design": "candidate",
+ "excluded": 34,
+ "experiment_id": "exp-009-swe-bench-lite-swe-001",
+ "instrument": {
+  "agree": 272,
+  "total": 274
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "prereg_digest": "eca1d836e0746cfedd1c66e2f6dc357d22ad50b052a3e8c971a093687045fda5",
+ "reason": "too_many_excluded_units",
+ "units": 80,
+ "verdict": "NotRun"
+}

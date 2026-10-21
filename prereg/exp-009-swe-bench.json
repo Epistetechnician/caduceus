@@ -1,0 +1,35 @@
+{
+  "schema": "caduceus.prereg.bench.v1",
+  "experiment_id": "exp-009-swe-bench-lite-swe-001",
+  "hypothesis": "A patch-writing skill refined by Hermes on Claude Sonnet 5.5 (proposer) from FIT-split failures only (30 fit tasks) raises the SWE-bench Lite (oracle retrieval, prompts <= 40k chars) resolve rate by at least 0.10 versus the untouched base skill, a hand-written fixed-policy refinement, AND a wrong-source skill (songwriting-and-ai-music), on Claude Haiku 5.5 (executor, no tools), over a sealed 80-task assessment split the proposer never saw. Graded by the benchmark's own tests. Follows four CL-bench candidates (exp-005, 007, 008 Fail; 006 NotRun).",
+  "benchmark": "SWE-bench Lite (oracle retrieval), SWE-bench/SWE-bench_Lite harness",
+  "dataset_sha256": "d606fda3f6c7b8e4c06123784d3db16baf420e00f62a2b3ced77d6772a1851f6",
+  "max_chars": 40000,
+  "exclude": [
+    12
+  ],
+  "split_seed": 20261021,
+  "n_fit": 30,
+  "n_assess": 80,
+  "assessment_commitment": "488a5a97dbea43b97334d6193bf043d34d590f02c1d432443925822382a7ed69",
+  "order_seed": 20261022,
+  "bootstrap_seed": 1021,
+  "bootstrap_resamples": 10000,
+  "min_effect_micro": 100000,
+  "alpha_micro": 50000,
+  "max_notrun_micro": 100000,
+  "executor": {
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "base_url": "https://api.anthropic.com",
+    "temperature": "provider_default"
+  },
+  "judge_primary": "swebench-harness-run-1",
+  "judge_second": "swebench-harness-run-2 (independent re-run)",
+  "skill": "software-development/patch-writing",
+  "base_tree_digest": "958553c17373d74858576b25f2cb11450e6643decc93191ab73514b34d13e477",
+  "random_skill": "creative/songwriting-and-ai-music",
+  "max_category_loss": 3,
+  "decision_rule": "Units: assessment tasks, one run per arm. Score: resolved (1) or not (0) by the SWE-bench harness; an empty or unparseable patch scores 0; a harness error excludes the task. Contrasts: candidate minus untouched_base, minus fixed_policy, and minus deterministic_random; cluster = task; seeded percentile bootstrap. Pass iff excluded/units <= max_notrun AND for ALL three contrasts lower bound > 0 AND mean >= min_effect. Second instrument: an independent harness re-run of the same patches. The Exchange then decides on all 13 lanes.",
+  "nonclaim": "LocalDevelopmentEvidenceOnly"
+}

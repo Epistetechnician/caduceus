@@ -91,6 +91,17 @@ What this repository does establish (by tests in `tests/`):
 * exp-012-gentle-replication (series 2 replication, fresh split seed, 86 sealed assess bugs, three seeds, same recipe): verified-data adapter 48.8-53.5%, pool-matched unverified adapter 26.7-36.0%, untouched base 9.3%, few-shot policy 8.1%. **Pass** on the preregistered rule (2 of 3 seeds, retention held); verified beat matched unverified by 13-27 points. Same scope as exp-011: distillation from a 32B proposer into a 7B, one repo, syntactic mutants, much of the gain over base is task/format learning. Not a claim of self-improvement, transfer, or compounding.
 * exp-012 admission: with `bugrepair_bridge`, seven lanes are Checked by evidence; independent_verification, behavior_equivalence, instrument_validity, lyre_report, search_cost and signature were waived by the repo owner (ledger audit_notes). The waivers are not evidence, add no claim, and the resulting accept grants no authority; the ceiling stays `LocalDevelopmentEvidenceOnly`.
 * exp-013-recursion-round2 (round 2, proposer = admitted exp-012 adapter, 73 sealed assess bugs, three seeds): verified-data adapter 35.6-45.2%, pool-matched unverified 26.0-32.9%, untouched base 12.3%, few-shot policy 8.2%. **Inconclusive** on the preregistered rule (0 of 3 seeds; verified-over-pool lower bounds 0 to +4.1 points against a 5-point floor). No claim that the loop compounds or that self-proposed verified data beats matched unverified data. Candidate identity closed; a retry needs a new id, seed and data.
+* exp-009, first SWE-bench Lite candidate (oracle retrieval, Haiku 5.5, no
+  tools, graded by the benchmark's own tests; Sonnet-proposed patch-writing
+  1.1.0 from 30 fit tasks where the base resolved 14): **NotRun**, 34/80
+  tasks excluded. Cause: my driver mapped "patch did not apply" (reported as
+  a harness error) to infra failure instead of a 0, and the locked rule
+  excludes harness errors. The verdict stands under the locked rule; the
+  Exchange quarantined it (controls, indispensability NotRun). Not a
+  verdict, but descriptively, scoring non-applying patches as 0 gives
+  base 44/80, fixed 45, random 43, candidate 45: no visible effect.
+  The two harness runs agreed on 272/274 graded patches. Driver fixed for
+  any next experiment.
 * Across four clean CL-bench attempts, no skill text (learned, hand-written
   or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
   this benchmark.

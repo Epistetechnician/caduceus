@@ -68,6 +68,18 @@ class BenchTest(unittest.TestCase):
         with self.assertRaises(bench.BenchError):
             bench.verify_split(dict(self.raw, assessment_commitment="f" * 64), self.data)
 
+    def test_batch_grade_path(self):
+        bench.lock(self.raw, self.ledger)
+        arms = {a: (lambda p: "bad") for a in bench.ARMS}
+        arms["candidate"] = lambda p: "GOOD"
+        seen = []
+
+        def batch(items):
+            seen.extend(items)
+            return {(t["idx"], arm): (int(text == "GOOD"), int(text == "GOOD")) for t, arm, text in items}
+        res = bench.run(self.raw, self.data, self.ledger, arms, None, None, batch_grade=batch)
+        self.assertEqual((res["verdict"], len(seen), res["instrument"]["agree"]), ("Pass", 80, 80))
+
     def test_category_filter(self):
         idx = [t["idx"] for t in bench.load_tasks(self.data, 1000, [0], ["A"])]
         self.assertEqual(idx, list(range(1, 40, 2)))
