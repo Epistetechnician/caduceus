@@ -1,0 +1,74 @@
+{
+ "alpha_micro": 50000,
+ "arms": {
+  "candidate": "same base + adapter trained on verified fit-split repairs only",
+  "deterministic_random": "same base + adapter trained on an equal number of unverified fit-split attempts (pool-matched, includes failing ones)",
+  "fixed_policy": "same base, k=4 verified fit repairs retrieved by module similarity as few-shot, no training",
+  "untouched_base": "qwen2.5-7b 4-bit, zero-shot"
+ },
+ "bootstrap_resamples": 10000,
+ "decision_rule": "Pass iff candidate minus each of the three other arms has paired-bootstrap 95% lower bound >= min_effect_micro/2 and mean >= min_effect_micro, in at least 2 of 3 seeds, retention holds. Fail if any contrast mean < 0 or retention breaks. Otherwise Inconclusive (never positive). n_assess is small, so Inconclusive is the expected outcome unless the effect is large; per_module may be raised only in a NEW experiment id.",
+ "domain": "this repository, caduceus/*.py injected-bug repair; oracle = covering unittest modules green, only the target file changed",
+ "experiment_id": "exp-014-recursion-round2b",
+ "falsifier": "if the pool-matched unverified adapter matches the verified one (difference lower bound <= 0), verification added nothing and the recursion thesis is not supported in this domain",
+ "hypothesis": "Recursion round 2b: repeat of exp-013 (proposer = admitted exp-012 adapter) on a fresh, larger split (assess 109), adding a reported parent-adapter arm.",
+ "known_limits": [
+  "syntactic mutations only",
+  "same-author, no independent review (waived)",
+  "single domain and single base model; replication in a second model is a separate experiment",
+  "proposer is a stronger model than the trainee: this tests verified-data distillation, not self-improvement",
+  "single domain, 7B trainee, one proposer",
+  "the proposer adapter was trained on exp-012 fit tasks from the same repository; modules that overlap exp-013 fit tasks may give it inflated yield (fit data only; assess modules are disjoint from exp-013 fit/tune)",
+  "K=8 not 12 because proposer runs locally on a shared GPU"
+ ],
+ "leakage_controls": [
+  "assess tasks never rendered to any proposer or trainer",
+  "assess modules disjoint from fit/tune",
+  "mutated assess sources not written to disk; regenerated at eval time from (module, op, ordinal)",
+  "tests directory unwritable by repair (verifier refuses other files)"
+ ],
+ "matched": [
+  "data volume (examples and tokens)",
+  "optimizer steps",
+  "LoRA rank and lr",
+  "decoding settings",
+  "wall-clock budget per arm"
+ ],
+ "metric": "repair_pass_rate_micro (tests green / attempts)",
+ "min_effect_micro": 100000,
+ "n_by_split": {
+  "assess": 109,
+  "fit": 289,
+  "tune": 73
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "oracle_audit": "tasks/bugtasks-v1.audited.json (mutant kill rate by operator); survivors are what the oracle cannot see and bound the claim",
+ "per_module": 24,
+ "proposer": "fit-split attempts from the admitted exp-012 candidate adapter (candidate-20301017) on Qwen2.5-7B 4-bit, local MLX, temp 0.8, K=8. Trainee and evaluated model are the untouched Qwen2.5-7B 4-bit with fresh adapters (not stacked on the proposer).",
+ "proposer_adapter": {
+  "adapter_digest": "ee195171201419123113a28bbfe310fbb878f903c6f9c2178c56073fc88327dd",
+  "path": "~/hsi-runs/exp-012/adapters/candidate-20301017.safetensors",
+  "source": "exp-012-gentle-replication, Pass, admitted via bugrepair_bridge with owner waivers"
+ },
+ "recipe": "LoRA rank 8, 16 layers, lr 1e-5, scale 4 (series 1 used lr 1e-4, scale 20 and every adapter, including the pool control, scored below the untouched base). Steps = 3 x examples, batch 1. Training aborts as NotRun if loss exceeds max(2.0, 5 x first-step loss). Recipe fixed before any model run and not tuned on assess.",
+ "recursion_next": "A third round is allowed only if this is a Pass and uses a new split seed; if NotRun for the training floor, the recursion is not shown to sustain itself without a stronger proposer.",
+ "retention": "tune-split pass rate (evaluated for untouched_base and candidate only) must not drop for the candidate versus untouched_base by more than 0.02",
+ "round_policy": "New id, seed and data after exp-013 Inconclusive at n=73; same recipe, rule and thresholds, no tuning. exp-011/012 Pass, exp-013 Inconclusive and series 1 must be cited. The parent arm (the exp-012 adapter, assess only) is reported, not gating. Distinct-repair count keyed by (task, repaired digest).",
+ "schema": "caduceus.prereg.bugrepair.v1",
+ "seeds": [
+  20321017,
+  20321018,
+  20321019
+ ],
+ "split_commitments": {
+  "assess": "a66f09717c1a8cbba849f32085afc80d3eda45da9189a906f865bb92e8afcea6",
+  "fit": "600abdbf0087d1862e949a605c6da685bd27130a4170c9a0f0354c00ec069bcf",
+  "tune": "57312058f3370483226598626c2ec3615705f5a40e74634e73b4f339806bb5bd"
+ },
+ "split_seed": 20321017,
+ "status": "Locked by ledger entry in ledgers/exp-014-bugrepair.jsonl before any model run.",
+ "task_manifest": "tasks/bugtasks-v6.manifest.json",
+ "task_manifest_digest": "d84f7089fcee29ba68ebfc4390c257ecffb51a32547837821bdb53e819b45114",
+ "training_floor": ">=100 distinct verified fit repairs (<=3 per task); otherwise NotRun.",
+ "unit": "assess task, one attempt per arm per seed"
+}

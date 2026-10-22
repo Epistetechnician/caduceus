@@ -231,7 +231,7 @@ def run(args):
     m = raw["executor"]["model"]
     arms = {"untouched_base": arm_model(m, os.path.join(WORK, "base/skills"), SKILL_REL),
             "fixed_policy": arm_model(m, os.path.join(WORK, "fixed/skills"), SKILL_REL),
-            "deterministic_random": arm_model(m, RANDOM_ROOT, RANDOM_REL),
+            "deterministic_random": arm_model(m, os.path.expanduser(args.random_root), args.random_rel),
             "candidate": arm_model(m, os.path.join(WORK, args.candidate, "skills"), SKILL_REL)}
     eid = raw["experiment_id"]
 
@@ -244,6 +244,12 @@ def run(args):
 
     res = bench.run(raw, DATA, Ledger(args.ledger), arms, None, None, custody=Custody("~/.caduceus/custody"),
                     workers=args.workers, batch_grade=batch_grade)
+    if raw.get("design") == "positive_control":
+        # Preregistered sensitivity check: the untouched base must beat the sabotage (negative-control) arm.
+        from caduceus.stats import paired_bootstrap
+        d = [v["untouched_base"] - v["deterministic_random"] for v in res["per_task"].values()]
+        res["sensitivity_base_minus_negative"] = paired_bootstrap(d, raw["bootstrap_seed"] + 3,
+                                                                  raw["bootstrap_resamples"], raw["alpha_micro"] / 1000000)
     with open(args.ledger.replace(".jsonl", ".result.json"), "w") as fh:
         json.dump(res, fh, indent=1, sort_keys=True)
     print(json.dumps(res, indent=1, sort_keys=True))
@@ -262,6 +268,8 @@ def main():
     ap.add_argument("--candidate", default="swe-001")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--proposer-model", default="claude-sonnet-5-5")
+    ap.add_argument("--random-root", default=RANDOM_ROOT)
+    ap.add_argument("--random-rel", default=RANDOM_REL)
     args = ap.parse_args()
     global DATA, AGENTIC
     if args.phase != "prep-agentic":

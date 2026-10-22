@@ -133,7 +133,7 @@ def parse_grade(text: str) -> Optional[int]:
 def load_prereg(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as fh:
         raw = json.load(fh, parse_float=lambda s: (_ for _ in ()).throw(BenchError("floats not allowed")))
-    if set(raw) - {"categories"} != _KEYS or raw["schema"] != SCHEMA or raw["nonclaim"] != REQUIRED_NONCLAIM:
+    if set(raw) - {"categories", "design"} != _KEYS or raw["schema"] != SCHEMA or raw["nonclaim"] != REQUIRED_NONCLAIM:
         raise BenchError("bench prereg: expected exactly keys %s, schema %s, nonclaim" % (sorted(_KEYS), SCHEMA))
     return raw
 
@@ -268,7 +268,7 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
         "per_task_digest": domain_digest("caduceus.bench.per_task.v1", per_task),
     })
     result: Dict[str, Any] = {"experiment_id": eid, "prereg_digest": prereg_digest(raw), "units": total,
-                              "excluded": excluded, "clusters": len(diffs_b), "design": "candidate",
+                              "excluded": excluded, "clusters": len(diffs_b), "design": raw.get("design", "candidate"),
                               "benchmark": raw["benchmark"], "nonclaim": REQUIRED_NONCLAIM}
     if (excluded * MICRO) // max(total, 1) > raw["max_notrun_micro"] or len(diffs_b) < 2:
         result.update(verdict="NotRun", reason="too_many_excluded_units")
@@ -284,7 +284,8 @@ def run(raw: Dict[str, Any], dataset_path: str, ledger: Ledger, arms: Dict[str, 
                       vs_fixed_lower_micro=f["lower_micro"], vs_fixed_upper_micro=f["upper_micro"], verdict="Pass" if ok else "Fail",
                       reason="decision_rule")
     ledger.append("verdict", result)
-    result.update(counts=counts, by_category=by_cat, instrument={"agree": agree, "total": graded})
+    result.update(counts=counts, by_category=by_cat, instrument={"agree": agree, "total": graded},
+                  per_task={k: dict(zip(ARMS, v)) for k, v in per_task.items()})
     return result
 
 

@@ -26,11 +26,11 @@ from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
-GENTLE = ("011", "012", "013")
-K_ATTEMPTS, GEN_TEMP, MAX_NEW = (8 if N == "013" else 12), 0.8, 400
+GENTLE = ("011", "012", "013", "014")
+K_ATTEMPTS, GEN_TEMP, MAX_NEW = (8 if N in ("013", "014") else 12), 0.8, 400
 RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") in GENTLE else (8, 16, 1e-4, 20.0)
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
 ARMS = ("untouched_base", "fixed_policy", "candidate", "deterministic_random")
@@ -180,7 +180,7 @@ def stage_ingest():
 def stage_gen():
     tasks = tasks_for("fit")
     llm = load_llm()
-    if N == "013":
+    if N in ("013", "014"):
         load_proposer(llm)
     out = p("attempts_fit.json")
     recs = jload(out) if os.path.exists(out) else []
@@ -268,7 +268,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -316,8 +316,13 @@ def stage_eval():
     outs = jload(outp) if os.path.exists(outp) else []
     done = {(o["arm"], o["seed"], o["split"], o["task_id"]) for o in outs}
     plan = [("untouched_base", 0), ("fixed_policy", 0)] + [(a, s) for s in pr["seeds"] for a in ("candidate", "deterministic_random")]
+    if N == "014":
+        plan.append(("parent", 0))
     for arm, seed in plan:
-        if arm in ("candidate", "deterministic_random"):
+        if arm == "parent":
+            llm.load_adapter(os.path.expanduser(pr["proposer_adapter"]["path"]))
+            llm.set_adapter(True)
+        elif arm in ("candidate", "deterministic_random"):
             llm.load_adapter(p("adapters", "%s-%d.safetensors" % (arm, seed)))
             llm.set_adapter(True)
         else:
@@ -356,6 +361,13 @@ def stage_report():
         tb, tc = rate_map("untouched_base", seed, "tune"), rate_map("candidate", seed, "tune")
         if sum(tc.values()) * br.MICRO // max(1, len(tc)) < sum(tb.values()) * br.MICRO // max(1, len(tb)) - 20000:
             retention = False
+    extra = {}
+    if N == "014":  # parent arm is reported, not gating
+        pm = rate_map("parent", 0, "assess")
+        extra["parent_rate_micro"] = sum(pm.values()) * br.MICRO // max(1, len(pm))
+        for seed in pr["seeds"]:
+            cm = rate_map("candidate", seed, "assess")
+            extra["candidate_minus_parent_micro_%d" % seed] = (sum(cm.values()) - sum(pm.values())) * br.MICRO // max(1, len(cm))
     verdict = br.decide(per_seed, retention, pr["min_effect_micro"])
     led = Ledger(LEDGER)
     for a in ARMS:
@@ -363,7 +375,7 @@ def stage_report():
             rs = [o for o in outs if o["arm"] == a and o["split"] == "assess" and o["seed"] == (seed if a in ("candidate", "deterministic_random") else 0)]
             led.append("assessment", {"experiment_id": EID, "arm": a, "seed": seed, "units": len(rs), "passes": sum(o["passed"] for o in rs),
                                       "outcomes_digest": br.outcome_digest([{"arm": a, "seed": seed, "task_id": o["task_id"], "passed": o["passed"]} for o in rs])})
-    body = dict(verdict, experiment_id=EID, prereg_digest=lock["prereg_digest"], rates_micro=rates,
+    body = dict(verdict, **extra, experiment_id=EID, prereg_digest=lock["prereg_digest"], rates_micro=rates,
                 contrasts={str(s): c for s, c in zip(pr["seeds"], per_seed)},
                 adapters={k: {"adapter_digest": v["adapter_digest"], "examples": v["examples"]} for k, v in meta.items()})
     led.append("verdict", body)
