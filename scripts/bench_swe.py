@@ -30,7 +30,7 @@ from caduceus import bench  # noqa: E402
 
 REPO = bench_cl.REPO
 WORK = os.path.expanduser("~/.caduceus/swe")
-DATA = os.path.join(WORK, "lite_oracle.jsonl")
+DATA = DATA_ORACLE = os.path.join(WORK, "lite_oracle.jsonl")
 HARNESS_PY = os.path.join(WORK, "venv", "bin", "python")
 SKILL_REL = "software-development/patch-writing"
 RANDOM_ROOT, RANDOM_REL = os.path.expanduser("~/.hermes/skills"), "creative/songwriting-and-ai-music"
@@ -43,6 +43,72 @@ def extract_patch(text: str) -> str:
         m = re.search(r"```(?:diff|patch)?\s*\n(--- .*?)```", text, re.S)
     body = m.group(1) if m else (text if text.lstrip().startswith("--- ") else "")
     return body.rstrip() + "\n" if body.strip() else ""
+
+
+AGENT_DATA = os.path.join(WORK, "lite_agentic.jsonl")
+AGENT_PROMPT = ("The repository {repo} is checked out at /testbed (current directory). Resolve this issue by editing "
+                "the source files. Do not modify or add tests. You may run code and existing tests.\n\n<issue>\n"
+                "{issue}\n</issue>\nWhen finished, reply DONE.")
+AGENTIC = False
+
+
+def prep_agentic(args):
+    """Same rows as the oracle file, but the prompt is the bare issue: the agent explores /testbed itself."""
+    with open(DATA_ORACLE) as src, open(AGENT_DATA, "w") as dst:
+        for line in src:
+            r = json.loads(line)
+            r["text"] = AGENT_PROMPT.format(repo=r["repo"], issue=r["problem_statement"])
+            dst.write(json.dumps(r) + "\n")
+    print(json.dumps({"written": AGENT_DATA, "sha256": bench.file_sha256(AGENT_DATA)}))
+
+
+def agent_model(name, root=None, rel=None):
+    """Hermes with terminal + file tools inside the task's SWE-bench image, no network; returns its git diff."""
+    import threading
+    import uuid
+
+    from caduceus.executor import HermesExecutor, default_config_from_env
+
+    by_prompt = {}
+    with open(AGENT_DATA) as fh:
+        for line in fh:
+            r = json.loads(line)
+            by_prompt[r["text"]] = r["instance_id"]
+    cfg = default_config_from_env(bench_cl.HERMES_SRC, name, "anthropic", "https://api.anthropic.com", None,
+                                  use_hermes_login=True)
+    cfg = cfg.__class__(**dict(cfg.__dict__, timeout_s=1800))
+    local = threading.local()
+
+    def call(prompt):
+        if not hasattr(local, "ex"):
+            local.ex = HermesExecutor(cfg, root, rel, allow_model_calls=True)
+            bench_cl._opened.append(local.ex)
+        iid = by_prompt[prompt]
+        label = "caduceus.call=%s" % uuid.uuid4().hex
+        env = {"TERMINAL_ENV": "docker", "TERMINAL_DOCKER_IMAGE": image(iid), "TERMINAL_CWD": "/testbed",
+               "TERMINAL_CONTAINER_MEMORY": "3072", "TERMINAL_CONTAINER_PERSISTENT": "false",
+               "TERMINAL_DOCKER_EXTRA_ARGS": json.dumps(["--network=none", "--platform=linux/amd64", "--label=" + label])}
+        extra = {"toolsets": ["terminal", "file"], "max_iterations": 30, "task_id": label.split("=")[1][:12],
+                 "collect_command": "cd /testbed && git diff"}
+        try:
+            for attempt in range(3):
+                try:
+                    diff = local.ex(prompt, env_extra=env, request_extra=extra)
+                    return "<patch>\n%s</patch>" % diff if diff.strip() else ""
+                except Exception as e:  # noqa: BLE001
+                    print("call_error agent %s attempt=%d %s" % (iid, attempt, str(e)[:120]), file=sys.stderr, flush=True)
+                    if attempt == 2:
+                        raise
+        finally:
+            ids = subprocess.run(["docker", "ps", "-aq", "--filter", "label=" + label],
+                                 capture_output=True, text=True).stdout.split()
+            if ids:
+                subprocess.run(["docker", "rm", "-f"] + ids, capture_output=True)
+    return call
+
+
+def arm_model(name, root=None, rel=None):
+    return agent_model(name, root, rel) if AGENTIC else bench_cl.model(name, root, rel)
 
 
 def image(instance_id: str) -> str:
@@ -98,7 +164,7 @@ def fit(args):
     tasks = bench.load_swe_tasks(DATA, raw["max_chars"], raw["exclude"], raw.get("categories"))
     fit_set, assess = bench.split(tasks, raw["split_seed"], raw["n_fit"], raw["n_assess"])
     assert bench.commitment(assess) == raw["assessment_commitment"]
-    base = bench_cl.model(raw["executor"]["model"], os.path.join(WORK, "base/skills"), SKILL_REL)
+    base = arm_model(raw["executor"]["model"], os.path.join(WORK, "base/skills"), SKILL_REL)
 
     def one(t):
         try:
@@ -132,11 +198,13 @@ def propose(args):
     base_md = open(os.path.join(WORK, "base/skills", SKILL_REL, "SKILL.md")).read()
     fails = [r for r in fitlog["rows"] if r["score"] == 0]
     parts = ["ISSUE:\n%s\n\nAGENT PATCH (%s):\n%s\n" % (
-        r["issue_head"][:1500], "empty or unparseable" if not r["patch"] else "applied, tests failed or did not apply",
+        r["issue_head"][:1500], ("no change made" if AGENTIC else "empty or unparseable") if not r["patch"] else "tests failed" if AGENTIC else "applied, tests failed or did not apply",
         r["patch"][:1500]) for r in fails]
-    p = ("You maintain an agent skill used to fix GitHub issues: the agent sees an issue and the relevant source "
-         "files and must reply with one unified diff that applies with `git apply` and makes the repository's "
-         "hidden tests pass. Below is the current SKILL.md and %d tasks where the agent FAILED (its patch did not "
+    setting = ("the agent gets an issue and a shell plus file tools inside the repository checkout (no network, "
+               "about 30 tool calls); its `git diff` is graded by the repository's hidden tests" if AGENTIC else
+               "the agent sees an issue and the relevant source files and must reply with one unified diff that "
+               "applies with `git apply` and makes the repository's hidden tests pass")
+    p = ("You maintain an agent skill used to fix GitHub issues: " + setting + ". Below is the current SKILL.md and %d tasks where the agent FAILED (its patch did not "
          "apply or the tests failed). Find the general, recurring failure patterns (not task-specific fixes) and "
          "write an improved SKILL.md. Keep the same frontmatter name; bump version to 1.1.0; keep it under 60 "
          "lines; give concrete, checkable habits. Output ONLY the SKILL.md file content.\n\nCURRENT SKILL.md:\n%s"
@@ -161,10 +229,10 @@ def run(args):
 
     raw = bench.load_prereg(args.prereg)
     m = raw["executor"]["model"]
-    arms = {"untouched_base": bench_cl.model(m, os.path.join(WORK, "base/skills"), SKILL_REL),
-            "fixed_policy": bench_cl.model(m, os.path.join(WORK, "fixed/skills"), SKILL_REL),
-            "deterministic_random": bench_cl.model(m, RANDOM_ROOT, RANDOM_REL),
-            "candidate": bench_cl.model(m, os.path.join(WORK, args.candidate, "skills"), SKILL_REL)}
+    arms = {"untouched_base": arm_model(m, os.path.join(WORK, "base/skills"), SKILL_REL),
+            "fixed_policy": arm_model(m, os.path.join(WORK, "fixed/skills"), SKILL_REL),
+            "deterministic_random": arm_model(m, RANDOM_ROOT, RANDOM_REL),
+            "candidate": arm_model(m, os.path.join(WORK, args.candidate, "skills"), SKILL_REL)}
     eid = raw["experiment_id"]
 
     def batch_grade(items):
@@ -188,15 +256,19 @@ def exchange(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("phase", choices=["pull", "fit", "propose", "run", "exchange"])
-    ap.add_argument("--prereg", required=True)
+    ap.add_argument("phase", choices=["prep-agentic", "pull", "fit", "propose", "run", "exchange"])
+    ap.add_argument("--prereg", default="")
     ap.add_argument("--ledger")
     ap.add_argument("--candidate", default="swe-001")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--proposer-model", default="claude-sonnet-5-5")
     args = ap.parse_args()
+    global DATA, AGENTIC
+    if args.phase != "prep-agentic":
+        AGENTIC = "agentic" in json.load(open(args.prereg))["benchmark"].lower()
+        DATA = AGENT_DATA if AGENTIC else DATA_ORACLE
     try:
-        {"pull": pull, "fit": fit, "propose": propose, "run": run, "exchange": exchange}[args.phase](args)
+        {"prep-agentic": prep_agentic, "pull": pull, "fit": fit, "propose": propose, "run": run, "exchange": exchange}[args.phase](args)
     finally:
         for e in bench_cl._opened:
             e.close()

@@ -1,0 +1,93 @@
+{
+ "benchmark": "SWE-bench Lite, agentic (Hermes terminal+file tools in the task image, no network), SWE-bench/SWE-bench_Lite harness",
+ "by_category": {
+  "django/django": {
+   "candidate": 25,
+   "deterministic_random": 25,
+   "fixed_policy": 25,
+   "untouched_base": 24
+  },
+  "mwaskom/seaborn": {
+   "candidate": 1,
+   "deterministic_random": 1,
+   "fixed_policy": 1,
+   "untouched_base": 1
+  },
+  "pallets/flask": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "psf/requests": {
+   "candidate": 3,
+   "deterministic_random": 3,
+   "fixed_policy": 3,
+   "untouched_base": 3
+  },
+  "pydata/xarray": {
+   "candidate": 0,
+   "deterministic_random": 0,
+   "fixed_policy": 0,
+   "untouched_base": 0
+  },
+  "pylint-dev/pylint": {
+   "candidate": 2,
+   "deterministic_random": 2,
+   "fixed_policy": 2,
+   "untouched_base": 2
+  },
+  "pytest-dev/pytest": {
+   "candidate": 3,
+   "deterministic_random": 2,
+   "fixed_policy": 4,
+   "untouched_base": 3
+  },
+  "scikit-learn/scikit-learn": {
+   "candidate": 3,
+   "deterministic_random": 4,
+   "fixed_policy": 3,
+   "untouched_base": 3
+  },
+  "sphinx-doc/sphinx": {
+   "candidate": 1,
+   "deterministic_random": 2,
+   "fixed_policy": 1,
+   "untouched_base": 1
+  },
+  "sympy/sympy": {
+   "candidate": 5,
+   "deterministic_random": 5,
+   "fixed_policy": 5,
+   "untouched_base": 5
+  }
+ },
+ "clusters": 60,
+ "counts": {
+  "candidate": 43,
+  "deterministic_random": 44,
+  "fixed_policy": 44,
+  "untouched_base": 42
+ },
+ "design": "candidate",
+ "excluded": 0,
+ "experiment_id": "exp-011-swe-bench-agentic-swe-003",
+ "instrument": {
+  "agree": 239,
+  "total": 240
+ },
+ "lower_micro": 0,
+ "mean_micro": 16667,
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "prereg_digest": "7c9c80738035e6c402fb5426a50360f45464a330c9c41afa3498997bddfdf324",
+ "reason": "decision_rule",
+ "units": 60,
+ "upper_micro": 50000,
+ "verdict": "Fail",
+ "vs_fixed_lower_micro": -50000,
+ "vs_fixed_mean_micro": -16667,
+ "vs_fixed_upper_micro": 0,
+ "vs_random_lower_micro": -83333,
+ "vs_random_mean_micro": -16667,
+ "vs_random_upper_micro": 50000
+}

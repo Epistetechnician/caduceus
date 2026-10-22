@@ -1,7 +1,7 @@
 """Hermes-side runner for `executor.HermesExecutor`. Not imported by Caduceus.
 
 Executed as a subprocess by the Hermes venv interpreter. Reads one JSON request
-on stdin, runs one Hermes turn with no tools, prints one JSON line on stdout:
+on stdin, runs one Hermes turn (no tools unless the request names toolsets), prints one JSON line on stdout:
 
   request:  {"hermes_src", "model", "provider", "base_url", "api_key_env",
              "use_hermes_login", "skill" (name or null), "prompt"}
@@ -75,12 +75,37 @@ def main():
                 skip_context_files=True,
                 skip_memory=True,
                 skip_background_review=True,
-                enabled_toolsets=[],
+                enabled_toolsets=list(req.get("toolsets") or []),
+                **({"max_iterations": int(req["max_iterations"])} if req.get("max_iterations") else {}),
                 ephemeral_system_prompt=system,
             )
-            result = agent.run_conversation(req["prompt"])
+            task_id = req.get("task_id") or None
+            try:
+                result = agent.run_conversation(req["prompt"], task_id=task_id)
+                collected = None
+                if req.get("collect_command"):
+                    # Read the agent's work out of its sandbox (e.g. `git diff`), then remove the sandbox.
+                    from tools.terminal_tool import terminal_tool
+
+                    out = json.loads(terminal_tool(command=req["collect_command"], task_id=task_id, timeout=120))
+                    collected = out.get("output") if out.get("exit_code") == 0 else None
+            finally:
+                if req.get("toolsets"):
+                    # One runner process serves one call, so every sandbox it opened is this call's.
+                    from tools.terminal_tool import _active_environments, cleanup_vm
+
+                    for tid in list(_active_environments):
+                        with contextlib.suppress(Exception):
+                            cleanup_vm(tid, force_remove=True)
         if not isinstance(result, dict):
             return _fail("no_result")
+        if req.get("collect_command"):
+            # Agentic runs: a turn that ends on its iteration budget still leaves work to grade;
+            # provider failures are still NotRun.
+            if result.get("failed") or result.get("error") or collected is None:
+                return _fail("turn_failed")
+            print(json.dumps({"ok": True, "final_response": collected}), file=sys.__stdout__)
+            return 0
         # Hermes reports provider failures (e.g. HTTP 429) as final_response
         # text; they must surface as NotRun, never as a model answer.
         if result.get("failed") or result.get("interrupted") or result.get("completed") is False or result.get("error"):

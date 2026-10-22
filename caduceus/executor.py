@@ -117,7 +117,10 @@ class HermesExecutor:
     def manifest_digest(self) -> str:
         return domain_digest("caduceus.executor.manifest.v1", self.manifest())
 
-    def __call__(self, prompt: str) -> str:
+    def __call__(self, prompt: str, env_extra: Optional[Dict[str, str]] = None,
+                 request_extra: Optional[Dict[str, Any]] = None) -> str:
+        """`env_extra` / `request_extra` configure a tool sandbox for agentic runs (e.g. Hermes' Docker
+        terminal backend); only TERMINAL_* variables and the runner's known keys are accepted."""
         request = {
             "hermes_src": self.config.hermes_src,
             "model": self.config.model,
@@ -128,10 +131,18 @@ class HermesExecutor:
             "skill": self.skill_name,
             "prompt": prompt,
         }
+        extra = request_extra or {}
+        if set(extra) - {"toolsets", "max_iterations", "task_id", "collect_command"}:
+            raise ExecutorError("unknown request_extra keys")
+        request.update(extra)
         env = {k: v for k, v in os.environ.items()
                if not k.startswith("HERMES_") or k == self.config.api_key_env}
         env["HERMES_HOME"] = self.home
         env["PYTHONDONTWRITEBYTECODE"] = "1"
+        for k, v in (env_extra or {}).items():
+            if not k.startswith("TERMINAL_"):
+                raise ExecutorError("env_extra accepts TERMINAL_* only")
+            env[k] = v
         try:
             proc = subprocess.run(
                 self._runner_cmd,

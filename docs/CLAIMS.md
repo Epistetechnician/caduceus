@@ -102,7 +102,17 @@ What this repository does establish (by tests in `tests/`):
   base 44/80, fixed 45, random 43, candidate 45: no visible effect.
   The two harness runs agreed on 272/274 graded patches. Driver fixed for
   any next experiment.
-* Across four clean CL-bench attempts, no skill text (learned, hand-written
+* exp-010 (agentic SWE-bench: Hermes terminal + file tools inside each
+  task's image, no network) was closed **NotRun**: Hermes' persistent Docker
+  mode shares one container per profile, so concurrent agents edited each
+  other's repositories. Fixed with one non-persistent sandbox per call,
+  verified on two concurrent tasks.
+* exp-011, agentic, clean (0 call errors, 0 excluded; base resolved 13/20 on
+  fit): Haiku 5.5 resolved base 42/60, fixed policy 44, random skill 44,
+  candidate 43; +0.017 [0, +0.05] vs base, -0.017 vs fixed and random.
+  **Fail**, closed. The two harness runs agreed on 239/240. The Exchange
+  rejected it on `controls` and `indispensability`.
+* Across four clean CL-bench attempts and the clean SWE-bench one (exp-011), no skill text (learned, hand-written
   or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
   this benchmark.
 * Phase 4 auto-apply therefore stays Blocked: 0 passing candidate experiments.
