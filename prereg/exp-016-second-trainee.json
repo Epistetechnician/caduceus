@@ -1,0 +1,69 @@
+{
+ "alpha_micro": 50000,
+ "arms": {
+  "candidate": "same base + adapter trained on verified fit-split repairs only",
+  "deterministic_random": "same base + adapter trained on an equal number of unverified fit-split attempts (pool-matched, includes failing ones)",
+  "fixed_policy": "same base, k=4 verified fit repairs retrieved by module similarity as few-shot, no training",
+  "untouched_base": "qwen2.5-7b 4-bit, zero-shot"
+ },
+ "bootstrap_resamples": 10000,
+ "decision_rule": "Pass iff candidate minus each of the three other arms has paired-bootstrap 95% lower bound >= min_effect_micro/2 and mean >= min_effect_micro, in at least 2 of 3 seeds, retention holds. Fail if any contrast mean < 0 or retention breaks. Otherwise Inconclusive (never positive). n_assess is small, so Inconclusive is the expected outcome unless the effect is large; per_module may be raised only in a NEW experiment id.",
+ "domain": "this repository, caduceus/*.py injected-bug repair; oracle = covering unittest modules green, only the target file changed",
+ "experiment_id": "exp-016-second-trainee",
+ "falsifier": "if the pool-matched unverified adapter matches the verified one (difference lower bound <= 0), verification added nothing and the recursion thesis is not supported in this domain",
+ "hypothesis": "Trainee generality: the exp-015 verification effect (verified adapter above pool-matched unverified, untouched base and fixed policy) recurs when the trainee is Qwen2.5-1.5B-Instruct 4-bit instead of the 7B.",
+ "known_limits": [
+  "syntactic mutations only",
+  "same-author, no independent review (waived)",
+  "single domain and single base model; replication in a second model is a separate experiment",
+  "proposer is a stronger model than the trainee: this tests verified-data distillation, not self-improvement",
+  "single domain, 7B trainee, one proposer",
+  "assess split reused from exp-015 (evaluated there with another trainee)",
+  "same model family, smaller; a different family is a separate experiment"
+ ],
+ "leakage_controls": [
+  "assess tasks never rendered to any proposer or trainer",
+  "assess modules disjoint from fit/tune",
+  "mutated assess sources not written to disk; regenerated at eval time from (module, op, ordinal)",
+  "tests directory unwritable by repair (verifier refuses other files)"
+ ],
+ "matched": [
+  "data volume (examples and tokens)",
+  "optimizer steps",
+  "LoRA rank and lr",
+  "decoding settings",
+  "wall-clock budget per arm"
+ ],
+ "metric": "repair_pass_rate_micro (tests green / attempts)",
+ "min_effect_micro": 100000,
+ "n_by_split": {
+  "assess": 189,
+  "fit": 211,
+  "tune": 71
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "oracle_audit": "tasks/bugtasks-v1.audited.json (mutant kill rate by operator); survivors are what the oracle cannot see and bound the claim",
+ "per_module": 24,
+ "proposer": "The exp-015 fit attempts (Qwen2.5-Coder-32B, K=12, sha256 recorded in ledgers/exp-015-bugrepair.jsonl) are reused unchanged; no new proposer run. Trainee and evaluated model: Qwen2.5-1.5B-Instruct 4-bit.",
+ "recipe": "LoRA rank 8, 16 layers, lr 1e-5, scale 4 (series 1 used lr 1e-4, scale 20 and every adapter, including the pool control, scored below the untouched base). Steps = 3 x examples, batch 1. Training aborts as NotRun if loss exceeds max(2.0, 5 x first-step loss). Recipe fixed before any model run and not tuned on assess.",
+ "recursion_next": "None.",
+ "retention": "tune-split pass rate (evaluated for untouched_base and candidate only) must not drop for the candidate versus untouched_base by more than 0.02",
+ "round_policy": "New trainee, same manifest v7, same verified data, same recipe, rule and thresholds; no tuning. The assess split was evaluated before only with the 7B trainee and was never shown to any trainer. Cite series 1, exp-011/012/015 Pass, exp-013 Inconclusive, exp-014 Fail. No parent arm (not comparable across trainees).",
+ "schema": "caduceus.prereg.bugrepair.v1",
+ "seeds": [
+  20341017,
+  20341018,
+  20341019
+ ],
+ "split_commitments": {
+  "assess": "c2ce93ae5ac374c9bfaa0316050626c915282d002e1fa54a592f6eddee644977",
+  "fit": "696a8ed7a074ca2d2133aa2e32b5fe569bee98f0e233c31722b895d3a98d9a7e",
+  "tune": "8c2f318ff0f5bd2bfcf380f0c29746d79d54ffdca05b62523b0820fc180ef781"
+ },
+ "split_seed": 20331017,
+ "status": "Locked by ledger entry in ledgers/exp-016-bugrepair.jsonl before any model run.",
+ "task_manifest": "tasks/bugtasks-v7.manifest.json",
+ "task_manifest_digest": "3a443034cb96f2d15b5d586b31915a6d4e4ca9430e4f034d5cada1a21ec68ef6",
+ "training_floor": ">=100 distinct verified fit repairs (<=3 per task); otherwise NotRun.",
+ "unit": "assess task, one attempt per arm per seed"
+}
