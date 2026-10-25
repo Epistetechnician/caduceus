@@ -21,16 +21,21 @@ from concurrent.futures import ThreadPoolExecutor
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
 from caduceus import bugrepair as br, bugtasks  # noqa: E402
+try:
+    from hsi.learning import llm as _hsi_llm
+    _hsi_llm.MODELS["llama3.1-8b"] = ("mlx-community/Meta-Llama-3.1-8B-Instruct-4bit", "241a666dad6cb93c8ff213d39a7f34a36bf26db4", "llama3.1")
+except ImportError:
+    pass
 from caduceus.digest import domain_digest  # noqa: E402
 from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
-GENTLE = ("011", "012", "013", "014", "015", "016")
-TRAINEE = "qwen2.5-1.5b" if N == "016" else "qwen2.5-7b"
+GENTLE = ("011", "012", "013", "014", "015", "016", "017")
+TRAINEE = {"016": "qwen2.5-1.5b", "017": "llama3.1-8b"}.get(N, "qwen2.5-7b")
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = (8 if N in ("013", "014") else 12), 0.8, 400
 RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") in GENTLE else (8, 16, 1e-4, 20.0)
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
@@ -269,7 +274,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100, "017": 100}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
