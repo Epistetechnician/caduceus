@@ -26,10 +26,10 @@ from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
-GENTLE = ("011", "012", "013", "014")
+GENTLE = ("011", "012", "013", "014", "015")
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = (8 if N in ("013", "014") else 12), 0.8, 400
 RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") in GENTLE else (8, 16, 1e-4, 20.0)
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
@@ -268,7 +268,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -316,7 +316,7 @@ def stage_eval():
     outs = jload(outp) if os.path.exists(outp) else []
     done = {(o["arm"], o["seed"], o["split"], o["task_id"]) for o in outs}
     plan = [("untouched_base", 0), ("fixed_policy", 0)] + [(a, s) for s in pr["seeds"] for a in ("candidate", "deterministic_random")]
-    if N == "014":
+    if N in ("014", "015"):
         plan.append(("parent", 0))
     for arm, seed in plan:
         if arm == "parent":
@@ -362,7 +362,7 @@ def stage_report():
         if sum(tc.values()) * br.MICRO // max(1, len(tc)) < sum(tb.values()) * br.MICRO // max(1, len(tb)) - 20000:
             retention = False
     extra = {}
-    if N == "014":  # parent arm is reported, not gating
+    if N in ("014", "015"):  # parent arm is reported, not gating
         pm = rate_map("parent", 0, "assess")
         extra["parent_rate_micro"] = sum(pm.values()) * br.MICRO // max(1, len(pm))
         for seed in pr["seeds"]:
