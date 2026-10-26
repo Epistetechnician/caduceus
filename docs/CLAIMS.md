@@ -116,6 +116,17 @@ What this repository does establish (by tests in `tests/`):
   candidate 43; +0.017 [0, +0.05] vs base, -0.017 vs fixed and random.
   **Fail**, closed. The two harness runs agreed on 239/240. The Exchange
   rejected it on `controls` and `indispensability`.
+* exp-012-swe-agentic-positive-control (SWE-bench series; distinct from the
+  bug-repair exp-012 above), method sensitivity check, never counts toward
+  auto-apply. 57/60 tasks graded (3 excluded), harness runs agreed 226/228.
+  Resolved: base 44, fixed policy 42, hand-written repo-aware positive
+  control 42, **sabotage skill ("never change code") 41**. Positive control
+  **Fail** (-0.035 [-0.105, +0.035] vs base). Sensitivity check **Fail**:
+  base minus sabotage +0.053 [0, +0.123], lower bound not above 0. Finding:
+  in this executor the preloaded skill barely steers the agent; even an
+  instruction to never edit code left resolves almost unchanged. The skill
+  nulls in exp-005..011 therefore say little about skill quality; the next
+  step is to fix how the skill reaches the agent, then re-run the controls.
 * Across four clean CL-bench attempts and the clean SWE-bench one (exp-011), no skill text (learned, hand-written
   or unrelated) moved Haiku's solve rate: the skill is not the bottleneck on
   this benchmark.
