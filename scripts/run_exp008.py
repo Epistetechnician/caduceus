@@ -24,6 +24,7 @@ from caduceus import bugrepair as br, bugtasks  # noqa: E402
 try:
     from hsi.learning import llm as _hsi_llm
     _hsi_llm.MODELS["llama3.1-8b"] = ("mlx-community/Meta-Llama-3.1-8B-Instruct-4bit", "241a666dad6cb93c8ff213d39a7f34a36bf26db4", "llama3.1")
+    _hsi_llm.MODELS["qwen2.5-coder-7b"] = ("mlx-community/Qwen2.5-Coder-7B-Instruct-4bit", "019cc73c45c770444708a6dd8690c66243cc5c80", "apache-2.0")
 except ImportError:
     pass
 from caduceus.digest import domain_digest  # noqa: E402
