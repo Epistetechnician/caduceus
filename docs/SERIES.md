@@ -76,6 +76,16 @@ contrast mean is negative or retention breaks. Otherwise Inconclusive.
   with regression tests from repositories outside the proposer's likely training data.
 - Other repositories. One repo, stdlib Python only.
 
+## Real-bug attempt (exp-020: NotRun)
+
+Mined 384 verified fix commits from 24 outside Python libraries (`scripts/mine_realbugs.py`:
+tests green on the fix tree, red with only the source file reverted, run in network-less
+Docker). Split by repository (fit 191 / tune 36 / assess 157). The 32B proposer, shown only
+the buggy file and the test file names, solved 6 of 191 fit tasks (20 of 2,292 attempts), so
+the training floor (60) was not met: **NotRun**, no training, no assess run. Real fixes need
+the intended behaviour stated, which the injected-mutant prompts never needed. A new
+candidate (exp-021) adds a specification to the prompt; exp-020 is closed.
+
 ## Process notes
 
 - Lock before any model run: every experiment appends a `prediction_lock` to its own
