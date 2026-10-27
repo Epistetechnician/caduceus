@@ -34,6 +34,8 @@ from .digest import domain_digest
 PKG = "caduceus"
 SPLITS = ("fit", "tune", "assess")
 OPS = ("cmp_flip", "arith_swap", "bool_not", "const_off_by_one", "and_or_swap")
+OPS2 = ("stmt_delete", "return_none", "arg_swap", "if_negate")  # "structural" family; OPS (syntactic) is unchanged
+FAMILIES = {"syntactic": OPS, "structural": OPS2}
 _CMP = {ast.Lt: ast.GtE, ast.GtE: ast.Lt, ast.Gt: ast.LtE, ast.LtE: ast.Gt, ast.Eq: ast.NotEq, ast.NotEq: ast.Eq}
 _ARITH = {ast.Add: ast.Sub, ast.Sub: ast.Add, ast.Mult: ast.FloorDiv}
 
@@ -78,8 +80,64 @@ def _apply(tree: ast.AST, op: str, node: ast.AST) -> None:
         node.op = ast.Or() if isinstance(node.op, ast.And) else ast.And()  # type: ignore[attr-defined]
 
 
+def _bodies(tree: ast.AST) -> List[List[ast.stmt]]:
+    out: List[List[ast.stmt]] = []
+    for node in ast.walk(tree):
+        for field in ("body", "orelse", "finalbody"):
+            v = getattr(node, field, None)
+            if isinstance(v, list) and v and isinstance(v[0], ast.stmt):
+                out.append(v)
+    return out
+
+
+def _sites2(tree: ast.AST) -> List[Tuple[str, int, Any]]:
+    """Structural sites (op, ordinal, handle) in deterministic walk order."""
+    out: List[Tuple[str, int, Any]] = []
+    c: Dict[str, int] = {}
+
+    def add(op: str, h: Any) -> None:
+        out.append((op, c.get(op, 0), h))
+        c[op] = c.get(op, 0) + 1
+
+    for body in _bodies(tree):
+        for i, st in enumerate(body):
+            if len(body) >= 2 and isinstance(st, (ast.Assign, ast.AugAssign)) or (
+                    len(body) >= 2 and isinstance(st, ast.Expr) and isinstance(st.value, ast.Call)):
+                add("stmt_delete", (body, i))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Return) and node.value is not None and not (
+                isinstance(node.value, ast.Constant) and node.value.value is None):
+            add("return_none", node)
+        elif isinstance(node, ast.Call) and len(node.args) >= 2 and not any(isinstance(a, ast.Starred) for a in node.args[:2]):
+            add("arg_swap", node)
+        elif isinstance(node, ast.If):
+            add("if_negate", node)
+    return out
+
+
+def _mutate2(source: str, op: str, ordinal: int) -> Optional[str]:
+    tree = ast.parse(source)
+    hit = [h for (o, i, h) in _sites2(tree) if o == op and i == ordinal]
+    if not hit:
+        return None
+    h = hit[0]
+    if op == "stmt_delete":
+        body, i = h
+        del body[i]
+    elif op == "return_none":
+        h.value = ast.Constant(value=None)
+    elif op == "arg_swap":
+        h.args[0], h.args[1] = h.args[1], h.args[0]
+    elif op == "if_negate":
+        h.test = ast.UnaryOp(op=ast.Not(), operand=h.test)
+    ast.fix_missing_locations(tree)
+    return ast.unparse(tree) + "\n"
+
+
 def mutate(source: str, op: str, ordinal: int) -> Optional[str]:
     """Return the mutated source, or None if the site does not exist."""
+    if op in OPS2:
+        return _mutate2(source, op, ordinal)
     if op not in OPS:
         raise TaskError("unknown op %r" % op)
     tree = ast.parse(source)
@@ -180,14 +238,16 @@ def make_task(repo: str, module: str, op: str, ordinal: int, split_seed: int) ->
     return task
 
 
-def generate(repo: str, modules: Sequence[str], split_seed: int, per_module: int = 3) -> List[Dict[str, Any]]:
+def generate(repo: str, modules: Sequence[str], split_seed: int, per_module: int = 3, family: str = "syntactic") -> List[Dict[str, Any]]:
     """Deterministic task list: for each module, the first `per_module` killed mutants in (op, ordinal) order."""
+    ops = FAMILIES[family]
     tasks: List[Dict[str, Any]] = []
     for module in sorted(modules):
         with open(os.path.join(repo, PKG, module + ".py")) as fh:
             tree = ast.parse(fh.read())
         got = 0
-        for op, ordinal, _ in sorted(_sites(tree), key=lambda s: (OPS.index(s[0]), s[1])):
+        sites = _sites2(tree) if family == "structural" else _sites(tree)
+        for op, ordinal, _ in sorted(sites, key=lambda s: (ops.index(s[0]), s[1])):
             if got >= per_module:
                 break
             t = make_task(repo, module, op, ordinal, split_seed)

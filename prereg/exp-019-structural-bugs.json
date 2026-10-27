@@ -1,0 +1,71 @@
+{
+ "alpha_micro": 50000,
+ "arms": {
+  "candidate": "same base + adapter trained on verified fit-split repairs only",
+  "deterministic_random": "same base + adapter trained on an equal number of unverified fit-split attempts (pool-matched, includes failing ones)",
+  "fixed_policy": "same base, k=4 verified fit repairs retrieved by module similarity as few-shot, no training",
+  "untouched_base": "qwen2.5-7b 4-bit, zero-shot"
+ },
+ "bootstrap_resamples": 10000,
+ "decision_rule": "Pass iff candidate minus each of the three other arms has paired-bootstrap 95% lower bound >= min_effect_micro/2 and mean >= min_effect_micro, in at least 2 of 3 seeds, retention holds. Fail if any contrast mean < 0 or retention breaks. Otherwise Inconclusive (never positive). n_assess is small, so Inconclusive is the expected outcome unless the effect is large; per_module may be raised only in a NEW experiment id.",
+ "domain": "this repository, caduceus/*.py injected structural-bug repair (family \"structural\": stmt_delete, return_none, arg_swap, if_negate); oracle = covering unittest modules green, only the target file changed",
+ "experiment_id": "exp-019-structural-bugs",
+ "falsifier": "if the pool-matched unverified adapter matches the verified one (difference lower bound <= 0), verification added nothing and the recursion thesis is not supported in this domain",
+ "hypothesis": "Bug-class generality: the verification effect (verified adapter above pool-matched unverified, untouched base and fixed policy) recurs on structural bugs (statement deletion, return value dropped, call-argument swap, negated condition), a different mutant family from the syntactic one used in exp-011..018.",
+ "known_limits": [
+  "syntactic mutations only",
+  "same-author, no independent review (waived)",
+  "single domain and single base model; replication in a second model is a separate experiment",
+  "proposer is a stronger model than the trainee: this tests verified-data distillation, not self-improvement",
+  "single domain, 7B trainee, one proposer",
+  "structural mutants are still synthetic injections, not bugs mined from history",
+  "single repo, single trainee",
+  "the oracle audit (tasks/bugtasks-v1.audited.json) covers the syntactic family only"
+ ],
+ "leakage_controls": [
+  "assess tasks never rendered to any proposer or trainer",
+  "assess modules disjoint from fit/tune",
+  "mutated assess sources not written to disk; regenerated at eval time from (module, op, ordinal)",
+  "tests directory unwritable by repair (verifier refuses other files)"
+ ],
+ "matched": [
+  "data volume (examples and tokens)",
+  "optimizer steps",
+  "LoRA rank and lr",
+  "decoding settings",
+  "wall-clock budget per arm"
+ ],
+ "metric": "repair_pass_rate_micro (tests green / attempts)",
+ "min_effect_micro": 100000,
+ "mutant_family": "structural",
+ "n_by_split": {
+  "assess": 96,
+  "fit": 281,
+  "tune": 79
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "oracle_audit": "tasks/bugtasks-v1.audited.json (mutant kill rate by operator); survivors are what the oracle cannot see and bound the claim",
+ "per_module": 16,
+ "proposer": "fit-split attempts from Qwen2.5-Coder-32B-Instruct (bf16, vLLM, temp 0.8, K=12) on a gman H100; trainee and evaluated model: Qwen2.5-Coder-7B-Instruct 4-bit (the trainee with the most headroom in exp-018).",
+ "recipe": "LoRA rank 8, 16 layers, lr 1e-5, scale 4 (series 1 used lr 1e-4, scale 20 and every adapter, including the pool control, scored below the untouched base). Steps = 3 x examples, batch 1. Training aborts as NotRun if loss exceeds max(2.0, 5 x first-step loss). Recipe fixed before any model run and not tuned on assess.",
+ "recursion_next": "None.",
+ "retention": "tune-split pass rate (evaluated for untouched_base and candidate only) must not drop for the candidate versus untouched_base by more than 0.02",
+ "round_policy": "New bug family, new manifest v8 (split seed 20371017, per_module 16), fresh proposer run, same recipe, rule and thresholds; no tuning. Training data capped at the first 150 distinct verified repairs in digest order (seed-independent), and the pool control is matched to that count. Cite series 1, exp-011/012/015/018 Pass, exp-013 Inconclusive, exp-014 Fail, exp-016/017 Inconclusive. No parent arm.",
+ "schema": "caduceus.prereg.bugrepair.v1",
+ "seeds": [
+  20371017,
+  20371018,
+  20371019
+ ],
+ "split_commitments": {
+  "assess": "ebc6a637d2a3b8e580c2b291db37bd10559cbef2aa5284ec50f55ce69d068153",
+  "fit": "9e58f9cdaf3a75ed3b816e4d6f4243ff98019f3b3c0ca067c066204d6266c425",
+  "tune": "fd36bb4811da67c59ede9b802009946687ab26985035bcad22794f0cd96bc94e"
+ },
+ "split_seed": 20371017,
+ "status": "Locked by ledger entry in ledgers/exp-019-bugrepair.jsonl before any model run.",
+ "task_manifest": "tasks/bugtasks-v8.manifest.json",
+ "task_manifest_digest": "ea861d757a1b9569539684fed882d303b41d1c38861ba6173ede4354e4280153",
+ "training_floor": ">=100 distinct verified fit repairs (<=3 per task); otherwise NotRun.",
+ "unit": "assess task, one attempt per arm per seed"
+}

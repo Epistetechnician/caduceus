@@ -32,11 +32,12 @@ from caduceus.ledger import Ledger  # noqa: E402
 
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee", "018": "exp-018-coder-trainee"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee", "018": "exp-018-coder-trainee", "019": "exp-019-structural-bugs"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7, "019": 8}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
-GENTLE = ("011", "012", "013", "014", "015", "016", "017", "018")
-TRAINEE = {"016": "qwen2.5-1.5b", "017": "llama3.1-8b", "018": "qwen2.5-coder-7b"}.get(N, "qwen2.5-7b")
+GENTLE = ("011", "012", "013", "014", "015", "016", "017", "018", "019")
+MAX_EXAMPLES = 150 if N == "019" else None
+TRAINEE = {"016": "qwen2.5-1.5b", "017": "llama3.1-8b", "018": "qwen2.5-coder-7b", "019": "qwen2.5-coder-7b"}.get(N, "qwen2.5-7b")
 K_ATTEMPTS, GEN_TEMP, MAX_NEW = (8 if N in ("013", "014") else 12), 0.8, 400
 RANK, LAYERS, LR, SCALE = (8, 16, 1e-5, 4.0) if os.environ.get("EXP") in GENTLE else (8, 16, 1e-4, 20.0)
 MAX_TRAIN_PROMPT, FEWSHOT_K = 3500, 4
@@ -77,7 +78,7 @@ def tasks_for(split, cache=True):
         return jload(path)
     m = jload(MANIFEST)
     want = {t["task_id"] for t in m["tasks"] if t["split"] == split}
-    ts = bugtasks.generate(p("repo"), modules_of(split), m["split_seed"], m["per_module"])
+    ts = bugtasks.generate(p("repo"), modules_of(split), m["split_seed"], m["per_module"], m.get("family", "syntactic"))
     ts = [t for t in ts if t["split"] == split]
     if {t["task_id"] for t in ts} != want:
         sys.exit("task regeneration does not match manifest for %s (repo changed?)" % split)
@@ -223,6 +224,8 @@ def training_sets(seed):
             per_task[r["task_id"]] = per_task.get(r["task_id"], 0) + 1
             e = br.parse_edit(r["text"])
             ver.append({"task_id": r["task_id"], "completion": br.format_edit(*e)})
+    if MAX_EXAMPLES and len(ver) > MAX_EXAMPLES:  # deterministic, seed-independent cap (digest order)
+        ver = sorted(ver, key=lambda e: domain_digest("caduceus.exp019.cap.v1", [e["task_id"], e["completion"]]))[:MAX_EXAMPLES]
     rng = random.Random("pool/%d" % seed)
     pool_src = [r for r in recs if r["text"].strip()]
     pool = [{"task_id": r["task_id"], "completion": r["text"].strip()} for r in rng.sample(pool_src, min(len(ver), len(pool_src)))]
@@ -275,7 +278,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100, "017": 100, "018": 100}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100, "017": 100, "018": 100, "019": 100}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -306,7 +309,7 @@ def stage_eval():
     pr = prereg()
     meta = jload(p("adapters.json"))
     m = jload(MANIFEST)
-    assess = bugtasks.generate(p("repo"), modules_of("assess"), m["split_seed"], m["per_module"])
+    assess = bugtasks.generate(p("repo"), modules_of("assess"), m["split_seed"], m["per_module"], m.get("family", "syntactic"))
     assess = [t for t in assess if t["split"] == "assess"]
     if {t["task_id"] for t in assess} != {t["task_id"] for t in m["tasks"] if t["split"] == "assess"}:
         sys.exit("assess regeneration does not match manifest")

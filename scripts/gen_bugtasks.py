@@ -21,13 +21,14 @@ def main():
     ap.add_argument("--split-seed", type=int, required=True)
     ap.add_argument("--per-module", type=int, default=3)
     ap.add_argument("--out", default=os.path.join(REPO, "tasks", "bugtasks-v1.manifest.json"))
+    ap.add_argument("--family", default="syntactic", choices=sorted(b.FAMILIES))
     ap.add_argument("--audit", action="store_true", help="also run the full mutant audit (slow)")
     a = ap.parse_args()
     skip = {"__init__", "__main__", "cli", "demo", "hermes_runner", "bench", "executor", "drill"}
     mods = sorted(f[:-3] for f in os.listdir(os.path.join(REPO, b.PKG)) if f.endswith(".py") and f[:-3] not in skip)
-    tasks = b.generate(REPO, mods, a.split_seed, a.per_module)
+    tasks = b.generate(REPO, mods, a.split_seed, a.per_module, a.family)
     meta = [{k: v for k, v in t.items() if k != "mutated_source"} for t in tasks]
-    m = {"split_seed": a.split_seed, "per_module": a.per_module, "n": len(meta),
+    m = {"family": a.family, "split_seed": a.split_seed, "per_module": a.per_module, "n": len(meta),
          "by_split": {s: sum(1 for t in meta if t["split"] == s) for s in b.SPLITS},
          "commitments": {s: b.split_commitment(tasks, s) for s in b.SPLITS},
          "tasks": [{k: t[k] for k in ("task_id", "module", "split", "original_digest", "mutated_digest")} for t in meta]}

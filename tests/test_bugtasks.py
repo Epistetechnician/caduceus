@@ -82,5 +82,24 @@ class Prereg(unittest.TestCase):
         self.assertEqual(set(pr["arms"]), {"untouched_base", "fixed_policy", "candidate", "deterministic_random"})
 
 
+class StructuralFamily(unittest.TestCase):
+    SRC = "def f(a, b):\n    x = a\n    if x > b:\n        return x\n    g(a, b)\n    return b\n"
+
+    def test_each_op_changes_source_deterministically(self):
+        import ast
+        canon = ast.unparse(ast.parse(self.SRC)) + "\n"
+        for op in b.OPS2:
+            m = b.mutate(self.SRC, op, 0)
+            self.assertIsNotNone(m, op)
+            self.assertNotEqual(m, canon, op)
+            self.assertEqual(m, b.mutate(self.SRC, op, 0))
+        self.assertIsNone(b.mutate(self.SRC, "arg_swap", 5))
+
+    def test_families_are_disjoint_and_syntactic_unchanged(self):
+        self.assertFalse(set(b.OPS) & set(b.OPS2))
+        self.assertEqual(b.OPS, ("cmp_flip", "arith_swap", "bool_not", "const_off_by_one", "and_or_swap"))
+
+
+
 if __name__ == "__main__":
     unittest.main()
