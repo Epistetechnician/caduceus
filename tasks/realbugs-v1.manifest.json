@@ -1,0 +1,5066 @@
+{
+ "by_split": {
+  "assess": 157,
+  "fit": 191,
+  "tune": 36
+ },
+ "commitments": {
+  "assess": "13c059a8f1b7634891e22ab2479df14f13ff2d53e047633e8cff2f244d5ee537",
+  "fit": "47490e5df55172492f10f0bc1598ea982d2953db69becc5b975ff41c067f53a2",
+  "tune": "95f79cd7ae135ac8fdbd6f30ee2eb1747372a6539c8d9daa5e5f7990fe5aa8da"
+ },
+ "family": "real",
+ "manifest_digest": "a00b3ce23a80a125f4dec13e77c2b0d112d0684e7b95a8bfa01f050284c2d590",
+ "n": 384,
+ "split_seed": 20381074,
+ "tasks": [
+  {
+   "commit": "08b15877c77eab4e2c0785e71f0442653b39bfe9",
+   "module": "attrs",
+   "mutated_digest": "b47641375c8a326a72911446a00078d1050105a113eef0ded1db626fab02c74a",
+   "original_digest": "d86359926157ef6950006b6ee6eeab66c8cc9aa493ed5df56dd87aed1ae48e83",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "f090d140c07dda34",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "0abd302cb20241cdbe508b1c9e4c43b874280348",
+   "module": "attrs",
+   "mutated_digest": "cbd544363950b7ba3e421cb35821d70de160257702e2a70364546b20d3664750",
+   "original_digest": "c6918039e34a22cd99acf1dae1404852061f0286eeb5b38a0a78f8fbb2d609f8",
+   "path": "attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "b40c24c9d71fcc45",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "15d568a2cc24920e769287a0f31bc2ccd1e8f590",
+   "module": "attrs",
+   "mutated_digest": "6216dcacd9b6896cea167e93f7f245010a3c52c2d1a1557146f276b3f4813d2d",
+   "original_digest": "f7f265840278341fd60214c6911260d155b6a4783adf1d024e05d083712dd800",
+   "path": "attr/_funcs.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "af2ac39f6fb6efd6",
+   "tests": [
+    "tests/test_funcs.py"
+   ]
+  },
+  {
+   "commit": "1bcecf397098ef33a9f133e9c441b625e57fe63d",
+   "module": "attrs",
+   "mutated_digest": "76ffc800c2fa5d22ee7ecb3a87b478417fefff80f208511c997d8bdd90cf4bd6",
+   "original_digest": "08cfab5c4d8b634c083911b743393f7f0dbf508642dfe1f8020df28f0a88c850",
+   "path": "attr/_funcs.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "1f1a3a7a883e2413",
+   "tests": [
+    "tests/test_funcs.py"
+   ]
+  },
+  {
+   "commit": "1e6627c9ad64988c3d547606fd379eb1dd32d80b",
+   "module": "attrs",
+   "mutated_digest": "5e22b099c948a87eb6647b96a1ba66fc415561ea6aba9fcc5f16b5ffd34703b4",
+   "original_digest": "f8018d7a5c5701ed079178782d1fc2f3d6b2d9d360fa0b8c0436c5061f941cf8",
+   "path": "src/attr/_compat.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "af350fc994d6b2ab",
+   "tests": [
+    "tests/test_slots.py"
+   ]
+  },
+  {
+   "commit": "2321fc202a64d51a4a2c930f8585e16d3064bb3a",
+   "module": "attrs",
+   "mutated_digest": "631584783a3e696f5b3dd74210421a7c61b8671a722505c8e9e64a2db0b05a60",
+   "original_digest": "76ffc800c2fa5d22ee7ecb3a87b478417fefff80f208511c997d8bdd90cf4bd6",
+   "path": "attr/_funcs.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "3be2f5436ebe18fb",
+   "tests": [
+    "tests/test_funcs.py"
+   ]
+  },
+  {
+   "commit": "336d052ec9959067bcc162ce5655bab38bbc9708",
+   "module": "attrs",
+   "mutated_digest": "9f5756371521c5ad1721359bbe396112a99b84ff07e2f6f186e92f585f8b2bfb",
+   "original_digest": "e038d9335331ee997657cf4d521407748bf26f09e01eac451d66ba863eb29983",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "8fb94aa311fe146a",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "358c85e74c5e9c73a222268cb34c914c52135497",
+   "module": "attrs",
+   "mutated_digest": "dc8cd6db808638a0c48934412dc5262073bbf96894ff9b674f94d91fe1439226",
+   "original_digest": "35b5e6e304b64c9a18d334800b736a5eb5e15afa5d639cb0b47af837de161e4c",
+   "path": "src/attr/_next_gen.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "bc7a52a9d8ac140f",
+   "tests": [
+    "tests/test_next_gen.py"
+   ]
+  },
+  {
+   "commit": "44ea327ab7f3a9c33578b1895f65314a81858dae",
+   "module": "attrs",
+   "mutated_digest": "3573b7abeb7bc33eac83cc6a1a6698eca21524dcb92b4663a8bf354ea1d894f7",
+   "original_digest": "ba6c18fc828ea85bdf9eff745b34ef5661b397087bff06ae0d478e9a6ae746f2",
+   "path": "src/attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "1acf767384a49932",
+   "tests": [
+    "tests/attr_import_star.py",
+    "tests/test_import.py"
+   ]
+  },
+  {
+   "commit": "4cfd52db5141cb82b218ab9d881bbb631fa10b4e",
+   "module": "attrs",
+   "mutated_digest": "35b5e6e304b64c9a18d334800b736a5eb5e15afa5d639cb0b47af837de161e4c",
+   "original_digest": "74e35cf7b19ccfba9538b7e492195d938ed99983609c4d58f6a0bf6c7472c8ed",
+   "path": "src/attr/_next_gen.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "3f888b38eae19b22",
+   "tests": [
+    "tests/test_next_gen.py"
+   ]
+  },
+  {
+   "commit": "504eefe91fc49c761572b0a855479775fb6498a8",
+   "module": "attrs",
+   "mutated_digest": "74e35cf7b19ccfba9538b7e492195d938ed99983609c4d58f6a0bf6c7472c8ed",
+   "original_digest": "07cdd98de3ce4b79e2d08abcdf4b3c5c1c0135bd3442e3f52e5af9c41803866f",
+   "path": "src/attr/_next_gen.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "cfcbb5eb2f56d3cb",
+   "tests": [
+    "tests/test_next_gen.py"
+   ]
+  },
+  {
+   "commit": "577c782c328d79db38361ac7a302cfd919748521",
+   "module": "attrs",
+   "mutated_digest": "ec1f1a837fdbae978e78aa95180e471d6701926002e6dfef38d10f2349b7b256",
+   "original_digest": "fddd42b4485127dfdd7a7f9b76999c6b04d6fc8e0498d8300d8b64a90b41cd67",
+   "path": "src/attr/_version_info.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "dcc3e34b209548a1",
+   "tests": [
+    "tests/test_version_info.py"
+   ]
+  },
+  {
+   "commit": "58d5c0a7677fe27aa726fc0e823f60e185abaab2",
+   "module": "attrs",
+   "mutated_digest": "67e13f1772abd9d4f23d971ef297df545479d482b2427451f4800075cf6951bf",
+   "original_digest": "07a9b7bda28e260784dd916cda077a3fde2d701e0db24ee5f46385f238e08c7b",
+   "path": "attr/_dunders.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "4093ea9238fcfd39",
+   "tests": [
+    "tests/test_dunders.py",
+    "tests/test_make.py"
+   ]
+  },
+  {
+   "commit": "5ce5e48074a53f7b95421f64f15a858e2d6d9263",
+   "module": "attrs",
+   "mutated_digest": "b041d112616501d990f499490191fe6472ca2b3d535bbf762bdbccb44c3cf016",
+   "original_digest": "b7559961c1ed400ad8ca3286423c65743db0f7c2ca8f66c770f6dd7fd08998a2",
+   "path": "attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "0a9402b9548292de",
+   "tests": [
+    "tests/test_dark_magic.py"
+   ]
+  },
+  {
+   "commit": "65ee286d6a98dbe88aba73b993532af86bffa143",
+   "module": "attrs",
+   "mutated_digest": "a29ccd5178cb4f661949356de9cd59285988d6d80078e1f2b9fde0550b2f6217",
+   "original_digest": "9ffe1a11c80449c4e2a13d134ceb1d7f56d5109bb5ce7746ed4ca4508a164a90",
+   "path": "src/attr/_next_gen.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "3bf13d164c60700e",
+   "tests": [
+    "tests/test_next_gen.py"
+   ]
+  },
+  {
+   "commit": "774cf0142abbf0aee55940d1d793c79ddfd1a71c",
+   "module": "attrs",
+   "mutated_digest": "1e13566101b8806188b66c1883cf9e7c17b72208942dca3eb9ec5b799ea5fb26",
+   "original_digest": "abc13eb06a47c3ce7020ccdb4e4d6ab79e693947f945b3f45ca3ac0917cee83d",
+   "path": "attr/_dunders.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "8d24518c3dc47b22",
+   "tests": [
+    "tests/test_dunders.py"
+   ]
+  },
+  {
+   "commit": "7b49d375c78e556ff22ead34d0c02fd611ae4c5c",
+   "module": "attrs",
+   "mutated_digest": "74dd692e6b8639ea4572e135e4c71c0ed79b52b17928f02704c6c4b7b5fc1fce",
+   "original_digest": "bd462ae70f90a282b847b8b718961a87ee64e3406f2d23bb483e266a30a279c8",
+   "path": "src/attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "f69bbbb86920a04e",
+   "tests": [
+    "tests/test_version_info.py"
+   ]
+  },
+  {
+   "commit": "8bb430cf1887feae4e04d2821d4ee3725038eb9c",
+   "module": "attrs",
+   "mutated_digest": "370c0fe7335bceabd7fa65607ef459bfe39a04d3f200ace078caef8e427bec06",
+   "original_digest": "8d49e8ee7a85b048a55da4b7f94203dbd206c7e6ad299049fec3fe0b41db9f4b",
+   "path": "attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "d34b23d317bf7dca",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "90f7590abf70e1405295387cac214485af411e3e",
+   "module": "attrs",
+   "mutated_digest": "0626d3d2b1d8f3596aeeca78e50d2aa1825776bf56fd6b94f5f31da14f949ee7",
+   "original_digest": "0fbd41fa7fb308ab3e58a63c2a9e37f5749605967169f3ecd389845c49824916",
+   "path": "src/attr/_compat.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "bda62234169a907b",
+   "tests": [
+    "tests/test_abc.py"
+   ]
+  },
+  {
+   "commit": "955d622493795b4d14cd950f0da2c90bc1e3006a",
+   "module": "attrs",
+   "mutated_digest": "b6aa17688fa7e5379db8f9f1f76ff78ca89f1dad6269adca871265b06d979dfb",
+   "original_digest": "9fa88ea7f3320a839e9393f67b71a000e8b3095afa0c69d74cd0205e423760aa",
+   "path": "src/attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "ca41e90899b7a104",
+   "tests": [
+    "tests/test_version.py"
+   ]
+  },
+  {
+   "commit": "957b1982d0d635e6e367bced0088ecc25fa4bc14",
+   "module": "attrs",
+   "mutated_digest": "e714ac5174aeff8b6a09dec0d76e27250307605fd49a791b4391ef7e2a95a75f",
+   "original_digest": "acb9026b0f6ffef371a6b8b1ab8c3560fbc6a084eeb3e51af7751cae25e7d29a",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "691ebac8c0309422",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "a18b3957d55c669de56799a9a72ea31febe93ce4",
+   "module": "attrs",
+   "mutated_digest": "3f30f9f54b84b015308f1ad531623eaa5b957d380cb396895f9d9f3f0f43ea0d",
+   "original_digest": "ec6749300fb2380873a38a5874896803c218a38e55b201da1ac803556adfe7c7",
+   "path": "src/attr/_compat.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "e55cf8e09a4663f5",
+   "tests": [
+    "tests/test_annotations.py",
+    "tests/test_make.py",
+    "tests/test_slots.py"
+   ]
+  },
+  {
+   "commit": "a3dbdfc6870684580a17b11f6b04126303962633",
+   "module": "attrs",
+   "mutated_digest": "f2bb420c5ac0a6a3c34ad59b075ebe778e2027ae9cc49a35e1dee3f0ba21c396",
+   "original_digest": "b982ee82e19925bba13c846384176d9edb79b6c391e04675ce7dbaeb55b743ac",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "f7f5721473f2598e",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "abb9c95232e613297ceb26558b3d691132fca08c",
+   "module": "attrs",
+   "mutated_digest": "901cd14caaeb74872e500dec93c22daddb2a449abd7e4b09c6ff6c6a60e88693",
+   "original_digest": "2b7fa972647661cdcdad69772d6d286fd30fb1860f427f49a0f46bff72d01840",
+   "path": "attr/_config.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "e0b67cca6c211511",
+   "tests": [
+    "tests/test_config.py"
+   ]
+  },
+  {
+   "commit": "afd2584470ebf524acb818b4f223cf68698705e9",
+   "module": "attrs",
+   "mutated_digest": "57a98a9e37d92a637db4b7e113eec30a5efc01b1db3b9339b3ee6eacc9d36eb5",
+   "original_digest": "688bc7864eb5e176ba27220a39fa7c28b65a91984eca85b4abafeb4ca49425a8",
+   "path": "src/attr/converters.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "a228a7081a1592e2",
+   "tests": [
+    "tests/test_converters.py",
+    "tests/typing_example.py"
+   ]
+  },
+  {
+   "commit": "b02335f59dbd441397d190942ee603bc1d5d9a98",
+   "module": "attrs",
+   "mutated_digest": "994380d696a6198f9b2cd59358af28d2aaff88b2e57dc3f1aafe3536bb7f80f1",
+   "original_digest": "3ea722c13ea2a8019abf764115a6bdcfd2f3733e4ae61f326abf341a9330a4ab",
+   "path": "src/attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "0aa3ae1892edaafa",
+   "tests": [
+    "tests/test_next_gen.py",
+    "tests/typing_example.py"
+   ]
+  },
+  {
+   "commit": "b8671adf985507849f51782781847c7d407d0304",
+   "module": "attrs",
+   "mutated_digest": "4be395065983021de166204dd6c40b4fedb701d60d00abd67bdb88daf7cfee01",
+   "original_digest": "ecd695a7261c7501bde6008eb241a9424c105113b8f6a8319dbe8f1eaa60dc83",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "2a7db7cf41c4da6c",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "bd135d43f1720147abf875fc7a5b1b313cf50394",
+   "module": "attrs",
+   "mutated_digest": "b6aa17688fa7e5379db8f9f1f76ff78ca89f1dad6269adca871265b06d979dfb",
+   "original_digest": "9fa88ea7f3320a839e9393f67b71a000e8b3095afa0c69d74cd0205e423760aa",
+   "path": "src/attr/__init__.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "b0f745749b65c7a1",
+   "tests": [
+    "tests/test_version.py"
+   ]
+  },
+  {
+   "commit": "ce89f5d11feb0805da9ed10bb165238cc959f1bb",
+   "module": "attrs",
+   "mutated_digest": "3b9ef365e95d6d9a8357d31b5ee43b004bb06dbffe32ce698eec40567d58ee15",
+   "original_digest": "d4e71ee3b73759d15213fb64c98b5704214eee98cb37eb774a30f8ee6b7f7436",
+   "path": "src/attr/exceptions.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "56c6ddf5db50574c",
+   "tests": [
+    "tests/test_functional.py"
+   ]
+  },
+  {
+   "commit": "d153daa4ef176b2766c7d37e2d255ced8df5dcd3",
+   "module": "attrs",
+   "mutated_digest": "a6a7f08f2699ae2d60e81abc81ea05fe0ff3ec8e6d649e1cd4ae5505fb6228f0",
+   "original_digest": "1af07798b637beda26f52025625076dfc183b6febe16b5d9242bc58f1f43470c",
+   "path": "src/attr/validators.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "039a10b25d691107",
+   "tests": [
+    "tests/test_validators.py"
+   ]
+  },
+  {
+   "commit": "ddf0256527fdcf3133ffeae3c950795505c4abe2",
+   "module": "attrs",
+   "mutated_digest": "08cfab5c4d8b634c083911b743393f7f0dbf508642dfe1f8020df28f0a88c850",
+   "original_digest": "6216dcacd9b6896cea167e93f7f245010a3c52c2d1a1557146f276b3f4813d2d",
+   "path": "attr/_funcs.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "baee317a8c7288f6",
+   "tests": [
+    "tests/test_funcs.py"
+   ]
+  },
+  {
+   "commit": "e21793e90a25c7ea47a9c0369150067cc8322de0",
+   "module": "attrs",
+   "mutated_digest": "3270940e61186578e7ce45b9212054130d53cf637ee46b0de503c1276ca1d4a0",
+   "original_digest": "c02e990c66796be37494d32e907ac86f370cda5b04cf3e5adbecb5c9165dd5a9",
+   "path": "src/attr/converters.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "1297dd7cbea4a644",
+   "tests": [
+    "tests/test_converters.py"
+   ]
+  },
+  {
+   "commit": "e84b57ea687942e5344badfe41a2728e24037431",
+   "module": "attrs",
+   "mutated_digest": "2c5cd20011b8c89bc86c45f33523ef478f2e5b101244e95a3c99397504007df7",
+   "original_digest": "be81888bdcfd7fd512d93528e692b2303b9f3c6d86858d24b264d48a015743fe",
+   "path": "src/attr/converters.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "b630f13a86d7e1a9",
+   "tests": [
+    "tests/test_converters.py",
+    "tests/typing_example.py"
+   ]
+  },
+  {
+   "commit": "f9ff9135b472c78a7333d6272c62b92217897464",
+   "module": "attrs",
+   "mutated_digest": "1ebc65c31b4d20128b471634f2418f6756dcd4de2ba98f81ad1ace8e73d04a83",
+   "original_digest": "997c4b9b73726c706d30fce403d4297f3027ec60ac5cd43c0e4b0a4bac5ae20c",
+   "path": "src/attr/_compat.py",
+   "repo": "attrs",
+   "split": "fit",
+   "task_id": "63c492fab5f007fb",
+   "tests": [
+    "tests/test_cmp.py"
+   ]
+  },
+  {
+   "commit": "1a04b637900cf7e3f01186cf9f5b669224438990",
+   "module": "boltons",
+   "mutated_digest": "c8444e7f5824162ad0ac93e1183d2f4ecca43526d29c63c0b8c30a645e2a394f",
+   "original_digest": "a475367ed1db5126a088cf88a8feec0f16812e1e083aa7eeadc3049ac7b78d0b",
+   "path": "boltons/jsonutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "cc6d47ddc6303955",
+   "tests": [
+    "tests/test_jsonutils.py"
+   ]
+  },
+  {
+   "commit": "278e77d82dc51a2bda83ca8dc8af4e80e56b5e4e",
+   "module": "boltons",
+   "mutated_digest": "0bc8585f0b5b39782ff2ed07e7cb700bd969aa180c5dadb6872dbc5981fe8352",
+   "original_digest": "18f445771f36c2d6f4d282d834defd73903eaf7b29d83a124300bd951ff6f457",
+   "path": "boltons/jsonutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "bad7c6bf0ce10b70",
+   "tests": [
+    "tests/test_jsonutils.py"
+   ]
+  },
+  {
+   "commit": "28e6018973c8a0a797e4bef558e5b9c38fd388cc",
+   "module": "boltons",
+   "mutated_digest": "8171557732774dd80056a435fca82e8c612eb55c8fa917bd10faafbee63c1df5",
+   "original_digest": "013dd9dbc64d3a96bc66b400dc60afaae9ece897da26cf57837fafe83d397dd0",
+   "path": "boltons/socketutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "d6ce46a4023af533",
+   "tests": [
+    "tests/test_socketutils.py"
+   ]
+  },
+  {
+   "commit": "2ecf547be07e4458fa6b22129d208402392317c9",
+   "module": "boltons",
+   "mutated_digest": "1e07fe489763331ca7e6880003f3c015eb8b187e9ad1e2fe9c69dbf827ecea35",
+   "original_digest": "b86d84750c0165b1c74cb0c9384e50e8bd5acb54e70005087d500197d3627c92",
+   "path": "boltons/excutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "9b633c857093da75",
+   "tests": [
+    "tests/test_excutils.py"
+   ]
+  },
+  {
+   "commit": "5150802911edbf8ade1e7d1bfb346fed52c88d05",
+   "module": "boltons",
+   "mutated_digest": "c8444e7f5824162ad0ac93e1183d2f4ecca43526d29c63c0b8c30a645e2a394f",
+   "original_digest": "2c19893be54faaf0a23485eceb6abf5e717ff375be40ba1e3797c766fa5b973f",
+   "path": "boltons/jsonutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "e7dd0649f300468a",
+   "tests": [
+    "tests/test_jsonutils.py"
+   ]
+  },
+  {
+   "commit": "59bd0fbc60352f5fe1ca96b758f363fb67729a66",
+   "module": "boltons",
+   "mutated_digest": "a432369f0d9067ce72b6150c4f29cd473979d1751e4f81278d5e916c0b10ec1c",
+   "original_digest": "b9c15f80499a1d2bc230a1c59c354c8c05fe2101253e238e88815f2874efe4a3",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "2414e3a2cb554f29",
+   "tests": [
+    "tests/test_mathutils.py"
+   ]
+  },
+  {
+   "commit": "5db8df959b782d75c9e4f70475e1efd4bb6bffac",
+   "module": "boltons",
+   "mutated_digest": "785280da3d6d2d4134a3db2d4809f8c426699ef2ea88afba98e4be2f36bcd5c8",
+   "original_digest": "b2b005a473e1abbd57ef532407099096d6b2db6bbca13bd615f02e9a9cdf0813",
+   "path": "boltons/funcutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "49a60b2c469c9a7d",
+   "tests": [
+    "tests/test_funcutils.py"
+   ]
+  },
+  {
+   "commit": "5eb6cc045560abf320712f262346ae95fb66d448",
+   "module": "boltons",
+   "mutated_digest": "97b722f9b1499f7d08b11605d1e3a88edd788741b40b109d30e0dac47af75aee",
+   "original_digest": "0c10c6e56256c138bcb34080b53a21e100a79bff7df20eb9bda5115740dcae95",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "c17732047e48dca6",
+   "tests": [
+    "tests/test_mathutils.py"
+   ]
+  },
+  {
+   "commit": "926e91bef0c40e27b6cb8b90554198ecd91e2fe4",
+   "module": "boltons",
+   "mutated_digest": "5766788f776b92d7eb0660dd80e7598d13ed303e2f31c71d06c490f899463ce2",
+   "original_digest": "203220e66bcc3302d99bfeda3666e66d8cf116a1bdddc97ddb4adeb0eb3da5c3",
+   "path": "boltons/debugutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "c47ee54982cd8d2c",
+   "tests": [
+    "tests/test_debugutils_trace.py"
+   ]
+  },
+  {
+   "commit": "b6f61b8d8b46ad87f69db5bec038e1e21dd0ed6b",
+   "module": "boltons",
+   "mutated_digest": "55dfcad903d1ef0e1bd31ea5d29d9bb3dda3fc6cf0391666e78338c4fa2a0161",
+   "original_digest": "991d9acbec68d198ca6aaeee7555ad2a9a81a95d59c21d85e3081a55ec11d331",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "49f21a37c4729c0e",
+   "tests": [
+    "tests/mathutils_test.py"
+   ]
+  },
+  {
+   "commit": "c1c25da365cf14878cf5317147e7a09b5d124df5",
+   "module": "boltons",
+   "mutated_digest": "ae0479b5da776c0251265a921fca3ea340a71816b2258a124ada4116e8ba6783",
+   "original_digest": "97b722f9b1499f7d08b11605d1e3a88edd788741b40b109d30e0dac47af75aee",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "18f859b562dddb4f",
+   "tests": [
+    "tests/test_mathutils.py"
+   ]
+  },
+  {
+   "commit": "e604f5a3e114d43fe72cdaf6ccc9741bbc7a56f3",
+   "module": "boltons",
+   "mutated_digest": "0ff9bdba2486de53c480d959a51e57ee7f4c4a9ba40447df06be023bfbf4b1ee",
+   "original_digest": "7ab5f91547db82f24a85617ca39fda2986d2d7d751d7d980d7297cc95da416e4",
+   "path": "boltons/jsonutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "974e1336e56e9976",
+   "tests": [
+    "tests/test_jsonutils.py"
+   ]
+  },
+  {
+   "commit": "e72b1887b4ef604c31f40a6e0b7a18b23728dfa1",
+   "module": "boltons",
+   "mutated_digest": "b9fd1c1db3cc29044edbbe5e634f022d777d69eb1f303fa7964f8b2e815d8909",
+   "original_digest": "59de7b01d1f34e9dcbfa96ffccd9921153f9797097f0854510db6ab770e95de8",
+   "path": "boltons/socketutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "a8db8143a85e4d46",
+   "tests": [
+    "tests/test_socketutils.py"
+   ]
+  },
+  {
+   "commit": "efff866a3b66fdafc817894390742e1d8bc025e5",
+   "module": "boltons",
+   "mutated_digest": "0c10c6e56256c138bcb34080b53a21e100a79bff7df20eb9bda5115740dcae95",
+   "original_digest": "a432369f0d9067ce72b6150c4f29cd473979d1751e4f81278d5e916c0b10ec1c",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "173f26f149d11aa8",
+   "tests": [
+    "tests/test_mathutils.py"
+   ]
+  },
+  {
+   "commit": "f1034b07ddf71f4d9285134a47a4ade16fe40789",
+   "module": "boltons",
+   "mutated_digest": "2438014d1debd25d4228352d1c39050c68bc2b9158380943de98fd1c99bd7e9c",
+   "original_digest": "c8444e7f5824162ad0ac93e1183d2f4ecca43526d29c63c0b8c30a645e2a394f",
+   "path": "boltons/jsonutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "5ff6c0fce6c0f42e",
+   "tests": [
+    "tests/test_jsonutils.py"
+   ]
+  },
+  {
+   "commit": "fb5b2621f371bf4fd6e6ff59630fb699f2bb0659",
+   "module": "boltons",
+   "mutated_digest": "850bccf8948458bf5199088eb8b9624aacfc365f694d4d2e3f8958d9cf9561ae",
+   "original_digest": "c569a537fbd4dce54a0043f8b8c6bc16c1f9cd236a2abf4c5166b08a18b9e512",
+   "path": "boltons/mathutils.py",
+   "repo": "boltons",
+   "split": "fit",
+   "task_id": "2e3f77ddea478425",
+   "tests": [
+    "tests/mathutils_test.py"
+   ]
+  },
+  {
+   "commit": "1a015dc6b5fd9300c1176980d03603c8888e8303",
+   "module": "cachetools",
+   "mutated_digest": "092b0d9cc89292f407932849c926e52f40597f87f5786f36c2f42c5e99de1927",
+   "original_digest": "39c898f247d620e810f924c141c472c47a53c22a2e55fff9bea3f26984f2c1bd",
+   "path": "src/cachetools/keys.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "b48e1eb86a4327f6",
+   "tests": [
+    "tests/test_cachedmethod.py"
+   ]
+  },
+  {
+   "commit": "36d4e87f3fd6ec557323e150dcb40123312f2730",
+   "module": "cachetools",
+   "mutated_digest": "cc1cc86298551cf8fa4be1848e7b53d5a888b5afb0751873a010b0755aeaba6c",
+   "original_digest": "13738ec105cb7808f7f2af074fab75aae4e2a5f04fca660bf8fd2e52edc3d1e2",
+   "path": "src/cachetools/_cachedmethod.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "814d86254aeb9078",
+   "tests": [
+    "tests/test_cachedmethod.py"
+   ]
+  },
+  {
+   "commit": "41e4b1616a292e26ebac3c5f68a8c5d5e43edc68",
+   "module": "cachetools",
+   "mutated_digest": "d879ef83326a699260fa10e1386b2a656cf2d1f0daff8308913ca8dc69cd4c3a",
+   "original_digest": "983dba4bf48677a9cf8e871f25a5940da1564fbadcccce5b140718216281b08d",
+   "path": "src/cachetools/_cached.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "753a8df18bfe2135",
+   "tests": [
+    "tests/test_cached.py",
+    "tests/test_func.py"
+   ]
+  },
+  {
+   "commit": "462e867950883c8ffbcfff715efd767b20c6c749",
+   "module": "cachetools",
+   "mutated_digest": "ba9e89dc0c1bc4ab7f38069969c9c3184251ef61af861acdc3040bf942abc33b",
+   "original_digest": "2d4bc136cccca60ed3257502be9192f19b28b04ac2df84791f5e936ec080af15",
+   "path": "cachetools/keys.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "13661fa6d751e91f",
+   "tests": [
+    "tests/test_keys.py"
+   ]
+  },
+  {
+   "commit": "6a70f80e8baf8954e32b836eeb8ecbb37f15d5ac",
+   "module": "cachetools",
+   "mutated_digest": "35d8a518f77298385d98f1493a73a389bac67dcbea030e403f180af4b83c2f03",
+   "original_digest": "097684e6d47922104f95e4cde9126bdf5fc5c0503b9ebd8a1146041a75750272",
+   "path": "cachetools/func.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "1fa19a8332cd102d",
+   "tests": [
+    "tests/test_func.py"
+   ]
+  },
+  {
+   "commit": "86352aed2bedb23aa0cc461a58e76bd667617eaa",
+   "module": "cachetools",
+   "mutated_digest": "fb45adcb27844785c72074520d44bf11419cd725e417e5ee055eb2e24a7f8d7b",
+   "original_digest": "517402c9908fa621246d9fc178d55df54cc595160a62762fed351a799aabf38d",
+   "path": "src/cachetools/_cachedmethod.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "4403ba3bc4916f4c",
+   "tests": [
+    "tests/__init__.py",
+    "tests/test_cached.py",
+    "tests/test_cachedmethod.py",
+    "tests/test_classmethod.py"
+   ]
+  },
+  {
+   "commit": "902dce4b450e1159f75ee00339767f829b82826d",
+   "module": "cachetools",
+   "mutated_digest": "366906ae3f0dd053f74e687dc22888915f3c8f567efdb7c20d9772262e823aaa",
+   "original_digest": "ab82e663b4620ce80f9fa1d2914ccde10a27d7fd94db9dcd40b4d034018bcb31",
+   "path": "src/cachetools/_decorators.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "ed4931ad054a15bf",
+   "tests": [
+    "tests/test_cached.py"
+   ]
+  },
+  {
+   "commit": "95e6addbd82afd75f81cb5650f32f6d74af2f1f9",
+   "module": "cachetools",
+   "mutated_digest": "e0dc25465e6f2d326601a9560627484ff7dfece942cf6d4a6f26d5b9de02f34f",
+   "original_digest": "0aa41e3cce9f7442b44e5e6bad057fe779caf02d31a1a7f7dd8ef5e4ba4ec0ab",
+   "path": "src/cachetools/_descriptor.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "886bcf8b23222d10",
+   "tests": [
+    "tests/test_cachedmethod.py"
+   ]
+  },
+  {
+   "commit": "9a6cb65aae884cff1b1287d5288ff43c751a6f32",
+   "module": "cachetools",
+   "mutated_digest": "5c04344ca02d9b375f8023429ae443acb32782d64b3276b5f8f1fe84fbda1d74",
+   "original_digest": "35d8a518f77298385d98f1493a73a389bac67dcbea030e403f180af4b83c2f03",
+   "path": "cachetools/func.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "4e07ad9060eface4",
+   "tests": [
+    "tests/test_func.py"
+   ]
+  },
+  {
+   "commit": "9b7fe6ca659382158897723205882f0b4126241e",
+   "module": "cachetools",
+   "mutated_digest": "8d141c6dc5acb2b027aaa5aa6818cb7ab4d1b3cbf7fcc00354b185b96e4d3e3c",
+   "original_digest": "4e42aee7c3d35bf8a3f3e98ed19c6b32991c652716ef515ae17e99b5f5fcfcf3",
+   "path": "src/cachetools/_cached.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "bd5e4d76b619df69",
+   "tests": [
+    "tests/test_cached.py"
+   ]
+  },
+  {
+   "commit": "b34643f37174751df37016899f4e7f5f6b189012",
+   "module": "cachetools",
+   "mutated_digest": "0aa41e3cce9f7442b44e5e6bad057fe779caf02d31a1a7f7dd8ef5e4ba4ec0ab",
+   "original_digest": "2836bdb5fc259d08843c1b00efacd85645278362a0f1a366c9ee97b6a0cb0a13",
+   "path": "src/cachetools/_descriptor.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "71012732d9e6f8c6",
+   "tests": [
+    "tests/test_cachedmethod.py"
+   ]
+  },
+  {
+   "commit": "d3598664ca921b11a35e42087b46a4686fa10f37",
+   "module": "cachetools",
+   "mutated_digest": "498710703be3447996cd81bd1da72f50a050e68dcd651169c4230ed9865e926d",
+   "original_digest": "d6839db68615f3003a34bed04fd753b411c63bd2b59c70e93b834b5210282a50",
+   "path": "src/cachetools/func.py",
+   "repo": "cachetools",
+   "split": "fit",
+   "task_id": "4aac18d808d50c0d",
+   "tests": [
+    "tests/test_func.py"
+   ]
+  },
+  {
+   "commit": "25ffce7e000ad27485982732214b4181ec0e6116",
+   "module": "cattrs",
+   "mutated_digest": "1dbbc51abe700ecea4e979e32582aba06992f18f4da75db3e87a058e9f3a204d",
+   "original_digest": "61307eb6c51332f2fba028e9fc5981b63d45536f539ab0d9e4673a5ce239e1d0",
+   "path": "src/cattr/disambiguators.py",
+   "repo": "cattrs",
+   "split": "tune",
+   "task_id": "8a1572c1c302e60e",
+   "tests": [
+    "tests/test_disambigutors.py"
+   ]
+  },
+  {
+   "commit": "8ef75b6007a77cb7b8e05467b1f8d2573628a6f7",
+   "module": "cattrs",
+   "mutated_digest": "d0b6114c05979aebe41c35900e8f54f5a934c898e7562b470a738cb6d8713a41",
+   "original_digest": "aedacf884ef5e12b22ddb6cdd283838be3335ec6e5c3c690a90c648a934eb05e",
+   "path": "src/cattr/gen.py",
+   "repo": "cattrs",
+   "split": "tune",
+   "task_id": "b3be5b990db04fd1",
+   "tests": [
+    "tests/metadata/__init__.py",
+    "tests/test_dict_generation.py"
+   ]
+  },
+  {
+   "commit": "0551bf53588ae87f462d336f24f853a156fefe3a",
+   "module": "click",
+   "mutated_digest": "87c7ee14d63e402fac5d2716d62e74a5d966357b38f9fe33378bf3e1cc5edf7c",
+   "original_digest": "38ee69bbf7f3afaf03a8a9f6387550b6db04f785c161d4a67d575478170b34f5",
+   "path": "src/click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "f1d5d87ea2725ffd",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "0759c87dc38ab54cbb741d79bfb5bca656b622b7",
+   "module": "click",
+   "mutated_digest": "85454e629097de7a8d7e0c37e196623c2b18953e357773ffd265b96bbb7de17a",
+   "original_digest": "0f494e1e8d64fbaa847e89a81fd6253912743ed62d0a407890cdbcb288fbb621",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "6f43d0058763c6d8",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "1241abaed4e441582a21f4bf90c8482de02b92df",
+   "module": "click",
+   "mutated_digest": "da777529560819edcff1261a8477855775f50fcb28afe70dc67aa2c776a484dd",
+   "original_digest": "302923d8d62b6dd2bf1eb816a98f3e243c6fd0f45efb1611910f306ac347a319",
+   "path": "src/click/exceptions.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "288ce13d56808a2f",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "1a63c21678a0896ba440bc0fda6ef58e3574510a",
+   "module": "click",
+   "mutated_digest": "ce7bd8e8ea2fc2f5449ad306c0e4e5602c5f77827d03607ddf4554d92f466754",
+   "original_digest": "2ec6cc2b6589f0522e581fa92b30a4435e107ce04242a70a36694a88c4616475",
+   "path": "click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "e8494989c8ad5aea",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "29ab0b033f013ac9f603ad652e0cc813a2d0a550",
+   "module": "click",
+   "mutated_digest": "926b719dc4f5659646d0a5ed3b55f5c6f03207566480e9391965cf58e311332a",
+   "original_digest": "52eb0446f1996db7cc207e15cf1908a017ca6e55e6559d5c28ea526d2b7cb174",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "b1a01f6151c0a3d8",
+   "tests": [
+    "tests/test_bashcomplete.py"
+   ]
+  },
+  {
+   "commit": "2a7c39956c49d8ca5bd8297164c51fe59ab477de",
+   "module": "click",
+   "mutated_digest": "f34911d2855cda08a723d9fe7d1db0c195bce829b9226b9dd9cf6832c44b6f8b",
+   "original_digest": "ef0e2a944e9d3935119d7141671cb72132763d56ea6a5cdde5d63e8881b1a287",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "1776e9e434435a63",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "3106951b6fc733385f08b2a397621dec756a2989",
+   "module": "click",
+   "mutated_digest": "1bb3e87f351615c2cab538459af0ee3da235a6f95de501f74c872012ccec2981",
+   "original_digest": "9a9dd4b40286c77f0aefbe2a88709a0d931b782cb8c877af69ec66c33f9a08a2",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "0f52b6afa863db54",
+   "tests": [
+    "tests/test_compat.py"
+   ]
+  },
+  {
+   "commit": "37011e76aaef13786af9ead1158ac5c2d52c8631",
+   "module": "click",
+   "mutated_digest": "259316efe6de8493afe8dc1db3a0e516098f17ff43190bdd2256182e8532f768",
+   "original_digest": "3c5ea853f45306a927413044ed7d1f02d38a96d53a68b0e82f5af8eb8bc4aea2",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "ff4bc75736a352a7",
+   "tests": [
+    "tests/test_bashcomplete.py"
+   ]
+  },
+  {
+   "commit": "4e519da58ac79fbd97eb86eb7717603d77eec379",
+   "module": "click",
+   "mutated_digest": "0bce1177bd519338f1734ae821fe4f7d1912709630f7b4f8cb3ba7f49a9c3a4d",
+   "original_digest": "c723f9b4db7e1bdcc57d8a7e953c5d47a9b192ac9ffea2ec536fe15e81af7f82",
+   "path": "click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "286064def0b75e77",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "4fd19ce097576072020084a61b6172bfb9b07f26",
+   "module": "click",
+   "mutated_digest": "3cc10c8e31c0962c1d0e616ba02274da486d4678e96d08cdeaf3a58999f66194",
+   "original_digest": "e63b4803de944e12a8cce0589ade0a08bdd8ad8c56260c44da07ea063f04a619",
+   "path": "click/parser.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "48180cac02e492c7",
+   "tests": [
+    "tests/test_arguments.py"
+   ]
+  },
+  {
+   "commit": "598c6d76fbc036fb3219d9f09948a682cda66601",
+   "module": "click",
+   "mutated_digest": "3dda906e008ac375fec25187e8a6539dadf43d2d8bf183e898271ab3ffcd7dbe",
+   "original_digest": "85454e629097de7a8d7e0c37e196623c2b18953e357773ffd265b96bbb7de17a",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "f80bff08bbf060c7",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "5d1df0e042b2f8b0dee8f6dd9ce74edce331a950",
+   "module": "click",
+   "mutated_digest": "cac1c6ef3c215099e7967453fe227ac2d0902e74217e07831be48ab1902b957d",
+   "original_digest": "06a0e75ce72732dbf9b061ab5fe05f0e0ae59572b2c8f1ff4e6ad4bfff2d6147",
+   "path": "click/decorators.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "77f6be7fb436a069",
+   "tests": [
+    "tests/test_commands.py",
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "770e1e9ccb3c45b9363e2a3b3fbd5d3f6da773ea",
+   "module": "click",
+   "mutated_digest": "622c3205d7ae4ed753555a2670064bd562197ea5ded5db246e263c18034b2b1b",
+   "original_digest": "7d1829d8f6365bdb47f6c5fd4adb6f345be1d1a11637a29206de5857365ee623",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "9bf53aa2e6a1b4d6",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "7b1429d0fe234b59617bd771ddff31e228f0ff58",
+   "module": "click",
+   "mutated_digest": "11faba91501bcca8f5f826fd66d88b92de92bacebb0468b5c165cf8023e915c4",
+   "original_digest": "597f81cd0c8f40b803883a16d803d80b2d68e03d328adad08ee19001c6c6eec1",
+   "path": "click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "bd47394d63f50a95",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "807c5df0b9528d387ff48f0e593907760b2ad6ce",
+   "module": "click",
+   "mutated_digest": "7d1829d8f6365bdb47f6c5fd4adb6f345be1d1a11637a29206de5857365ee623",
+   "original_digest": "583a041b2ac500e4d419265f8b738d592bef0ed73b01f44d423908dad8d366d1",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "1dfc9d03e2ae08fd",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "8af7ec14f3d936e02c2e4ee62d3573593868e07e",
+   "module": "click",
+   "mutated_digest": "3c5ea853f45306a927413044ed7d1f02d38a96d53a68b0e82f5af8eb8bc4aea2",
+   "original_digest": "926b719dc4f5659646d0a5ed3b55f5c6f03207566480e9391965cf58e311332a",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "28d7254ed7c85656",
+   "tests": [
+    "tests/test_bashcomplete.py"
+   ]
+  },
+  {
+   "commit": "8e2e583694ac0b374a3aa9712e8274ef3519f1d1",
+   "module": "click",
+   "mutated_digest": "78ff9b98908ba1d8f71a66c981c53f08f9cc55a71411e2a667e568f805be7506",
+   "original_digest": "319a04053942c07010eac32c87e79fcea17e0b09fdea576959be8664b2088b0a",
+   "path": "click/decorators.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "c845e795fc7edd98",
+   "tests": [
+    "tests/test_options.py"
+   ]
+  },
+  {
+   "commit": "99ef35e3b4919b5dc33d1ee4b1e04b437b6307a5",
+   "module": "click",
+   "mutated_digest": "48c27c65c0b2bc75ca1bad33aa1004f4f66e4761ec6a833e967a5145960de3e5",
+   "original_digest": "46cbbed5af8a68d05a87e12d3a2021b62e16ac7c5465ad3ace7bd3fc345e2e43",
+   "path": "click/exceptions.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "d4d82a892058cb58",
+   "tests": [
+    "tests/test_arguments.py",
+    "tests/test_options.py"
+   ]
+  },
+  {
+   "commit": "9cfea142150a8b5a372550702dbe269a30df5840",
+   "module": "click",
+   "mutated_digest": "116507591feef1a6a33c852a1124a8919c5d97d0a5c3d0269ea8f95babab5008",
+   "original_digest": "c57d806de89ba515e6dbb9f6c7260e505c67de9710e090bd91843e072d6cf164",
+   "path": "click/exceptions.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "7a701b2ea43f043e",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "9e7d1588ad85fb629f9377b4d78b4f5d2051e7aa",
+   "module": "click",
+   "mutated_digest": "259316efe6de8493afe8dc1db3a0e516098f17ff43190bdd2256182e8532f768",
+   "original_digest": "3c5ea853f45306a927413044ed7d1f02d38a96d53a68b0e82f5af8eb8bc4aea2",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "d5d46709bf3076fd",
+   "tests": [
+    "tests/test_bashcomplete.py"
+   ]
+  },
+  {
+   "commit": "a17b544788256d59baae0352a90bdb9af2b8ed34",
+   "module": "click",
+   "mutated_digest": "06a0e75ce72732dbf9b061ab5fe05f0e0ae59572b2c8f1ff4e6ad4bfff2d6147",
+   "original_digest": "c0773edd4a09d5ef6e485785e2e8d98a6fdc7acc1b8c344b2913b1ce199eed8e",
+   "path": "click/decorators.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "b8ef78988078dc62",
+   "tests": [
+    "tests/test_options.py"
+   ]
+  },
+  {
+   "commit": "c2933658a64464bbb518eb723c239c1ab6196aa2",
+   "module": "click",
+   "mutated_digest": "01822fc6c7a5d05d657c20ef925d33461acfbf16f9b5b19f626eb3267b9d709a",
+   "original_digest": "a16a061ee0f8e39bd2b2032dcd1ca022b2abd5aff181e937a5e66d28f1716cb7",
+   "path": "click/decorators.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "23b250838e025525",
+   "tests": [
+    "tests/test_context.py"
+   ]
+  },
+  {
+   "commit": "cbb3c0c3d969cc35f49b18280bd7a11f139e3185",
+   "module": "click",
+   "mutated_digest": "beb9a62a3601a544ba1fb302930b29725afa2b27c007ac02cb662f8b80bc05f3",
+   "original_digest": "7f2fbd6d2a1725dc56de104cbd34e1b9447f13323107f4f3d6b846325d0ea583",
+   "path": "click/_bashcomplete.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "9ffafb9817aa87d1",
+   "tests": [
+    "tests/test_compat.py"
+   ]
+  },
+  {
+   "commit": "d8a7cea172977d48a58023b80ca42b76e7ac3956",
+   "module": "click",
+   "mutated_digest": "c723f9b4db7e1bdcc57d8a7e953c5d47a9b192ac9ffea2ec536fe15e81af7f82",
+   "original_digest": "ce7bd8e8ea2fc2f5449ad306c0e4e5602c5f77827d03607ddf4554d92f466754",
+   "path": "click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "c4833268a71906e5",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "dcd991d986d43c4f12cc838c4008dfafc015c21d",
+   "module": "click",
+   "mutated_digest": "7fe3bb3696b3c58f3fa93e3f47baf544b511cb29161b1867a1420b76abfdf6c2",
+   "original_digest": "e9984b21c4b5b68cf4f325b7c4abba2f91b64c095be85521e2334e71a2620299",
+   "path": "src/click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "981c40f2be3d029e",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "e2c3b9bc6122562c015bb98d3890a6d6512fba24",
+   "module": "click",
+   "mutated_digest": "919db13bf2b23a0a9f7cb8c13f2b563e2f6b859170f1ecdbf1f1e4b0ec1bdfe6",
+   "original_digest": "0bce1177bd519338f1734ae821fe4f7d1912709630f7b4f8cb3ba7f49a9c3a4d",
+   "path": "click/formatting.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "8115f70ef1da43d2",
+   "tests": [
+    "tests/test_formatting.py"
+   ]
+  },
+  {
+   "commit": "f1a846081b241c742c9700354ebe16f56c1c28fc",
+   "module": "click",
+   "mutated_digest": "ef0e2a944e9d3935119d7141671cb72132763d56ea6a5cdde5d63e8881b1a287",
+   "original_digest": "af663ef01006b15d5230daa09d0401ef55b3cdd1aec6745c18913f76b20e979f",
+   "path": "click/testing.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "13183da71622d8dc",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "f58ca3e81424a35626c8a475eb59ab95589008ce",
+   "module": "click",
+   "mutated_digest": "fdd63b0b9506956819ec7350f22dd061648bee351e6540b749401558b9a6dbae",
+   "original_digest": "ee4f60df8c622259431c1acf76d7ddeae80a421585e354429906d58ba8570003",
+   "path": "src/click/_utils.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "815fcc055754ec30",
+   "tests": [
+    "tests/test_utils/test_sentinel.py"
+   ]
+  },
+  {
+   "commit": "fd401cd761a2cf15fbb9a54404860b636a5b558d",
+   "module": "click",
+   "mutated_digest": "2234fffa101c4c10a9a3592a11b4300f02c35ab7cf2e569168b6043f212efc75",
+   "original_digest": "6c81222f3bbaaf219437a086c51dfcd4c6335c64dcaa77e78ab530d91fa4a352",
+   "path": "click/decorators.py",
+   "repo": "click",
+   "split": "assess",
+   "task_id": "98289c2da4b25e72",
+   "tests": [
+    "tests/test_options.py"
+   ]
+  },
+  {
+   "commit": "121bf5d45631b7b683558fb06d0f5573ebb2485d",
+   "module": "dateutil",
+   "mutated_digest": "9f2712fc1c1a0f7cca5c472b84bdbe7245c2a9be2651c59eedf42cd58741b78c",
+   "original_digest": "f9b4d6cb5b7a974d9ce9be4df7ff75cb52359bdd30dd987b8ab9468b9bc7665b",
+   "path": "dateutil/__init__.py",
+   "repo": "dateutil",
+   "split": "tune",
+   "task_id": "f922be88ffecf3b8",
+   "tests": [
+    "dateutil/test/test_import_star.py"
+   ]
+  },
+  {
+   "commit": "e78c3c76d2f0aaf6180c786605857a6ebc0cd3f3",
+   "module": "dateutil",
+   "mutated_digest": "11a17b64f6046452c493ba7939c721f10ad384d81a0e0f060b97b8881a0447e9",
+   "original_digest": "405e25acd0b092e16eea434f0574bee978cfebb4a89338479605c0929a7cd640",
+   "path": "dateutil/__init__.py",
+   "repo": "dateutil",
+   "split": "tune",
+   "task_id": "684ba17d08d56d31",
+   "tests": [
+    "dateutil/test/test_imports.py"
+   ]
+  },
+  {
+   "commit": "f8f802b4b18ab5f5a33f7002953cafd821e8d409",
+   "module": "dateutil",
+   "mutated_digest": "3ac7fd8d15d10dc622923edc1d73842c7d8ffc8f5cf41ee53867125b9b6edc88",
+   "original_digest": "4fe0140b5154a3b2f23011d609823422a3904b0ed40772c77dc967fdbc7fdea6",
+   "path": "dateutil/parser/isoparser.py",
+   "repo": "dateutil",
+   "split": "tune",
+   "task_id": "253ae915e2857999",
+   "tests": [
+    "dateutil/test/test_isoparser.py"
+   ]
+  },
+  {
+   "commit": "11d534ff4142cc7d1705b0fb68d30271d520fd3e",
+   "module": "docopt-ng",
+   "mutated_digest": "873ddf72b85c1e9337679215bfe9370f1fb0da9eadd3f5a57703d3292b58e9c6",
+   "original_digest": "e48d8a7ec946dcb8ee969bfcec7a1fc9b2df139540bca5e5887cb494fe9c98e0",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "ae93437c08f8d9e9",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "19f2cb6f899b43cda7dbdc83662cf0846f710964",
+   "module": "docopt-ng",
+   "mutated_digest": "bbeaea0fde3ea0cba3508f4224b0231d8a16cc443e456594dac03c810fc7b384",
+   "original_digest": "b49f1e8307f7fc592b32a8732fa3835f2b9a319267a70c5a826d628934a22a99",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "777afc6fa90f9ae7",
+   "tests": [
+    "test_example.py"
+   ]
+  },
+  {
+   "commit": "242a49d350d8ef7658e1a53f7761a5ea6c803fa2",
+   "module": "docopt-ng",
+   "mutated_digest": "afaaee1ff5bd906aab2b47c981b09ffb8991fe14c0995e771d580825356ef0f6",
+   "original_digest": "ba60b4c3a20039498d4000ba507c24935a3eebf012369391041828316b694190",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "8c9da30ce5ecfd26",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "3add3642efb9c1a20111fda99c9343bf452b636b",
+   "module": "docopt-ng",
+   "mutated_digest": "b88cc66eae43ff8120f3785a4a60aa68a979dd17cbb83e9375b17a93d745e331",
+   "original_digest": "dcc26dbfc7e5201015647067f59ffde93b5f55fe9d2c6b629223f64132222582",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "73723ad5066def67",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "5e69ae2e80002a15f6b390ea369d65cf968c0de6",
+   "module": "docopt-ng",
+   "mutated_digest": "de52b30f4e21da4c13a027122b293b792dc4396bb91e15d305bb85d704322581",
+   "original_digest": "efba83fd307c745ceaa76713b019933fd39b0a291be08bc37b81e8a6501d1819",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "89e2dbec602219d4",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "603a03cb95adb69a2995336baaf141ab9128f429",
+   "module": "docopt-ng",
+   "mutated_digest": "8d0d50d14d6d869d75a7c57207892e6d19ff9f4bcbdd39c039ac41c017ebba85",
+   "original_digest": "83f1fc2be99b98951f1a5f52466eb50f3cf1f0ab19e1963368dcbb47285fdeab",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "a41c18a2d78636cb",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "689c7615eaedd832cf7a7245d209c6e3fd4a0e20",
+   "module": "docopt-ng",
+   "mutated_digest": "d41700cd91e0e7f37d86c6697ec96805446290a4be6b7e4bcb07198298078826",
+   "original_digest": "800d6aeb6a9e481b85179765a2d664e7d2eb54c885d7cbd02ec8a76227d87ea9",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "7fc1f5f2376986d3",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "69cd015a621913f5918f4c320a2ea01c435e3407",
+   "module": "docopt-ng",
+   "mutated_digest": "b97cec31d7e18f69d7c12cc2de42336cb6833692bc54ab62e21fcae9f54e3997",
+   "original_digest": "b88cc66eae43ff8120f3785a4a60aa68a979dd17cbb83e9375b17a93d745e331",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "206bd8cde25a851a",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "772e520970d21df813e5aacacf29bd79b823b686",
+   "module": "docopt-ng",
+   "mutated_digest": "0c15da6b3528e75c77f062bd0cc0c682da8c738ced475d6e66b481083e16aa76",
+   "original_digest": "8eda815e9033c19c0d6f8a07b258d527c832fbaa4c2c374d450ca1b686dc5151",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "0ac95322e61ece79",
+   "tests": [
+    "test_docopt.py",
+    "test_example.py"
+   ]
+  },
+  {
+   "commit": "78e105e355f4dbc55724bbb852d5f0107adf410f",
+   "module": "docopt-ng",
+   "mutated_digest": "98d7522c56b67e945913a93966fecd545a7e55375c973b4c5277431337ba364f",
+   "original_digest": "65fdec31f3c3b0750f9af4ca1e9b9730583930d71fa1c4db3568b3fa7e18afed",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "432c444da4611a5e",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "7b132478aa88b9e16adea84d66f11d4a7a6b8351",
+   "module": "docopt-ng",
+   "mutated_digest": "3691e154f53e4b6498b0a99203e36d9d60196a3c8f5bce6e1f2a683f2b3e7f93",
+   "original_digest": "1ca73b5ee4b6cfcbcb04857d30e0dd182b57db64b398201907bd6894c391fe3b",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "d3ac3b44943f249a",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "7c6315169d874a8e46fafe3638b64914a126b1e4",
+   "module": "docopt-ng",
+   "mutated_digest": "0e0aecf491bb6102d0838bcb46128b33453fed2f1ae49db7f05e44f8156718aa",
+   "original_digest": "98d7522c56b67e945913a93966fecd545a7e55375c973b4c5277431337ba364f",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "2a0a7bd2c540421c",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "839fd54249f0f7a078424fc4bf6bc65e0e0c5eba",
+   "module": "docopt-ng",
+   "mutated_digest": "64a2feda34b9f9c75fa8a6036caa3c862030b864a94e9aef6801c325bce65f64",
+   "original_digest": "e572f9ee79cdf38eed621b030ea72d46b14d11ec04ca0bc796577cada08408b4",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "93bc71149e38f71c",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "87ce4ddd2c40cb743df6f3bb82bc1bf077281508",
+   "module": "docopt-ng",
+   "mutated_digest": "a56974bc7707e93b97f6d967f8ea9cddcd37594471e44c1ceb60c71359a14126",
+   "original_digest": "bbeaea0fde3ea0cba3508f4224b0231d8a16cc443e456594dac03c810fc7b384",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "ee99cf57162360fb",
+   "tests": [
+    "test_example.py"
+   ]
+  },
+  {
+   "commit": "8972cb6a4e888636d48b46f0a304cd4664d81cb3",
+   "module": "docopt-ng",
+   "mutated_digest": "e48d8a7ec946dcb8ee969bfcec7a1fc9b2df139540bca5e5887cb494fe9c98e0",
+   "original_digest": "34845e50ca99ecc8796f84f702667f7d35b89679ad3725508842451826ca2fad",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "ca4c55de1cc4a2e6",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "b0d91be676130ee9a72f2a55fe3ba65c225647e6",
+   "module": "docopt-ng",
+   "mutated_digest": "d7102a598ca6d7ebd0976a8ba1710e3c5ef35baba5ffed376a275f8a7c9c54a4",
+   "original_digest": "41e4359b0245a4190e8a097491443accee5fdcc98a2ec5d2ac7e4501d9ffd072",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "ba0d27ba9365d098",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "b5eb385bde3a926b9efe9a7337f49a72b499e651",
+   "module": "docopt-ng",
+   "mutated_digest": "73dabe437a6d802aea6f1195c055120f39cc00e43b373d0b0ab7fce2f5547c45",
+   "original_digest": "afaaee1ff5bd906aab2b47c981b09ffb8991fe14c0995e771d580825356ef0f6",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "5f19a8f3ad63effb",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "b607d98658aa037d4e8aac5e9804c97dc8edd71d",
+   "module": "docopt-ng",
+   "mutated_digest": "1ca73b5ee4b6cfcbcb04857d30e0dd182b57db64b398201907bd6894c391fe3b",
+   "original_digest": "ba4da79588a04ef9bde1954e3715beff2c1f9c09e01f145d13cac771c40d518a",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "ae983732c7484ac7",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "b62099bae32fe5fe9d4d5004df01bf344eda14ff",
+   "module": "docopt-ng",
+   "mutated_digest": "800d6aeb6a9e481b85179765a2d664e7d2eb54c885d7cbd02ec8a76227d87ea9",
+   "original_digest": "0afab8f795a718215d317caf59c1142a3d321eadca5e91c1b80061072759483f",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "1d84c07f250e6676",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "bb930fb7956eda34d2513b0b042791d8a04bf841",
+   "module": "docopt-ng",
+   "mutated_digest": "41e4359b0245a4190e8a097491443accee5fdcc98a2ec5d2ac7e4501d9ffd072",
+   "original_digest": "873ddf72b85c1e9337679215bfe9370f1fb0da9eadd3f5a57703d3292b58e9c6",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "512593dc20867e4b",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "c95541c35a808549614de9d86a4f80776416ffa3",
+   "module": "docopt-ng",
+   "mutated_digest": "65fdec31f3c3b0750f9af4ca1e9b9730583930d71fa1c4db3568b3fa7e18afed",
+   "original_digest": "5c5ddaa9989f865b7876bcc1c69d7bd6d343cb55c328545b7a93e1348ebc488b",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "7b45d4cffaa57fbf",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "cf0738f228620eb0f8f71736b13ed864af57340c",
+   "module": "docopt-ng",
+   "mutated_digest": "41042e880da35657db45dffc415e0a9d37728316fe8303e5ee04e49f5ba11fb7",
+   "original_digest": "a56974bc7707e93b97f6d967f8ea9cddcd37594471e44c1ceb60c71359a14126",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "612548c90f69cea5",
+   "tests": [
+    "test_docopt.py",
+    "test_example.py"
+   ]
+  },
+  {
+   "commit": "d95044cb2f4c431629db14405bd0fdb1d350fb72",
+   "module": "docopt-ng",
+   "mutated_digest": "ba4da79588a04ef9bde1954e3715beff2c1f9c09e01f145d13cac771c40d518a",
+   "original_digest": "de52b30f4e21da4c13a027122b293b792dc4396bb91e15d305bb85d704322581",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "079dc96bb40e726c",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "e338c75fb66728cb7a431bee09aabf859427c244",
+   "module": "docopt-ng",
+   "mutated_digest": "ba60b4c3a20039498d4000ba507c24935a3eebf012369391041828316b694190",
+   "original_digest": "1469c7c2c1081619069bdf701ead7d2f7dd2bb3d15112e2d70ddccfb13c9a1d3",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "790984594045869b",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "f293e390cea351232b108f84b18272a70453d06f",
+   "module": "docopt-ng",
+   "mutated_digest": "1469c7c2c1081619069bdf701ead7d2f7dd2bb3d15112e2d70ddccfb13c9a1d3",
+   "original_digest": "b97cec31d7e18f69d7c12cc2de42336cb6833692bc54ab62e21fcae9f54e3997",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "363559d8aff1c730",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "fdb48d70fbdc5697d663d235bf2c71d114dd0f59",
+   "module": "docopt-ng",
+   "mutated_digest": "83f1fc2be99b98951f1a5f52466eb50f3cf1f0ab19e1963368dcbb47285fdeab",
+   "original_digest": "64a2feda34b9f9c75fa8a6036caa3c862030b864a94e9aef6801c325bce65f64",
+   "path": "docopt.py",
+   "repo": "docopt-ng",
+   "split": "fit",
+   "task_id": "3f703bfebc776ad7",
+   "tests": [
+    "test_docopt.py"
+   ]
+  },
+  {
+   "commit": "0b9191e8230ada21a36f5d1a67539c058a43aece",
+   "module": "idna",
+   "mutated_digest": "266816aefe7173c5463f723813ce5752db3e0522c55d3b41e12bfcc24855a2b5",
+   "original_digest": "43608e2c1c346fa0b245e639c53654390946d5261b2733d4d9338d7c63aca0f1",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "fef357cb8a6e8fb6",
+   "tests": [
+    "tests/test_idna_other.py"
+   ]
+  },
+  {
+   "commit": "13bddc919eed630796711b179bebc3eb5e58c7d7",
+   "module": "idna",
+   "mutated_digest": "30a5833eb7931e0605292df67059d0736b66c5d31172839a6512674aff35ce49",
+   "original_digest": "1c6c0d433db2816e80f2439338aa058c0b24e778d4c48f8ca08d903c60cfd91d",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "f85605df8c7c2ee3",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "14a059fea726ae269c2dd3f897ade181d30f4729",
+   "module": "idna",
+   "mutated_digest": "8a0e857e811ad19d7108553ed25613c4fec203c045cea4124b86ac58a95d307c",
+   "original_digest": "266816aefe7173c5463f723813ce5752db3e0522c55d3b41e12bfcc24855a2b5",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "3449491093452ea8",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "27fe03ffc5c101e58ca064df7cbf1afbd357ce6f",
+   "module": "idna",
+   "mutated_digest": "5c3e09f5de630dbaa532f239d506c78c6b5c391d834cfa0b3d1364958a17a22a",
+   "original_digest": "30ea30eb3461867d2c7917d495e2e6b5aa317475ad3e4db6d1e51ca91ed889c2",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "64762976a4214aea",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "5d156fc487f2683597455bb3f598057e038c7e82",
+   "module": "idna",
+   "mutated_digest": "2bd80b25916bf41bc2bd848fe40c4f9d812bca3b87573691b6edf37f3014a3bb",
+   "original_digest": "8057719ad9afd3cc96bdce4c6b4caaae99479ec90f967d39ff6b24248ca5745d",
+   "path": "idna/compat.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "c2f38f4372200bb9",
+   "tests": [
+    "tests/test_idna_compat.py"
+   ]
+  },
+  {
+   "commit": "612a137402315d9818a888d5398ac38738baffd6",
+   "module": "idna",
+   "mutated_digest": "ca86e1cba587ff1008e876535a48657c4fccd41860bf917cb4b33cd254a1cc57",
+   "original_digest": "261131916c2d51ea78d3ef4e32d8cf2c61c0d3d0a17a591e21a09eaae225f4a0",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "f06e382e0c9e070b",
+   "tests": [
+    "tests/test_idna.py",
+    "tests/test_idna_tr46.py"
+   ]
+  },
+  {
+   "commit": "6a9e01cba9f9a15564a4b228d25b3c52ee04b42c",
+   "module": "idna",
+   "mutated_digest": "78f0e7313f0cd614b2748e1c4855964f0f50115a68586a9287a74a81fed4c785",
+   "original_digest": "cb1be1dc13759ede7a050f53c68604cb53549e75113a56525951a7f77fb05d84",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "def75b76e6ff15e2",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "789c28a731e11d67007c48b819b8117bd1a0fc2d",
+   "module": "idna",
+   "mutated_digest": "4661ab1a7c9693b96f78b232b288f15adb0739020be9a89a798f2178c1836249",
+   "original_digest": "95e833804fc6e908b4ecf8a2b73c5699f20eb40bf46e4c0e5cd7c407cba7332a",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "046a6a7361b999ed",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "7ba5aab439fea705726b61f2e27796999e4fb2db",
+   "module": "idna",
+   "mutated_digest": "1c6c0d433db2816e80f2439338aa058c0b24e778d4c48f8ca08d903c60cfd91d",
+   "original_digest": "bda22028f703acad251e94859a9bf5a68cf8c09c7182b811cb7cd47cf60265ad",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "36d60cdb91eb8109",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "ed4c71f083c3af6cdcc7c8d4e164e50455f72383",
+   "module": "idna",
+   "mutated_digest": "f0f19d917df5d0de5b075f75d8b7467b6323c76139433566dd4880038bcad581",
+   "original_digest": "30a5833eb7931e0605292df67059d0736b66c5d31172839a6512674aff35ce49",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "5d369d19a559b339",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "efc1607c038fb3b1b5ebcfc00db9d14be492ec3c",
+   "module": "idna",
+   "mutated_digest": "2094480b7b9d9508c63a4a015a9279026697fb88b9af588370fe5a768b045e19",
+   "original_digest": "fe7e27bb7c808768570fe9a5394cf792c706abb0dd2023d66805ca097451b468",
+   "path": "idna/core.py",
+   "repo": "idna",
+   "split": "fit",
+   "task_id": "0162b804af9e5136",
+   "tests": [
+    "tests/test_idna.py"
+   ]
+  },
+  {
+   "commit": "3594f8f52767e499c86182e25509dce893cbf6ae",
+   "module": "itemadapter",
+   "mutated_digest": "f3aa97ab362d4b8db9173c45aa99fd8ca28ca31a2eb9c6426d7c2163750ceb76",
+   "original_digest": "ce9c3f17e641be5fd6dc8109b2acb8d8394a970973a3d6f17b5c5150f2272597",
+   "path": "itemadapter/adapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "8384bcbdb07d26e8",
+   "tests": [
+    "tests/test_adapter.py"
+   ]
+  },
+  {
+   "commit": "35fdf642d4deebddc4f15d0c36d9300bf066fab9",
+   "module": "itemadapter",
+   "mutated_digest": "50a68dfdb711a6fe25f2adf03cd6c33699699cf6f6fc9b981943889405a28f69",
+   "original_digest": "22f9fbb23733feffcff81eab78a4872512d174460a97f8c80b0ce61c52bd8609",
+   "path": "itemadapter/__init__.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "29e262cf9830e201",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "390dd424eea07174e6bf1ad67382509a05a3b0c6",
+   "module": "itemadapter",
+   "mutated_digest": "1930b380c6d98b77c409925e7535514e02b5adfe0aaf648b8c982299abfc2eac",
+   "original_digest": "65ca00e2f5a3fc971db25ff5aba5ce29a69b9bd3bd46f1ff5e1b2c513dfd6fb3",
+   "path": "scrapy_itemadapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "086852217085af06",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "3bc56f2f5cd43a90bbf4f65faee951b2f8b58382",
+   "module": "itemadapter",
+   "mutated_digest": "e3cdf6b865e7bdbbc638cd2fdf76ee2bdec1b99b470c372b0776c2e7837f3d87",
+   "original_digest": "f948744de4014f60e7d8e82d9b79f8638e687dea6776f5383f7f6f3cbdcb77ce",
+   "path": "itemadapter/adapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "0b2a505150f11e95",
+   "tests": [
+    "tests/test_adapter.py"
+   ]
+  },
+  {
+   "commit": "4b31b5f2160dfa53430054a32436626a0fae4544",
+   "module": "itemadapter",
+   "mutated_digest": "a2d832da193755b6562ac1921dba060f9d65d54f6109ddd395f852f9ba29a8d4",
+   "original_digest": "1930b380c6d98b77c409925e7535514e02b5adfe0aaf648b8c982299abfc2eac",
+   "path": "scrapy_itemadapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "25395145974df939",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "5e06d5facca2e9fa22b0e7c3e6506fc822334e96",
+   "module": "itemadapter",
+   "mutated_digest": "1f14af2001d16c6278a0fc47c559214f586552216820756134a6603609a3cc0d",
+   "original_digest": "d311cac7b5ae8ee2ff779fde71096b7b29ab840f85c6598db0bbb3ab703e018e",
+   "path": "itemadapter/__init__.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "0562a23b931a2434",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "5feac5f0f13ef5f7cd33f048ffd149fc7e45a9d1",
+   "module": "itemadapter",
+   "mutated_digest": "5b22a1ca9dfcd02ca2a2eec531a21b70eabc4ad914f8a5046dd79c30804ce8f3",
+   "original_digest": "db1c7cbdfff95b7b5e19b080379f7b2d5cddb867882567a0dfffbd34a31e2ed4",
+   "path": "scrapy_itemadapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "748bf37a10f9e01c",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "68772ab5cfaf3627c436cceb3566a302dd7eed70",
+   "module": "itemadapter",
+   "mutated_digest": "65ca00e2f5a3fc971db25ff5aba5ce29a69b9bd3bd46f1ff5e1b2c513dfd6fb3",
+   "original_digest": "5b22a1ca9dfcd02ca2a2eec531a21b70eabc4ad914f8a5046dd79c30804ce8f3",
+   "path": "scrapy_itemadapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "324282e9ae28ed2a",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "81c0f9238e0eeec1cb9041d7df75bee3a359983f",
+   "module": "itemadapter",
+   "mutated_digest": "ce9c3f17e641be5fd6dc8109b2acb8d8394a970973a3d6f17b5c5150f2272597",
+   "original_digest": "741586db6a9d80a59331f723a2b65f028e94ade7c2ccac70e0e7ba0d77f4910d",
+   "path": "itemadapter/adapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "b3319318e4d95bf4",
+   "tests": [
+    "tests/test_adapter.py"
+   ]
+  },
+  {
+   "commit": "d66aa627ee732d6f9eec159986922d63093a71ff",
+   "module": "itemadapter",
+   "mutated_digest": "b12b3c96824d417e9c735de8f323ee822656127a370c544665f77f0c6fd6f4ff",
+   "original_digest": "88fefaaefb858b7c1e433dbf14b9119db70b6bfd7ab4c0ccf160602521f56ea3",
+   "path": "itemadapter/adapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "d2c644e5f7364691",
+   "tests": [
+    "tests/test_itemadapter.py"
+   ]
+  },
+  {
+   "commit": "e6ad751b940133059b336e99a43f1b05b456cc42",
+   "module": "itemadapter",
+   "mutated_digest": "176c01c7103c2d275ad34435ea30b45cf1e5a6b59c7b29c6d1218850e4efbefd",
+   "original_digest": "e3cdf6b865e7bdbbc638cd2fdf76ee2bdec1b99b470c372b0776c2e7837f3d87",
+   "path": "itemadapter/adapter.py",
+   "repo": "itemadapter",
+   "split": "assess",
+   "task_id": "abdb61677745fee7",
+   "tests": [
+    "tests/__init__.py",
+    "tests/test_adapter.py"
+   ]
+  },
+  {
+   "commit": "526b1ea02934f529606dcbf3c3340ab429dcde04",
+   "module": "itsdangerous",
+   "mutated_digest": "1ab7c84f26009336cf00799b61d4f9024c1237a57b8a70c754b1c3041458f890",
+   "original_digest": "ee5903313a66fe593a2175c4a2dccf746e9ba7aacec59f2de780e6f0ad185296",
+   "path": "src/itsdangerous/timed.py",
+   "repo": "itsdangerous",
+   "split": "fit",
+   "task_id": "4ec1aee6d6006553",
+   "tests": [
+    "tests/test_itsdangerous/test_timed.py"
+   ]
+  },
+  {
+   "commit": "53f34c9a8fed28aa0f58502001ed2d75d23d3104",
+   "module": "itsdangerous",
+   "mutated_digest": "477c7abf7125edf2068321e6fa4decd9dc78ff19be098d826a0d4a48aee1219c",
+   "original_digest": "4ad994b29e9130cb313df739561607f2e7c0fba6cb2432544a9dd3fc74086b42",
+   "path": "src/itsdangerous/jws.py",
+   "repo": "itsdangerous",
+   "split": "fit",
+   "task_id": "dbc921fd050421e1",
+   "tests": [
+    "tests/test_itsdangerous/test_jws.py"
+   ]
+  },
+  {
+   "commit": "6c58e969a513646c8e37260417929770a4ab1b67",
+   "module": "itsdangerous",
+   "mutated_digest": "cfde1d8d922394703a4cad90588ec37ce4ee32b31b95ce4ad8acdb61a38d948b",
+   "original_digest": "6b106671acd57bb7f6f2057a20d4fa0e87fa64b30fd23c3890a3323010ef84cd",
+   "path": "src/itsdangerous/timed.py",
+   "repo": "itsdangerous",
+   "split": "fit",
+   "task_id": "0323da3ac44fd4c2",
+   "tests": [
+    "tests/test_itsdangerous/test_timed.py"
+   ]
+  },
+  {
+   "commit": "7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+   "module": "itsdangerous",
+   "mutated_digest": "06d27b2bc78ff1ba157a6b71b88a4704482e42b5d4de61a3638150c4bbda6157",
+   "original_digest": "994d57be2be30783bf458f9d7e58b933dc83622d1e9c75d2d6e8426642ef8616",
+   "path": "src/itsdangerous/signer.py",
+   "repo": "itsdangerous",
+   "split": "fit",
+   "task_id": "fbd708a942843ccb",
+   "tests": [
+    "tests/test_itsdangerous/test_serializer.py"
+   ]
+  },
+  {
+   "commit": "c30678d19e37011890e2374cca04f7789e101793",
+   "module": "itsdangerous",
+   "mutated_digest": "6f0af9a82b5a0bc3b7c5837a88cfabe6ea8d30e48e1ffd5077ce70ccda55a780",
+   "original_digest": "1ab7c84f26009336cf00799b61d4f9024c1237a57b8a70c754b1c3041458f890",
+   "path": "src/itsdangerous/timed.py",
+   "repo": "itsdangerous",
+   "split": "fit",
+   "task_id": "1a3d0412e096ff52",
+   "tests": [
+    "tests/test_itsdangerous/test_timed.py"
+   ]
+  },
+  {
+   "commit": "0940f9233529fc0044d3963320a5741a016412b1",
+   "module": "loguru",
+   "mutated_digest": "772f3654254dc6d40127e9236b19a4e1c779fc73facb846e71738d0426a41eb2",
+   "original_digest": "be1f6ad0ed546f2c24b60c913dec214f09df0510943cd6b72b98b38437fc1979",
+   "path": "loguru/_simple_sinks.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "aacdf88b00e72888",
+   "tests": [
+    "tests/test_standard_handler.py"
+   ]
+  },
+  {
+   "commit": "0e54edffdff09b5fb87edbca301ec6407bf868c0",
+   "module": "loguru",
+   "mutated_digest": "83d4e4b7d9ae9d133bdd25321389acda9df533039a7f4f20ca5851253038ce20",
+   "original_digest": "d05cd211d88bfbe3d1e58309652200dff7a62884550239cbcf1104b94c6616c2",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "9211cfa8fbde4e0b",
+   "tests": [
+    "tests/test_add_option_colorize.py"
+   ]
+  },
+  {
+   "commit": "0f0b698f91cfd9aadff10aa750bfc8abb4b6a18a",
+   "module": "loguru",
+   "mutated_digest": "d05cd211d88bfbe3d1e58309652200dff7a62884550239cbcf1104b94c6616c2",
+   "original_digest": "e93d2d06d8e194ca313171993d441a54447fb0394f56a8db81f657299836f26d",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "cfaca164cc1765d4",
+   "tests": [
+    "tests/test_add_option_colorize.py"
+   ]
+  },
+  {
+   "commit": "0fcc84268e0570a2ce13a2b1d6414042cdbe78e4",
+   "module": "loguru",
+   "mutated_digest": "2540518fd31c76a28d9084dd4b1d24542f6f5de5bc7fcb994d24b8e12b489f86",
+   "original_digest": "4cb7c5bf2a5f107728561947a0fe29f77a284916905bbf111fe1c9f9d0521971",
+   "path": "loguru/_simple_sinks.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "d75ec66e12885c38",
+   "tests": [
+    "tests/test_pickling.py",
+    "tests/test_standard_handler.py"
+   ]
+  },
+  {
+   "commit": "28749e78347ff013c36d6c74d85a2351062912af",
+   "module": "loguru",
+   "mutated_digest": "2bdcac1e43b497b32da214e0def8859a35ffee66f69f6e54b30509fabd5422e6",
+   "original_digest": "f43f95101eafd8fd6a6c0b63a0cec00b96262cb1cf080edce1e04da75a0a37df",
+   "path": "loguru/_datetime.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "4e8b1290d22e19f8",
+   "tests": [
+    "tests/test_datetime.py"
+   ]
+  },
+  {
+   "commit": "2e743078be0bdc5520d95c49fcef0e9099d51a52",
+   "module": "loguru",
+   "mutated_digest": "322a51da91a0233c8f7871cb96b7a2bb289070261bb6aac00a770f744b614e50",
+   "original_digest": "77362f115b38639e0ebb1bde703d8bf7263a6e079ba34cc82bf418d87a0a6047",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "91979d118f6e30ef",
+   "tests": [
+    "tests/test_repr.py"
+   ]
+  },
+  {
+   "commit": "4c8ebe267b82c4e97e2a2e7821b571199218e44d",
+   "module": "loguru",
+   "mutated_digest": "13d1d18132fcc0a1117834d7c6ea36d025802d074a4aeb87ebfcfe08ae7bd35e",
+   "original_digest": "c8e843216f02074246eb20b747efe35ed1f3c120c0917a115e74c883161e3cb0",
+   "path": "loguru/_recattrs.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "da570f153b7de5f8",
+   "tests": [
+    "tests/test_add_option_enqueue.py"
+   ]
+  },
+  {
+   "commit": "565a6f63bbbc39da8cca365fcf7ddf757f79b5e4",
+   "module": "loguru",
+   "mutated_digest": "13d1d18132fcc0a1117834d7c6ea36d025802d074a4aeb87ebfcfe08ae7bd35e",
+   "original_digest": "c8e843216f02074246eb20b747efe35ed1f3c120c0917a115e74c883161e3cb0",
+   "path": "loguru/_recattrs.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "5dd873b066a04817",
+   "tests": [
+    "tests/test_add_option_enqueue.py"
+   ]
+  },
+  {
+   "commit": "5672e7d0ad610d70c5e549939b049303edefda19",
+   "module": "loguru",
+   "mutated_digest": "70af9097d95f6d7e4208253b7764444a0aa7eb5ecbe0257e2bbad2cbf33323a7",
+   "original_digest": "6e6caefbea50df2e83b9b64ef1b57b96942d04020d1b6dc9f5f479860a541566",
+   "path": "loguru/_datetime.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "ff9c25846a40d283",
+   "tests": [
+    "tests/test_datetime.py"
+   ]
+  },
+  {
+   "commit": "59207a70900bce5c93660245835c95b9e694e062",
+   "module": "loguru",
+   "mutated_digest": "fe6e99facc2a4c537b997cb2e2dee1cd97dfbf8a9ddc3a9c04468cc89c8c8270",
+   "original_digest": "83d4e4b7d9ae9d133bdd25321389acda9df533039a7f4f20ca5851253038ce20",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "d5803307f88ff9b9",
+   "tests": [
+    "tests/test_add_option_colorize.py"
+   ]
+  },
+  {
+   "commit": "7b30cd046a593f34696f6c574813b9727ae5c35e",
+   "module": "loguru",
+   "mutated_digest": "15656b400e282e6d6e71173086fedb337a9c39ff872f22265560ced21ed12dd0",
+   "original_digest": "8f7a0a52c610b7cd3aee0f59b207a5684b228c9c453b5870b014b377072b73a2",
+   "path": "loguru/_string_parsers.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "1be334dbb142e601",
+   "tests": [
+    "tests/test_filesink_rotation.py"
+   ]
+  },
+  {
+   "commit": "7b6f6e3741eea7b56273e072a008dc2564592496",
+   "module": "loguru",
+   "mutated_digest": "e69243c1b84f2aea88ce7bc6138f90d9d752300db3db084a17c1dc7525ab1c74",
+   "original_digest": "6d0aef83cd230e60c97ee8366159bb6be34f2d82aa9f443d8abaa56a7cf22a6b",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "837d4d286a22fc63",
+   "tests": [
+    "tests/test_add_option_colorize.py",
+    "tests/test_colorama.py"
+   ]
+  },
+  {
+   "commit": "8052eff4c1ba86793a6f38ee890a898e902bc1ea",
+   "module": "loguru",
+   "mutated_digest": "e67b4ad4a4753609a1aced651388278e058f86e162b166928631eb3dd98b919d",
+   "original_digest": "70af9097d95f6d7e4208253b7764444a0aa7eb5ecbe0257e2bbad2cbf33323a7",
+   "path": "loguru/_datetime.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "645f9012ae0687aa",
+   "tests": [
+    "tests/test_datetime.py"
+   ]
+  },
+  {
+   "commit": "8680f63564ff530c6644f3e668403a5d22494679",
+   "module": "loguru",
+   "mutated_digest": "5d76b513fc0974a058c4674cc843ad8d6a21a3558040d987704633bcd0710fcf",
+   "original_digest": "792a0c88a570737863b46dbb111e8d73665d2d134aa57c16fd66d5dc29c301fc",
+   "path": "loguru/_recattrs.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "aaccf5f4cbfdc578",
+   "tests": [
+    "tests/test_patch.py",
+    "tests/test_recattr.py"
+   ]
+  },
+  {
+   "commit": "8a94647194538c32d480badd415cfaf908fca735",
+   "module": "loguru",
+   "mutated_digest": "997dc15c7dc8d1664e40e00cfc683e277765a5999aea7effe5b48d9485d29d67",
+   "original_digest": "97750e47f392fc1254172f492b5aefe5a4cc79b802579d2968fb1b385bde7207",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "f851d9ca3e880d04",
+   "tests": [
+    "tests/test_emit_errors.py"
+   ]
+  },
+  {
+   "commit": "92952b912c6e32866f2ec3dd6bee2aa5403d418b",
+   "module": "loguru",
+   "mutated_digest": "de22adc81faddb192282d093eb70c87fb399df1721854e7a6c8560d4985e3176",
+   "original_digest": "e8efc761262399a02546431e51b6ba421cfc7245410877e07c4ce2c9e8e62e45",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "0b439ecc467f6e4a",
+   "tests": [
+    "tests/test_colorama.py"
+   ]
+  },
+  {
+   "commit": "b02ef7ab6efa852e2a6cd859a90bbbe3b22698c1",
+   "module": "loguru",
+   "mutated_digest": "7287878b311373bca86db0d08011c531bc0951428407f7c332405434601f016d",
+   "original_digest": "22d1095a601a572466ae5eba51889f8f11cf2df211b56f07ba40bbc649126ac1",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "81cdd38bb25d06c4",
+   "tests": [
+    "tests/test_add_option_serialize.py"
+   ]
+  },
+  {
+   "commit": "bc2ec9abe9285ba016b904b6dd82ccb8ce0fb2c1",
+   "module": "loguru",
+   "mutated_digest": "6d0aef83cd230e60c97ee8366159bb6be34f2d82aa9f443d8abaa56a7cf22a6b",
+   "original_digest": "de22adc81faddb192282d093eb70c87fb399df1721854e7a6c8560d4985e3176",
+   "path": "loguru/_colorama.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "bcaa6fb8ba4f646c",
+   "tests": [
+    "tests/test_colorama.py"
+   ]
+  },
+  {
+   "commit": "bce5dfd3b435b1d1658507d7e095ad7a9919bf1c",
+   "module": "loguru",
+   "mutated_digest": "685476ea45e0a60da3b7d0202c4533eaef1244de137453f7f7189b7a6f995df5",
+   "original_digest": "9dc799ebf2505eda0ff37bd5133fdf65a109c482ddd7736c26ec36010fa6f043",
+   "path": "loguru/_simple_sinks.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "604c2f0b45d07547",
+   "tests": [
+    "tests/test_standard_handler.py"
+   ]
+  },
+  {
+   "commit": "c439a869bb231a3f4452fa4f78d7afe00af714b0",
+   "module": "loguru",
+   "mutated_digest": "77d5c2a38209aa79d357eafe77ee41b0ebcbc4a7f55b7c1193713aca3de4d23c",
+   "original_digest": "cdaa71d866168f17cc702cd16806abfd8a3207481d058bd275f717b7e98260ce",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "3c50f30f374f17d9",
+   "tests": [
+    "tests/test_add_option_serialize.py"
+   ]
+  },
+  {
+   "commit": "d3c590573edb41884feb206823a47c3a9e14aa68",
+   "module": "loguru",
+   "mutated_digest": "78935112f804fabab992a0d77aebb63a13ab1b490840e3d74df381830d185be5",
+   "original_digest": "7aed213a901565b6981facdc070633714a43f9c46b78e7f7db3fed1438313712",
+   "path": "loguru/_string_parsers.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "39943323d61cbcf7",
+   "tests": [
+    "tests/test_filesink_retention.py",
+    "tests/test_filesink_rotation.py"
+   ]
+  },
+  {
+   "commit": "de646c6ba64b1be484b6a77acb2e3a3dffaba35d",
+   "module": "loguru",
+   "mutated_digest": "25665034a099100c5dc4ba3cc3f1e633015384554e01b602cecac9f972e79503",
+   "original_digest": "eda2a84e6c0a821e5d2498b8b2a36231273ea951b407f81b1f2c6e9697f30bfe",
+   "path": "loguru/_datetime.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "d7790790c453a2db",
+   "tests": [
+    "tests/test_datetime.py"
+   ]
+  },
+  {
+   "commit": "e49d1539042e18ca17b96fd28727234a0705d22a",
+   "module": "loguru",
+   "mutated_digest": "cc6e8afb86fe92e9ca4444950872af311c4500d7be64b760761d1fde60eaf7cc",
+   "original_digest": "e67b4ad4a4753609a1aced651388278e058f86e162b166928631eb3dd98b919d",
+   "path": "loguru/_datetime.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "d1cb53238e27d161",
+   "tests": [
+    "tests/test_datetime.py"
+   ]
+  },
+  {
+   "commit": "ed7cea140751f2485b7fca16a95d1356a837b4b7",
+   "module": "loguru",
+   "mutated_digest": "3350ada52fec721b1e39e42d14099e32f8649f61b888c71687ef68ab566aa7d6",
+   "original_digest": "997dc15c7dc8d1664e40e00cfc683e277765a5999aea7effe5b48d9485d29d67",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "0255faae29819d29",
+   "tests": [
+    "tests/test_add_options.py",
+    "tests/test_ansimarkup.py",
+    "tests/test_formatting.py",
+    "tests/test_levels.py",
+    "tests/test_opt.py"
+   ]
+  },
+  {
+   "commit": "f9f8b79e76f0714f1a87055667ab46151ebdf984",
+   "module": "loguru",
+   "mutated_digest": "e426009b3ea1b969c689253caba04ee6229885a6b3b5f8de75c9c1ad86131751",
+   "original_digest": "fe0a807ea458ddbbd2303cc7040727f334a8b5147cf7cc5c344c3bbb3017756c",
+   "path": "loguru/_handler.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "7fd5cd6ad472f6ea",
+   "tests": [
+    "tests/test_multiprocessing.py"
+   ]
+  },
+  {
+   "commit": "ff7f315b39b6d6d10d108a5b4d3520e7cf83a3d3",
+   "module": "loguru",
+   "mutated_digest": "cfde92e4f627ad69ecdc16cbbc19b2bd8b14e600a8c994f1bf7090dbc8415ea9",
+   "original_digest": "2540518fd31c76a28d9084dd4b1d24542f6f5de5bc7fcb994d24b8e12b489f86",
+   "path": "loguru/_simple_sinks.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "f8c6931d289c6b6f",
+   "tests": [
+    "tests/test_standard_handler.py"
+   ]
+  },
+  {
+   "commit": "ffe1617122cc6c56f6fdfb1715a006fbf85bea1c",
+   "module": "loguru",
+   "mutated_digest": "bdf66d417e599aa46ee6e54237379e1542e932034bf23bfb8d9f4c9d4b736a22",
+   "original_digest": "685476ea45e0a60da3b7d0202c4533eaef1244de137453f7f7189b7a6f995df5",
+   "path": "loguru/_simple_sinks.py",
+   "repo": "loguru",
+   "split": "tune",
+   "task_id": "14c41d331d05ff60",
+   "tests": [
+    "tests/test_standard_handler.py"
+   ]
+  },
+  {
+   "commit": "0b6bee071fbd8d3171fb1ac4fb669baace808438",
+   "module": "markupsafe",
+   "mutated_digest": "242d1b9456595bc2287f4ba8a8beeb33fcfd6523fad9b850c9b8101518bedb13",
+   "original_digest": "6f162e5e66343be32635273a254bbd1b6bdc66e9b70f0da8748d860cf3e491d9",
+   "path": "src/markupsafe/__init__.py",
+   "repo": "markupsafe",
+   "split": "assess",
+   "task_id": "5bcc49b4ca5f11cd",
+   "tests": [
+    "tests/test_markupsafe.py"
+   ]
+  },
+  {
+   "commit": "391aa07d3c68d4d0888b31fdea62516df9e19cb8",
+   "module": "markupsafe",
+   "mutated_digest": "cb9305881a1da8f04e5903c9acd20a393cd7eb0b6d997ce8eb0e70d76c75343d",
+   "original_digest": "6dfa6d3153beb47a0ec4a8117987907b1d03a63bc47a0c3e96e922b0f3258a44",
+   "path": "src/markupsafe/__init__.py",
+   "repo": "markupsafe",
+   "split": "assess",
+   "task_id": "9837aed39408ced4",
+   "tests": [
+    "tests/test_markupsafe.py"
+   ]
+  },
+  {
+   "commit": "3d809aed7b7b6af5c371bab68666857087335af9",
+   "module": "markupsafe",
+   "mutated_digest": "76432085de8b036d7c6161e46eeaa5b404b5636345198582f853e69b09667f8e",
+   "original_digest": "73b5f083b3800b9502e19802b6f1b0011b95b1d46a9e2d16a87853c608ecebfe",
+   "path": "src/markupsafe/__init__.py",
+   "repo": "markupsafe",
+   "split": "assess",
+   "task_id": "aaf8cf6980332fdc",
+   "tests": [
+    "tests/test_markupsafe.py"
+   ]
+  },
+  {
+   "commit": "80aff0325c83991e5c62ad741b9a85d65df18058",
+   "module": "markupsafe",
+   "mutated_digest": "0bfdbf482650e260500ded21dbdfd41c8954deaac4da96688afe87319c5939c0",
+   "original_digest": "83d07dbb1bccc606048bfbaec59697319c1633793ce81193e2323a378c46b2d8",
+   "path": "src/markupsafe/__init__.py",
+   "repo": "markupsafe",
+   "split": "assess",
+   "task_id": "4ad006bb2a0af79c",
+   "tests": [
+    "tests/conftest.py",
+    "tests/test_escape.py"
+   ]
+  },
+  {
+   "commit": "e49d257126d09937b1bf5e2b2173238df729fb13",
+   "module": "markupsafe",
+   "mutated_digest": "a1cd547a5b15642a78a1e1d15090fb3ad2874ccbee16a2aba61b50dbb3128be7",
+   "original_digest": "5e822d4895f2a683d59d0ae5c79f05fa0db71e582131e63db45c7db689f1e643",
+   "path": "src/markupsafe/__init__.py",
+   "repo": "markupsafe",
+   "split": "assess",
+   "task_id": "3fffbdad46d7920b",
+   "tests": [
+    "tests/test_markupsafe.py"
+   ]
+  },
+  {
+   "commit": "17bd038024bd413cf783c5a52e02662a0edb81b9",
+   "module": "marshmallow",
+   "mutated_digest": "40bf0eba8ad7fa103f9a6633f433ee284e5d211eac08dac4d4bcc8d347afe0ef",
+   "original_digest": "15f9cdf529f4cfe2e11955ad79c898ca327536c13817bff0c185628139bdb510",
+   "path": "src/marshmallow/__init__.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "177dbfa602a09c31",
+   "tests": [
+    "tests/test_context.py",
+    "tests/test_deserialization.py",
+    "tests/test_schema.py",
+    "tests/test_serialization.py"
+   ]
+  },
+  {
+   "commit": "1f899e9a84000c6475795a4e53e7581580177906",
+   "module": "marshmallow",
+   "mutated_digest": "0052bf9f54b9297399b3641dce621f1e497b173d222d6d458d344f2bf81d060d",
+   "original_digest": "d10d63e47ce51568670f164a9762d293dbea7bfef31404449279c2fe95db736d",
+   "path": "marshmallow/class_registry.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "b84e9b5cf7da32a6",
+   "tests": [
+    "tests/test_registry.py"
+   ]
+  },
+  {
+   "commit": "2b84b56e9a80d07b65d74811673e8e5cf46cd0f1",
+   "module": "marshmallow",
+   "mutated_digest": "ceece427aa40eef12780ce7c53fb0549d29eac9421fe24f2ab7b5df7b585e666",
+   "original_digest": "3892731329073b010b0c5c766ffbc15b494f3396032d4cbe7d7a69f6133c3688",
+   "path": "src/marshmallow/constants.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "04a6c96962a15cf9",
+   "tests": [
+    "tests/test_deserialization.py"
+   ]
+  },
+  {
+   "commit": "2e0a4fcc832e6dfe10a96b539bb6a79378dbcc60",
+   "module": "marshmallow",
+   "mutated_digest": "72696ca6d03360bc46948c5701401d82346b4dfea571e9c878d23997347cbcde",
+   "original_digest": "d64a3a61c963b353999d718aa6d2c0cdedb199d56867268cdca286e0cf03bb7e",
+   "path": "src/marshmallow/utils.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "4e2ce385e1fc160f",
+   "tests": [
+    "tests/test_deserialization.py",
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "382c8cc0b1840b25bce524cef3defc784be24464",
+   "module": "marshmallow",
+   "mutated_digest": "9e8a09e4d9a91831babeeec63e901ffe3cc60d96f45a1c93916ee535094dde8b",
+   "original_digest": "bcaad2ed18854d1319da93e2305b9a51d2865f5b1f194bb16563da17cfbe33d3",
+   "path": "marshmallow/exceptions.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "a79e06591ce5e50c",
+   "tests": [
+    "tests/test_decorators.py"
+   ]
+  },
+  {
+   "commit": "4f4e0488daee3f2a263ce3b7951f5c10c3da1c94",
+   "module": "marshmallow",
+   "mutated_digest": "afc8a5cbf2e9061d4e150e3ac99b0e7b6256037ea16199fc5541c13c48e54fec",
+   "original_digest": "ca026b8d5a38756ccb6ecca8ccc37017a8842c7de36638e0a1a2b69b2f2513dd",
+   "path": "src/marshmallow/__init__.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "71811b5e1250807c",
+   "tests": [
+    "tests/test_schema.py"
+   ]
+  },
+  {
+   "commit": "610ec20ea3be89684f7e4df8035d163c3561c904",
+   "module": "marshmallow",
+   "mutated_digest": "aeaaff3529cefe5d62e2247d5bdd3c8475a50eade38714837b9c2743f7bd5ca3",
+   "original_digest": "d9927edcdfecc4fd0eea941895bcc5c53545ff07558d3c0cf20fea4068a35530",
+   "path": "src/marshmallow/utils.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "9a031e929a827f94",
+   "tests": [
+    "tests/test_serialization.py",
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "6fac57d41cc86fd960cbd92daca9c32181a21aed",
+   "module": "marshmallow",
+   "mutated_digest": "32f398a06bcc9c1371deef1afc0184aeb3b3d55f910a767d23cda297b895cb19",
+   "original_digest": "afe93dbfb2478ca1170a7fd63525c2bec4edf6a5c6abe90ed54487225cd0ac14",
+   "path": "src/marshmallow/context.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "dd6dec4fb1b812a3",
+   "tests": [
+    "tests/test_schema.py"
+   ]
+  },
+  {
+   "commit": "72ac4a04208ff24df0a9694d9b03b78b1c5a2e6a",
+   "module": "marshmallow",
+   "mutated_digest": "f1d572fd8e841cd00d20fba6dc4e0cf252c2e9fc1c4a7ab5f47926fa3bae2dbf",
+   "original_digest": "f27247781e555af953f062b2ad69b601056ef53fe781ba5482871939dd7b2007",
+   "path": "src/marshmallow/utils.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "b1eedd6d7b69e667",
+   "tests": [
+    "tests/test_deserialization.py",
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "b2e5a7da74d2f62a4d3694a43bc31248eb14be24",
+   "module": "marshmallow",
+   "mutated_digest": "85f0579bc065b076e285f021509cc216af79305d35584c1a8b2ac8d915068f8c",
+   "original_digest": "6c9383419d524f8137850ae534e187103b79f54556436a8286f1c2d76fef0997",
+   "path": "marshmallow/marshalling.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "dbe0004aab4a5d0b",
+   "tests": [
+    "tests/test_marshalling.py"
+   ]
+  },
+  {
+   "commit": "d40bd6e967b083a56c73e55945c6ce5213042203",
+   "module": "marshmallow",
+   "mutated_digest": "c65f36d6e9421710df2a5933b1c76e393ab4c389e5fb8ad215a97d2d2e4393aa",
+   "original_digest": "c96540c416724b274ea499e39e12adc4ea8cd712c6ab516b7e955b0c0374a381",
+   "path": "src/marshmallow/utils.py",
+   "repo": "marshmallow",
+   "split": "assess",
+   "task_id": "3b6b329ab2636e7e",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "03eacc5cf64df4f6f40864b852a62bc98c8e4c10",
+   "module": "mistune",
+   "mutated_digest": "24b2711c64a104420f2ae9aedafde4d3bb37a00f6c8ec913371ed6bdd92af272",
+   "original_digest": "71d46e1455a858986ca42fdc613e274032b24c14523310e10f54df7371e12c97",
+   "path": "src/mistune/list_parser.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "3baa7bd7fd24b306",
+   "tests": [
+    "tests/test_directives.py"
+   ]
+  },
+  {
+   "commit": "0d50b667e6a26a52597c4dbc446a2f1ee0e406f8",
+   "module": "mistune",
+   "mutated_digest": "7f7176df4afbfbc551f065219e86a33ba8fa342e7f37dcd62396ef9e67a324e4",
+   "original_digest": "3ebc135068709bfd34f1b16ad5532affcdf445f64dbe75f005eb8f29169ae4eb",
+   "path": "mistune/plugins/directive.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "5ea313b3fdd1f395",
+   "tests": [
+    "tests/test_directive.py"
+   ]
+  },
+  {
+   "commit": "0d6f3d850283d51e9c60e5a1b3c9343a18df3722",
+   "module": "mistune",
+   "mutated_digest": "48f873c912776607776fb9ee4b622fc6ee137a990d1e044574b30b1ad65301d2",
+   "original_digest": "763c711e7f87d62224fd5059dca1563e9edb2d15c388b79695cd4d48981fef6a",
+   "path": "src/mistune/renderers/html.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "72e7fe9f0769b922",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "1209f3421e5057bb2525c7059c1a38ddf205ef2e",
+   "module": "mistune",
+   "mutated_digest": "852afca786acda409bf4b57d05687fc43c5ecbb6283292a68a217001cd89cd14",
+   "original_digest": "ed80378ebce29c8a7e12b7f19d1b16ba2034847a907c4457bc7b1e831194fb66",
+   "path": "src/mistune/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "1619bcbf3800fc69",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "129f63aef0c2979f46aeadd82e96bc5443571a75",
+   "module": "mistune",
+   "mutated_digest": "057f496bd5dbb43c3a20045a5467acafd778c3567911bb3ecaea3dcf8c2522ba",
+   "original_digest": "7b746bb56ec9afdc9ef4135d3498a1015f1cd7f2e439028aaf45abd37f86973c",
+   "path": "src/mistune/renderers/_list.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "ae37d39ff52deaae",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "14ececa88fc61a7f9ab06413c82f18e3cfea1533",
+   "module": "mistune",
+   "mutated_digest": "2512d69ff50b77fe739f6a00d6890c4a8f748794c23c1b6dc974e1e882e40c8c",
+   "original_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "5009c4b4fe94e4de",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "15ad4b0551d5e3b26639a2f156e29487a3a4bd10",
+   "module": "mistune",
+   "mutated_digest": "16094913d0984ef3d26694a8b44e852d0d2b78c15f3e133e8a6c9094fc973a13",
+   "original_digest": "48c4335bdcc9f5cec0bbde88ac723a0afc920063fc2bbeb5824dfab0d157b236",
+   "path": "src/mistune/plugins/footnotes.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "8751c526f81a8d38",
+   "tests": [
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "18af19b4a318c7166175938ebc6e69dbde2d678d",
+   "module": "mistune",
+   "mutated_digest": "bb8fe3b53ba9b28f4b544923f024f3b1110727abdea314d6254a9cf42e593ce8",
+   "original_digest": "7d1c2f991c791b66004434889f17548f5cf03c33286f848a46599e8f081cad37",
+   "path": "src/mistune/plugins/def_list.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "c591588858b517dc",
+   "tests": [
+    "tests/test_def_list.py"
+   ]
+  },
+  {
+   "commit": "18c21d7dc0bf2d4b36792e425e4705d457c5402a",
+   "module": "mistune",
+   "mutated_digest": "3527f2866e74dd96b7fb2eeea09b157985ac9f819984108adc271ec76f3c029b",
+   "original_digest": "20beae853a0a2e735744c71334ea1fb545443fe777bf0babefbc69a9396901ca",
+   "path": "src/mistune/directives/include.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "05f08497a30c90f7",
+   "tests": [
+    "tests/test_security_include.py"
+   ]
+  },
+  {
+   "commit": "1b1e0edc2212298c5c6fb557b92c562a2029a353",
+   "module": "mistune",
+   "mutated_digest": "401db62cf6c174c91a88b388bdc32d3299a1a132384eac611001df53bf54804d",
+   "original_digest": "ccf1ffc98788a2035e71fdd9df594e660603952776a6e761e9994bc0719c1328",
+   "path": "src/mistune/list_parser.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "f230b467e0160b9a",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "1bef343ade163fc3bb95572b15be720084cdb993",
+   "module": "mistune",
+   "mutated_digest": "bf928922fe1da9aa857afffb0ee860dfa728ebd15815207fe7ec0c46a8944ba1",
+   "original_digest": "3527f2866e74dd96b7fb2eeea09b157985ac9f819984108adc271ec76f3c029b",
+   "path": "src/mistune/directives/include.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "03c43e92d4b6ad02",
+   "tests": [
+    "tests/test_directives.py",
+    "tests/test_security_include.py"
+   ]
+  },
+  {
+   "commit": "1eccac395567e8677865cfdf4a7e65f530357ab2",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "858848fc7d2368f9815a2ca559cb98c5cffc1ff675befeaa0062fbb515665db9",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "56456c318db1718b",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "2841c333ba5a3c8e2eb870c35ecb475ae2fbeb6c",
+   "module": "mistune",
+   "mutated_digest": "585c332d41b7c47a26e718e7b836753a3609afc7be51c8cbf101095829e5a47f",
+   "original_digest": "f6b51287d844546671fc4529761a8509fda6ae53924103463d6f3e5bcca88466",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "220b70e5a870915a",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "2c128b7e9ae1dd0119223ceef3346d331bd33ff6",
+   "module": "mistune",
+   "mutated_digest": "6d23836c9e035133eca79b8f544bd2239f3f3aa07b9634118ea3948997513f3d",
+   "original_digest": "0409d5cdf94d040cfacdc62c498494594980aaf1cee67e7a55e13732adb84628",
+   "path": "mistune/plugins/directive.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "024c554f0f93da83",
+   "tests": [
+    "tests/test_directive.py"
+   ]
+  },
+  {
+   "commit": "2c1a51813a301ea624f48b849ff5e677dc395ca2",
+   "module": "mistune",
+   "mutated_digest": "17f6d119202bd2bbf748949239c1adc66994ecf620ce770d82c6c158ffd3a5b0",
+   "original_digest": "1694f14b2537ecabed034dafd90ec15d913926f48f5f01354a2233af1b11e4f6",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "8c62b5c0e2ffefb3",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "316ec8dfc7e751adf95656579161f268e2e5af8f",
+   "module": "mistune",
+   "mutated_digest": "67dca79d5d45d18699da09dcc8f9aca4c4a468425e48188f96c8e954d770ca33",
+   "original_digest": "604c6a786097c0cc40a2e8fc9f8aac7f6a91625ad8079f7da7e9bd4119f7a553",
+   "path": "mistune/plugins/def_list.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "c7523585976c54c2",
+   "tests": [
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "373f8da51dc581613a45ff4a65e51dec37cff32d",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "bd7c061cb5286d526deb748fe12277645e66f655643e70f97319c936ab10bec7",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "b5583e2875435247",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "4009f67afc674225bbb3aa901614946feebfe4c9",
+   "module": "mistune",
+   "mutated_digest": "190f5bdc4c0449342929f35897a80cd73c30dbde5c23f5ce65a30af9842aef67",
+   "original_digest": "90541bef417b78c37a5f6ec879fab0dfda4445b56c606a70839b534616513705",
+   "path": "src/mistune/renderers/html.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "0af2b24358168edc",
+   "tests": [
+    "tests/test_commonmark.py",
+    "tests/test_security_urls.py"
+   ]
+  },
+  {
+   "commit": "451182e2806a075ce31a3df3f431fde7fef5b6bf",
+   "module": "mistune",
+   "mutated_digest": "b42c5d6fcc3bd208d8900d4c8c61f4a29b0799a86fbccb3279ca183f4eb83a78",
+   "original_digest": "f2bbfda4cdf214de0c619213364f049a2713822837b999dfca2546e5b5504828",
+   "path": "mistune/plugins/footnote.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "8a34c811c5b8f095",
+   "tests": [
+    "tests/fixtures/__init__.py",
+    "tests/test_directive.py",
+    "tests/test_footnote.py"
+   ]
+  },
+  {
+   "commit": "4c4e57ed1b1588dc159fdf474e0e9e2b547a9c70",
+   "module": "mistune",
+   "mutated_digest": "b6d53094bbb54e4374e92f3d4bde1eace4728c3de28340d75f54c0b1c9c74750",
+   "original_digest": "16094913d0984ef3d26694a8b44e852d0d2b78c15f3e133e8a6c9094fc973a13",
+   "path": "src/mistune/plugins/footnotes.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "45e651efd05c6a4a",
+   "tests": [
+    "tests/test_security_footnotes.py"
+   ]
+  },
+  {
+   "commit": "592a70d8c1ffde102bd3151c38cfc26e24735947",
+   "module": "mistune",
+   "mutated_digest": "2b699c6b0c89ae402366a06291e7d0593070a00c153661090b8f3909fac5da96",
+   "original_digest": "460abfcbae78d4e698b37bd48e810c8a6390e3e915198f52992306e91d03e63f",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "566b51f49b472d79",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "5afeaf6bf43649c575ebf016316fb46096993ece",
+   "module": "mistune",
+   "mutated_digest": "67b68a332f32c75575a79e4d3ce469587d2b0e0eb825950ceff7ccb3e2bfa245",
+   "original_digest": "e3c587e0eb8f0dce6eb44fa0e1f749570ab490087ed56776081fd9c2298b68b1",
+   "path": "src/mistune/directives/image.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "c6f1e230ccdae6a3",
+   "tests": [
+    "tests/test_directives.py",
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "618ebfb1e0e99ee3e18770518b5eca9530eb8633",
+   "module": "mistune",
+   "mutated_digest": "50cdc460918bde5e3015f9880487c88f756029362b8d2453c35cc0c4d34de54d",
+   "original_digest": "833d1a758c41970ad5d41aff9ed16a7409a1e0971bf6bf54b5e841a56c566754",
+   "path": "src/mistune/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "82beb612fdedb0ed",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "6528439eab1455b58f36ffb9c35c58774874258d",
+   "module": "mistune",
+   "mutated_digest": "69bfac4ef83f42e3d4bc701fc6de606032d9b441d7a6ea35fdaa9dc60b394424",
+   "original_digest": "1ad716a8f3a87ad02d652a345e85f7c09b6caaccfc213c4f4d78fc5ee278bb42",
+   "path": "mistune3/toc.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "39db2419645726fc",
+   "tests": [
+    "tests/__init__.py",
+    "tests/test_directives.py",
+    "tests/test_hooks.py",
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "81c75c9bea720e19f9bc67d3d2debd5c3708b823",
+   "module": "mistune",
+   "mutated_digest": "78098ebd09c28fa11f4d7b2742244745ca58472ecdd83fde8032cc7a58f63b04",
+   "original_digest": "bb0f5ef4f0e65c5c0586adafd7411fee680282fa6edec3aeef2b4ce44c8aadaa",
+   "path": "mistune/directives/admonition.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "5fb2ae264799e3fc",
+   "tests": [
+    "tests/test_directive.py"
+   ]
+  },
+  {
+   "commit": "85701ee64dba89ba850d93c393d533dbf38a3096",
+   "module": "mistune",
+   "mutated_digest": "d2a95e5eb594936a27c5582da812097c567b7376a5846c64b50096ff27bdc3cb",
+   "original_digest": "55d7f9ad12e39855a912932a9f0b6344ba54763c1b750a0bc51651d4f014dff9",
+   "path": "src/mistune/helpers.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "c8bd37797f7d789b",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "8baf90bf10380d13ed9279efdb521893ed9315fd",
+   "module": "mistune",
+   "mutated_digest": "ed80378ebce29c8a7e12b7f19d1b16ba2034847a907c4457bc7b1e831194fb66",
+   "original_digest": "934a768215360ec1d193978d7b72ad3e09947e97eac920e373b4959636bb7e0d",
+   "path": "src/mistune/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "d34a9f09d0a9f901",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "8bcdff8324af2bfdd0cc3b6d48165c704fe22fed",
+   "module": "mistune",
+   "mutated_digest": "72d7763baa9106dbbacfdd1722796c408666e0a1bb42fc01ffab651f075bcbf8",
+   "original_digest": "c74b86b2c673475d8340e0b9174e41ea709696c6f906ad7d4babbe6546bf9867",
+   "path": "mistune/directives/base.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "9e984453641fb35b",
+   "tests": [
+    "tests/test_directive.py"
+   ]
+  },
+  {
+   "commit": "8cc23127bb0bb0b5d1a9ddb20c1f5301bebed7f8",
+   "module": "mistune",
+   "mutated_digest": "4eb0ca18539c4a1141fe6f42d565fd430e051ccd7b990e792837b5938a471bd5",
+   "original_digest": "0d586f02e2cf520b0bdf9b799406e8a0719199350a918f4c39650ad9ba4a0594",
+   "path": "mistune/plugins/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "fdf13027a87afce8",
+   "tests": [
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "8d778179187b9e1024d554630263731ec0268623",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "e63c26e884207b17ec1b5b1909fd403fe547cb6ce9da814e30412125ca909a3c",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "4e74e32e6e5bf741",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "96d0f57f8fe9eeb06bb4cff521962a27d7c402e7",
+   "module": "mistune",
+   "mutated_digest": "f680105517ec5ae6a0904fcbffc89809c07baab4fabfd9d6098b8e5bc0abfd38",
+   "original_digest": "88c53bcee11c2e894bdfe0df4ea48e122b5b528f1cb57f3c13b4ba552d7e3015",
+   "path": "src/mistune/plugins/formatting.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "b35bed2c64e4bd4a",
+   "tests": [
+    "tests/test_security_formatting.py"
+   ]
+  },
+  {
+   "commit": "98bb5a93b99d0a05d1507d263e5c0a6141936858",
+   "module": "mistune",
+   "mutated_digest": "e9d2a753188fdb56c971ba85cdec6da3e40566e6413c834f4ed2e4120312a36a",
+   "original_digest": "83bf3c35c6b894907c8ad092963e1a89e86ef85a3638c1527adb2d6707dd5632",
+   "path": "mistune/inline_parser.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "84ec22e2e8e9b468",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "aa5f0acb31ed2e796a52b4b55fe0529b21eada39",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "1783823cde8a4f47b817fdf97b75454c3bb7b56f8a79f22921be05b916ea072b",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "d6f4ae01b1dc8b7a",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "ac53009ecee7c8bd463c6bc18da885bf20a0167b",
+   "module": "mistune",
+   "mutated_digest": "9f4afe0525f1de0ce789269b26ac7912e523a8bfe17e6782de0596a2dee13bae",
+   "original_digest": "74fee09b75a2ea8dd3571412f8083fbf7793dd312811319ee9fb90b4187f152b",
+   "path": "src/mistune/toc.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "08909d103b7c18c6",
+   "tests": [
+    "tests/test_hooks.py"
+   ]
+  },
+  {
+   "commit": "aca08137766c9f9873041f3250e5bff9234303b4",
+   "module": "mistune",
+   "mutated_digest": "45d53e1a6d67b37cca1d4274507c7cde86b1059ed6bc42e2b5d080627678a8e7",
+   "original_digest": "e1d569bb94f750c52a5cbf62175c948e28d6e3574b1bdac893a89ab304737f78",
+   "path": "mistune3/directives/toc.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "a36161b418f0b5ce",
+   "tests": [
+    "tests/test_toc.py"
+   ]
+  },
+  {
+   "commit": "ad992cc81f74a454df1cb6f171c35a579ab00fb2",
+   "module": "mistune",
+   "mutated_digest": "ff8481b9a3132a82d1c658c81f6f7610139bfd624b141a98cf97ceca384ac4b2",
+   "original_digest": "428d87fc86379cd7f3a95d13abf22570604008ad4d9c123a2c98b8fc9712d638",
+   "path": "mistune3/plugins/formatting.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "d53c48a06773a458",
+   "tests": [
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "b042996659275aa9719d6efa37163bea62b34cd5",
+   "module": "mistune",
+   "mutated_digest": "c1c2bf3d2ddf6ea25bad766459838c62d5c70289ff1fd43d12dbf39d136f1339",
+   "original_digest": "2512d69ff50b77fe739f6a00d6890c4a8f748794c23c1b6dc974e1e882e40c8c",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "463135ce785e4b60",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "b3aa5b95ca5fdee9b3d2f8f72a4c0d9b29f68af6",
+   "module": "mistune",
+   "mutated_digest": "6f67cd4cfb01e35561458b9fa030871a484a09dd659326f26ac597a5dcd741b2",
+   "original_digest": "2f339992e4dfd188afac3e3a707a01169189e4d68abdbc29e916367401bcf1a9",
+   "path": "src/mistune/renderers/rst.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "a2e5adc97c7df1a7",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "c3e832ce591408f085282ff8ee338c3f44b0af82",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "d73ee516ef7ee32fba23928888355a897b71924831534ceb895ec20164d9cb90",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "7375dc23dc5a4a1f",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "c4093c4742ed0d10d9332fb8edb455869b7b581b",
+   "module": "mistune",
+   "mutated_digest": "7786a692ba059d19918d0527bcf39aa0c1bb1eea6f85d92b7c4ce8ea4abea1a7",
+   "original_digest": "a24894eebf0d2513c1bd7ee011cd2ab37412a099fffde6f5d6a4c52aaae7186f",
+   "path": "src/mistune/toc.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "279ba7b297895d70",
+   "tests": [
+    "tests/test_security_toc.py"
+   ]
+  },
+  {
+   "commit": "c439fd5bd023d6ededc64210bc33e9096b2029bd",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "5ef6dd32b8f5db64215d6733fbda94741c087a9237e3c2ef44b11aac2194ae00",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "ac018e87c1b9ae27",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "c50d06f996d353de8c04504ded8ba135491bda1f",
+   "module": "mistune",
+   "mutated_digest": "dc831848bf52c73919b6431cfaf4dffab2105f600cd951bd6c33fd13ca18644f",
+   "original_digest": "4444b83dbf2034b6e47778e94f6ae17d28653930c2e218f908688910807ede8e",
+   "path": "mistune/directives/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "857cced1bbddc587",
+   "tests": [
+    "tests/test_directives.py"
+   ]
+  },
+  {
+   "commit": "c7101fcbb6e8790e8e39157c5ca2238fc6dd6cbc",
+   "module": "mistune",
+   "mutated_digest": "763c711e7f87d62224fd5059dca1563e9edb2d15c388b79695cd4d48981fef6a",
+   "original_digest": "190f5bdc4c0449342929f35897a80cd73c30dbde5c23f5ce65a30af9842aef67",
+   "path": "src/mistune/renderers/html.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "23f71f45030cedf5",
+   "tests": [
+    "tests/test_security_urls.py"
+   ]
+  },
+  {
+   "commit": "cea561eb0641cff6ce1604f127c75485c0bdd992",
+   "module": "mistune",
+   "mutated_digest": "b75dfd6154d2a94c7e0cb2e50ab68fdb4f7f546f314af2b319224f6bb6466a49",
+   "original_digest": "4eb0ca18539c4a1141fe6f42d565fd430e051ccd7b990e792837b5938a471bd5",
+   "path": "mistune/plugins/__init__.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "0ca2a1180286269c",
+   "tests": [
+    "tests/test_plugins.py"
+   ]
+  },
+  {
+   "commit": "cff35d57e83608a9e20a39d646f6c4de2306ed53",
+   "module": "mistune",
+   "mutated_digest": "1694f14b2537ecabed034dafd90ec15d913926f48f5f01354a2233af1b11e4f6",
+   "original_digest": "c1c2bf3d2ddf6ea25bad766459838c62d5c70289ff1fd43d12dbf39d136f1339",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "8baba2bd5636971d",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "d07faa92936915e2935cf54087cb796fed39fdbe",
+   "module": "mistune",
+   "mutated_digest": "ab789b20b779725437916f24f15609cb4714c76e4ed788f98b3fe6431de56463",
+   "original_digest": "2a229d73a20fc7606ba1915fdff28358bdc496df6606c2916315dbcc7b26d989",
+   "path": "src/mistune/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "254245e77abecf20",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "e12f0d38d028a297ffd6c8bec9b5480627fe1903",
+   "module": "mistune",
+   "mutated_digest": "d2a95e5eb594936a27c5582da812097c567b7376a5846c64b50096ff27bdc3cb",
+   "original_digest": "6704a7017373234920b5762040206b3ae02c78ff3b3e1de7abda63b83d4a3dac",
+   "path": "src/mistune/helpers.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "a44270321cf05d87",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "e3e51de9cf0a72dc30191248dccf22087c57f046",
+   "module": "mistune",
+   "mutated_digest": "3b5917ede8e5747a8330b286c74e734b8d84e4aae917865ef53e9cc95a445b13",
+   "original_digest": "f3b1ee5151adb04fb5915f9189a9ebe4203492fb1b5cc90160aab90c289ad10a",
+   "path": "src/mistune/directives/image.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "638aa63a0a92112f",
+   "tests": [
+    "tests/test_security_image.py"
+   ]
+  },
+  {
+   "commit": "eb32fe5e9c99dc15ebfd15a69f82c73f3c96c111",
+   "module": "mistune",
+   "mutated_digest": "c262874d63ae81edcabc324ec261c1af390131bca4dffa237819b127de106d14",
+   "original_digest": "54dc2521f8ed8735330bc42cc986c14d2f97b7b12eb796891bf54044e75a2a95",
+   "path": "mistune/renderers.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "b7bad73c242a8d61",
+   "tests": [
+    "tests/test_misc.py"
+   ]
+  },
+  {
+   "commit": "ed39f48bb524425b615a11c1352ce3671c003c31",
+   "module": "mistune",
+   "mutated_digest": "57130f5963d5f805e297753a20bd9668df8a02fe24066b9567502d6d51cfa132",
+   "original_digest": "75d1bcfbaf873ea6802bb068cbef7a81e8193bdf2f124b2d381de3b76c43c928",
+   "path": "mistune/blocks.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "b9125bc7890185ff",
+   "tests": [
+    "tests/fixtures/__init__.py",
+    "tests/test_syntax.py"
+   ]
+  },
+  {
+   "commit": "f6827e82fb0bd032fd3cc917140282885bcf6184",
+   "module": "mistune",
+   "mutated_digest": "f6b51287d844546671fc4529761a8509fda6ae53924103463d6f3e5bcca88466",
+   "original_digest": "e8e736c9b1f48458049e0f777d3fc652f8426a54774a0691c0998d1d1aa35c5a",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "c5f2cc8577d74c72",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "f6a076749571d76fe37f98fa54d1a55a230f07ff",
+   "module": "mistune",
+   "mutated_digest": "fa99a55890a299927bdbd76ac508a63335f39dd5bb6b1011bf113fde015bf96c",
+   "original_digest": "872a2d98115dfb04142d63eb0bc49aa0c7dec06ec9253499a012e64b67efa70b",
+   "path": "src/mistune/renderers/markdown.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "643962b563717e89",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "fdeeb25dded212bf23e683e0f8a52c4d2165e2de",
+   "module": "mistune",
+   "mutated_digest": "d3a962e54a32feff1ec00416bc74a4b9bb8863fdd69a45df7a6a51ae8ac8220c",
+   "original_digest": "881dc9bbc6ea866ad774417c0c0084e00bf3540a2b222c492032fe9e3c72db7f",
+   "path": "mistune/renderers/rst.py",
+   "repo": "mistune",
+   "split": "assess",
+   "task_id": "6dfebb8be421dc66",
+   "tests": [
+    "tests/test_renderers.py"
+   ]
+  },
+  {
+   "commit": "08bb047794f4e70b157dacef4538b3a6e3492743",
+   "module": "packaging",
+   "mutated_digest": "9fe2552daacbca70bac425a8774d33475a4bb5b20d7cc81f96f8be1736cdb3e7",
+   "original_digest": "d017242df69336a40ac1b175f5d20b7cd5eb2e2589cbc2a78003d779d0104f92",
+   "path": "src/packaging/direct_url.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "c3143b3b96128303",
+   "tests": [
+    "tests/test_direct_url.py"
+   ]
+  },
+  {
+   "commit": "0cc1cc8eea11da73a3ae540b92c51255d7d1d690",
+   "module": "packaging",
+   "mutated_digest": "7caa09713ba215ae8666b02eeb5a2a210eba4257bde6a8af40bdb939e7cd6bc5",
+   "original_digest": "be70dbdf5104d8ffd0ff35f55efb99a4ea7ddd0a3cfd2ee076f4475688af2070",
+   "path": "src/packaging/licenses/__init__.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "704c82d9ae168376",
+   "tests": [
+    "tests/test_licenses.py",
+    "tests/test_metadata.py"
+   ]
+  },
+  {
+   "commit": "189a76d54d64899adbca907c2a3efa5b6befdb28",
+   "module": "packaging",
+   "mutated_digest": "4102cd7d759e7c37d377780b2605b790a14507633dc42fa8f133f9ea90cd2cca",
+   "original_digest": "d03912dbc36944effb271cc9a53e47d30d19332dfe583ee4264c735307b16696",
+   "path": "src/packaging/_tokenizer.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "89647c3eaf3c9907",
+   "tests": [
+    "tests/test_markers.py",
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "258202ed7f796bdb8a65252a66c3fbd3e69e97f6",
+   "module": "packaging",
+   "mutated_digest": "ab346a8a403c994c693955bcf93e126c3f4ad73a558c1d8187b33d67143d391c",
+   "original_digest": "ff40fa592ea705f2fc4c9cd15d7db34fa7a0fd091b7e8921e5ff52d37fe52881",
+   "path": "src/packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "3fa48aa1290565cb",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "2602dd07d8bd5d6c54a3ce0e212f52eb2e127f3e",
+   "module": "packaging",
+   "mutated_digest": "447c9211c5bef572bb4fadabc75126425d8651f47cd12114e46d1ef0fca2a607",
+   "original_digest": "641e867496d3259cfa6c136547c85c435e1a268dec278ed76565cd5f6cb04104",
+   "path": "src/packaging/_tokenizer.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "5868fe68fe263981",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "2680259b4fa88885962e1b6f1cca9d92a3e605ca",
+   "module": "packaging",
+   "mutated_digest": "3c3fb2fd9c808eaa11ce3cfb5701262c31daf597c368de6af57956add89d6d4c",
+   "original_digest": "40e6e18048517415d85c538d0fe5e34793d31177d94da14a9dbd1804f90963fb",
+   "path": "src/packaging/licenses/__init__.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "04294da529e66704",
+   "tests": [
+    "tests/test_metadata.py"
+   ]
+  },
+  {
+   "commit": "2c87a33f665828b7aa0f650b1b50243b3ab95695",
+   "module": "packaging",
+   "mutated_digest": "be70dbdf5104d8ffd0ff35f55efb99a4ea7ddd0a3cfd2ee076f4475688af2070",
+   "original_digest": "11b1239ab763c548abfb3a74c4f171fe572c0d4da3381d580e21ade2735d1039",
+   "path": "src/packaging/licenses/__init__.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "8cc111a44ddb60a8",
+   "tests": [
+    "tests/test_licenses.py"
+   ]
+  },
+  {
+   "commit": "30824d9e3b33372a81af5e7a1d7e2ceb95e348c6",
+   "module": "packaging",
+   "mutated_digest": "49c31ed645e63d0ce27bd156742654a8c37843c9292a3e4258f2c0e8acfc5546",
+   "original_digest": "821d9fa098a2f55c8ca1c268538ce108802fd744907bc0684238f23a81e71fe3",
+   "path": "src/packaging/dependency_groups.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "a9939573c1a0ea6f",
+   "tests": [
+    "tests/test_dependency_groups.py"
+   ]
+  },
+  {
+   "commit": "349abfad0688f42eb835ed8a10380d6cbf6940e7",
+   "module": "packaging",
+   "mutated_digest": "6e5b277c295c5d682f8ea116326facedb94f7047ce426cb94b57de1e237d7949",
+   "original_digest": "49c31ed645e63d0ce27bd156742654a8c37843c9292a3e4258f2c0e8acfc5546",
+   "path": "src/packaging/dependency_groups.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "59f276b3d8050b5b",
+   "tests": [
+    "tests/test_dependency_groups.py"
+   ]
+  },
+  {
+   "commit": "34ec49f0b75990bae4db75769b49508bf8791513",
+   "module": "packaging",
+   "mutated_digest": "47cc88d573d625f32c6efd92a27d319fc613589f58f8c51fef4886a8fac7d489",
+   "original_digest": "66aa87937582c33fc03e9b3da1ff7fa16f312181ecba1e0e1ac09078a60a63d1",
+   "path": "packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "2dbc63b5022c21f5",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "3e67fc775e93166600c84a5183ab6a86afff84b5",
+   "module": "packaging",
+   "mutated_digest": "acb885cc171d1638435a28d3fe5427777468b32271df949e289cd2d0dda971c7",
+   "original_digest": "08c3400ab565c3262256f1ec19572df2948238e3d8738299dc00a23329543db7",
+   "path": "src/packaging/markers.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "1b893b64c5c13907",
+   "tests": [
+    "tests/test_markers.py"
+   ]
+  },
+  {
+   "commit": "4b243af94ff6885c89b8acd7a22fc5714b18cb96",
+   "module": "packaging",
+   "mutated_digest": "7e217200aef0d239968e64d387c15882eb35051ae1f6204d1b789b57c5eae7a7",
+   "original_digest": "f0bbd6dd718f0ae0d9311887599ba81132505ae6fee9bdf72c430aa36d85cc8e",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "4d8fce62936ac143",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "50f4ccbaae529b3a3e3fd2d4fda5a1fb6cd74093",
+   "module": "packaging",
+   "mutated_digest": "121871a7538e347eb9788708dd31457e9b2b1232a58d6d49519c527585a43e54",
+   "original_digest": "75a3f8ed03213d67ae3a8de6008ff2ed17caad86404a1d93b27794b0828d6d7d",
+   "path": "packaging/version.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "72e040b99af6b4d1",
+   "tests": [
+    "tests/test_version.py"
+   ]
+  },
+  {
+   "commit": "524b701c6e30fc4da9355117367273f591c6de72",
+   "module": "packaging",
+   "mutated_digest": "8cbfda4405727377e1a0b9ba378e833f09aafa6c03ad63448a979ad575b0204f",
+   "original_digest": "7d293fc2b87a4acf600ae7d812308c91656b222120ba977eab6001457c9f26c9",
+   "path": "src/packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "35adcb4c54901b86",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "538cd15c7d73d5a7466f8343e256923e77ab7113",
+   "module": "packaging",
+   "mutated_digest": "037e94ddfb1daa4acd5510e209c1bf820cf5ea901654d2a180113ab91db98b56",
+   "original_digest": "85ccb0f7c8878da8aa4c09e91fab0144d2682b242f4a9538c6749df3db582843",
+   "path": "src/packaging/_manylinux.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "51a6d65a5e8689a7",
+   "tests": [
+    "tests/test_manylinux.py",
+    "tests/test_tags.py"
+   ]
+  },
+  {
+   "commit": "55584fb5ca327ba38b74ca5c668125caaebd9a5d",
+   "module": "packaging",
+   "mutated_digest": "bbd0d62e47534691f25a23ce07bf40a52aade265324b60952c00196d1eb89682",
+   "original_digest": "8521b98223455d08664e2482a79af7b9ffc13395bb41a4cdb2690071bdd976e9",
+   "path": "src/packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "da4c221667aad4dd",
+   "tests": [
+    "tests/test_markers.py"
+   ]
+  },
+  {
+   "commit": "5c163f5382fb6cba408b7c42efb8a03ffa041f4b",
+   "module": "packaging",
+   "mutated_digest": "1e1bcad421c265ef5f9698de7ed01eb8f3b1f8d4e7ff5583c9ae0f7bc7f39aae",
+   "original_digest": "74bd44eb85c1dc459237dada942a1f040f9990e814250eb7f05a2a8cacc75044",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "184a9928a342b1b0",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "5c70ed4f983c4b27e67c34fe67266e1514484bf0",
+   "module": "packaging",
+   "mutated_digest": "1b6d4815659265da979be7e12c4f0706609f0f0d1751ae6d2a98bea3687a9884",
+   "original_digest": "876a79adbf7cb858f10e48d91be322f3387a903edc2f87fa54e2976ccaf6597d",
+   "path": "src/packaging/markers.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "497c594dda62618c",
+   "tests": [
+    "tests/test_markers.py"
+   ]
+  },
+  {
+   "commit": "625c8d09a2ed655bf725ea84ab2a52e2b6f86507",
+   "module": "packaging",
+   "mutated_digest": "510c80ef45a47edf709f61a93fa2c73334e5b1d06286c8e792a28c8c969824b7",
+   "original_digest": "2bd1dcc45dcc49e096ca2d6d622744ada1ef1fb2c4c8b44152e5ffe66c0bc1db",
+   "path": "packaging/version.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "5e6ffdaf2980bab4",
+   "tests": [
+    "tests/test_version.py"
+   ]
+  },
+  {
+   "commit": "684427106cfbb3eae8f4ee9f4489c4d22757a9d2",
+   "module": "packaging",
+   "mutated_digest": "240ce0424294b6e3fbf32ac74f673fc42321c9d5413bf85b9e3608ff80014eaa",
+   "original_digest": "113be0ea504fb88c9c92bd509007b2eb00aa9b4ae98ff55a88c9626ce573e136",
+   "path": "src/packaging/_manylinux.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "787817ea205f12ba",
+   "tests": [
+    "tests/test_manylinux.py",
+    "tests/test_tags.py"
+   ]
+  },
+  {
+   "commit": "6da1c50d1354284da3b1cfe3ba6cf495162421ee",
+   "module": "packaging",
+   "mutated_digest": "bfa679a53540101278c51961f8767151cbaee72f5d8fbe8af576aaa2fc89ac04",
+   "original_digest": "b8cd1f7022c5ce3fe56ebdbec08dc7098b3f3226aaae2dd8bb1611fc9db805b6",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "76b8af158748190a",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "711b2dc91f41806e1bcdd7a09044522c7250d491",
+   "module": "packaging",
+   "mutated_digest": "75a3f8ed03213d67ae3a8de6008ff2ed17caad86404a1d93b27794b0828d6d7d",
+   "original_digest": "38392f0aa3e0b822c7a25c911dd0a4b60d0139170e474fdb463278ee30652994",
+   "path": "packaging/version.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "91607261901ccb3f",
+   "tests": [
+    "tests/test_version.py"
+   ]
+  },
+  {
+   "commit": "7930b73d5815f475028a2600c47fb340ad72f40c",
+   "module": "packaging",
+   "mutated_digest": "dd7f00dea33363e059469c90bb6da311ccaadb07d7451259cbd2156899cb425a",
+   "original_digest": "f4648485fe7828cecfcbdf8588ef380b0983eb911352508ca7104093aa78d164",
+   "path": "packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "31ce3810b2fe1d1c",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "84833cc16be84bc7f1d9f64e2818afe0dd48aade",
+   "module": "packaging",
+   "mutated_digest": "a73f8663f9b05e7b92508827e5f74e513033e41f760e68b82aa52c0a31185179",
+   "original_digest": "3884c989bc69fe545520ccfc7ae8058fe42259231a160f7bb3d158b6c3901a39",
+   "path": "src/packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "5f4e25d5f501aad8",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "878a8c848198d0f6d355c3fa6dc9a474048788cd",
+   "module": "packaging",
+   "mutated_digest": "4b17d3c8e64f6d1ba4f3b112d61ec02d5efe6908a1f21f62cc3a313efa0e8b9e",
+   "original_digest": "9e6611d765c13fe08c19832b1e1e046ed264589016e0cc35752939a02529fab8",
+   "path": "packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "ef7c9d23af9483f8",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "888eb1452625196985701e2727c5416b70e969fd",
+   "module": "packaging",
+   "mutated_digest": "a4f1d40261a2426273f4d33168a0a5ba0b488d0e2938a691d921d097c07512e9",
+   "original_digest": "26d4cbd379c21552454a0de4b4df6e0230cff0afd8c515d4222150d0aff1982d",
+   "path": "src/packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "151b3d3aced15780",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "8af75907bf1140071a6a706874fcf1d73cc39c71",
+   "module": "packaging",
+   "mutated_digest": "f814d8f9dac2c34357291f57b22b7387a035eba9d03cff0bc27859352f98e86c",
+   "original_digest": "cfe55e34db025891a846a930b7d7f601af5c2e0d60d4757bb97bb3c261297632",
+   "path": "src/packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "752e59604f86d128",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "8c78c35bc20fc7b4aacb7a71ad5f5db9817630c1",
+   "module": "packaging",
+   "mutated_digest": "f8023535b500749139640e9796b93191e713ac2ebba6061aa2a4a0177fe5dfda",
+   "original_digest": "37548a56c2c0b5e01ff9cf2562230695ee25f3f28283131a2ddac5cc2675a8de",
+   "path": "packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "b47bf0e71aa0d9a8",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "9120541acf0c03d448308daa9f8d0e55e996f92d",
+   "module": "packaging",
+   "mutated_digest": "8eb86a7a92c7d546008efaad18972feb21f586ebdd5c8bc6a0d2ecfa1e5e35c1",
+   "original_digest": "110a97864bb3dd7b7fd61bc9dc4e4582bfdf76a99aa67e1cc5eab1fc86c30a23",
+   "path": "packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "c149d17ab37c8492",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "959bb79c06cb883bf1ecd1ddc94a079294907e0f",
+   "module": "packaging",
+   "mutated_digest": "2d957efc7819e9d984470708a762586a7d4a4740d681b93425528743692b2198",
+   "original_digest": "4c7760c9713b2b90aae6fadea55b7c9d71407311ed516e8d6668089321ec782d",
+   "path": "src/packaging/dependency_groups.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "68c787d3fceb6d6b",
+   "tests": [
+    "tests/test_dependency_groups.py"
+   ]
+  },
+  {
+   "commit": "975cd32b060814c0f3c47b8e7bf1928ac259c6d0",
+   "module": "packaging",
+   "mutated_digest": "f4648485fe7828cecfcbdf8588ef380b0983eb911352508ca7104093aa78d164",
+   "original_digest": "68a343cbb1e22b3c59f2eceef70ef654880a761302f91d4d15216b64e9b38e83",
+   "path": "packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "7308517acd6f05a5",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "9cef9d088d142160b7b13705be191ce69c4e160d",
+   "module": "packaging",
+   "mutated_digest": "f3c5554cac8162793d6d549b72e572b43e1c48217116df5c57b78a59945bfa22",
+   "original_digest": "7caa09713ba215ae8666b02eeb5a2a210eba4257bde6a8af40bdb939e7cd6bc5",
+   "path": "src/packaging/licenses/__init__.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "507692c39364870b",
+   "tests": [
+    "tests/test_licenses.py",
+    "tests/test_metadata.py"
+   ]
+  },
+  {
+   "commit": "a0661b5f5c8838af81c5098b2a564e62852decb4",
+   "module": "packaging",
+   "mutated_digest": "9932c2548e5ae3c606d53b645aa2d8eca7f8d7733164212dce5ebab41b89ed2c",
+   "original_digest": "7b0d41aff60b466eb1d03bea497b55443ed8f15523122a86fff292ba3b0f0ed4",
+   "path": "src/packaging/direct_url.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "85a1116cb82646a8",
+   "tests": [
+    "tests/test_direct_url.py"
+   ]
+  },
+  {
+   "commit": "a1f705642e50b79da6be83fb0f6149daa32fc7cc",
+   "module": "packaging",
+   "mutated_digest": "40e6e18048517415d85c538d0fe5e34793d31177d94da14a9dbd1804f90963fb",
+   "original_digest": "b5f28f92a05f8ca24f82df034a834c862a21190eaf85184d831b7bd2b83ca8fc",
+   "path": "src/packaging/licenses/__init__.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "479d6ba77a527afe",
+   "tests": [
+    "tests/test_metadata.py"
+   ]
+  },
+  {
+   "commit": "b997a48f2a5cdefb11c834b00eeb17a2d15c37c5",
+   "module": "packaging",
+   "mutated_digest": "b67d291d5c9d50b905064ce27541ad17b318402ccfb4ceb150e7230bc5d35dd3",
+   "original_digest": "54526e95e074b2b4be7815fc94b1bbfdbd76f743e949c645f158ad35c9768e75",
+   "path": "packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "0408f58744341e44",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "ba17fcea2367a70cba21d6bfb0931ae476ee8583",
+   "module": "packaging",
+   "mutated_digest": "7f1a4945896b6984569100489e37a05a9473eb8339387e162103d1fa42de0776",
+   "original_digest": "c037d2ac7758dc14b1d82bbfa75342960e80cc8ddd4a35efac4fe3a3340c85bc",
+   "path": "src/packaging/utils.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "0354f0b13bfaa6c9",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "c385b58c4d0e4d66f5c8273ebb155801c92aadf3",
+   "module": "packaging",
+   "mutated_digest": "d6a1967fdb8007a43469aa7985cca7b7103910517fca5d35d124a58d85ac728d",
+   "original_digest": "9a6ddec6b854a97e935531bee4c93aa680f861afccf2a828ed99eea735a37ab7",
+   "path": "src/packaging/markers.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "28c9cd3ed6a5075d",
+   "tests": [
+    "tests/test_markers.py"
+   ]
+  },
+  {
+   "commit": "cb093310093edf691bc2dd263d623b660335c79a",
+   "module": "packaging",
+   "mutated_digest": "f86f597391c81ce90f32e09fb317661bcec71ecc04fec719689d7fc27929a7ec",
+   "original_digest": "54c74ea47e0e95ab58531a74b5c1869277986fcecd3c84ecaf461428730003e1",
+   "path": "packaging/_tokenizer.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "d58a418843230bc9",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "d5fedc90bba333ed0962ba5dfb7072d38f2c1d84",
+   "module": "packaging",
+   "mutated_digest": "692138162e72efb3a6ae9c9ce89c216b0b62d6614789bfed7c5bf8093918fd48",
+   "original_digest": "4fab6b815bf138a8bd3199b005b73c42017e68ad97e9056879f4197ab2ee3920",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "8dc8dc1415ac0098",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "d8e08df11bfa50e987375546eda1f0ee3f27bd41",
+   "module": "packaging",
+   "mutated_digest": "07655f040dca1627a83f1a1488be525eefc7eb673ec3d5f58fc06c9f3eb6f4c0",
+   "original_digest": "0f37f3517d5cdf80a3d2e0ff4068d9b34d6e120533c1c89b22a8c9b185993761",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "89a71b607cdce690",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "ddf54e1c7eed60406de14615556650633e84799c",
+   "module": "packaging",
+   "mutated_digest": "e8e4cea204f5c64475ec717f7d3a5a5f0555f6854cf298f421b11f0025eb05ba",
+   "original_digest": "e1db45fd13a4e9fb0979bfa79e18dc1e7070278ff790236c19e091a31b2bac5a",
+   "path": "src/packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "bbe9fb8bdb241971",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "e7ce051e9191c461e0a536a84c4d66a87518de66",
+   "module": "packaging",
+   "mutated_digest": "7736db6bf45fde3aa8a00c7ca41f01604807c9e39cb50db1e78acc1ae60feef9",
+   "original_digest": "b67d291d5c9d50b905064ce27541ad17b318402ccfb4ceb150e7230bc5d35dd3",
+   "path": "packaging/_parser.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "2341c420c7a91524",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "e80f70f8b164ee4b0ef7634aafe8c6cc4ce00ca3",
+   "module": "packaging",
+   "mutated_digest": "551573379522a6a625357d92f7b557acecc33086e4a17b82d887caa4a4713e18",
+   "original_digest": "9932c2548e5ae3c606d53b645aa2d8eca7f8d7733164212dce5ebab41b89ed2c",
+   "path": "src/packaging/direct_url.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "607dd24e77ea1d4b",
+   "tests": [
+    "tests/test_direct_url.py"
+   ]
+  },
+  {
+   "commit": "e8f839f7400253998a07a993420ae308bb4f159d",
+   "module": "packaging",
+   "mutated_digest": "bbbbf88f5671e033bd5e879f5121f0438c117511be3e41b1c818a133d97b52ec",
+   "original_digest": "6eb0a1da9cfa0640e2768f9d3dd28a7272b647d9f48287e7c6039fe6d66bc133",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "d756269f47104805",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "f8f16338e10d5d509ea2a29e0f0cf56baf4be565",
+   "module": "packaging",
+   "mutated_digest": "4bd8e5b41732a6a50d81a531dc87f6e392376b659bc52d559242f02a6640dcbd",
+   "original_digest": "62b77a75563dc5eb8a7c415f360cffb769243c701445b8575e4021b1d6f4ba67",
+   "path": "src/packaging/_structures.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "56fe64e93c9f8c1e",
+   "tests": [
+    "tests/test_structures.py"
+   ]
+  },
+  {
+   "commit": "fbd0d4b4b83ba492ec9d5dd4eaa8e8df33288b1f",
+   "module": "packaging",
+   "mutated_digest": "35929fb63f6f8aba2923d291867affabf0eaa011940c9e2a163a27f095d6391f",
+   "original_digest": "44d09ea8bdfe7a3e57942684301e0d2188d888bd559c75447a7c978b87eda4df",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "8926c85992e5569f",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "fe18f139c5b3d73cd9fdd9b25f1eda1b6fd7ba15",
+   "module": "packaging",
+   "mutated_digest": "4fab6b815bf138a8bd3199b005b73c42017e68ad97e9056879f4197ab2ee3920",
+   "original_digest": "c0257b1d1cc63102152e63fbccd61f2e379d5fac720b1d2be4c5644af5110adb",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "2fec0c4735d93fc8",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "fe8f0bb99c41c5e3a8c2395d4e849c1eff72949c",
+   "module": "packaging",
+   "mutated_digest": "6024c62da3ea6552a4ac85962fb00fa65e7815558959e6e8ea7985dc7b019cfc",
+   "original_digest": "bbbbf88f5671e033bd5e879f5121f0438c117511be3e41b1c818a133d97b52ec",
+   "path": "src/packaging/requirements.py",
+   "repo": "packaging",
+   "split": "assess",
+   "task_id": "d252fbdf90581014",
+   "tests": [
+    "tests/test_requirements.py"
+   ]
+  },
+  {
+   "commit": "21b32ffc6b4da776c6fac2893754e8aced0a0cc0",
+   "module": "parsel",
+   "mutated_digest": "d0e139b3f32b588d4729c7bc028753b679b3d210ed9e20bdccca32bc3751eb14",
+   "original_digest": "5f0ad0cad6c4b7a36e687d32b968e93b0e3923748d6220310749a6cfdd2c2de5",
+   "path": "parsel/utils.py",
+   "repo": "parsel",
+   "split": "fit",
+   "task_id": "215e324fa0801f3d",
+   "tests": [
+    "tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "00ae36aebba6ac22386fa202df7987575eaa2332",
+   "module": "pluggy",
+   "mutated_digest": "4ecd871ba147cfe7d8c08978cb466f1d603ca67df069bc18bce6a1ea354cb515",
+   "original_digest": "f74f8405945b20c0a391717a3e8606cb19fd58791fc661d81b1423b8229091a7",
+   "path": "src/pluggy/_tracing.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "0ef81e448886a8b0",
+   "tests": [
+    "testing/test_tracer.py"
+   ]
+  },
+  {
+   "commit": "6a0532610b5909d761e349eb28e37631e7f73173",
+   "module": "pluggy",
+   "mutated_digest": "b5cd6ab78227e5f0b88c652e8abd565093c306244cb87cd8384abbb88d6aa13a",
+   "original_digest": "4ecd871ba147cfe7d8c08978cb466f1d603ca67df069bc18bce6a1ea354cb515",
+   "path": "src/pluggy/_tracing.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "ad422bb74653eaaf",
+   "tests": [
+    "testing/test_tracer.py"
+   ]
+  },
+  {
+   "commit": "742393e78e441a6e05249237295a79f3a37dbe01",
+   "module": "pluggy",
+   "mutated_digest": "f74f8405945b20c0a391717a3e8606cb19fd58791fc661d81b1423b8229091a7",
+   "original_digest": "5df20f874e6adef4eeaa339fe576fa73975c93a9e2f7439f663ecb55ea8f7210",
+   "path": "src/pluggy/_tracing.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "1c545e68861cb2f3",
+   "tests": [
+    "testing/test_tracer.py"
+   ]
+  },
+  {
+   "commit": "93ac1e9c468c733fb632237836766795f647d755",
+   "module": "pluggy",
+   "mutated_digest": "24f6a2af14da332c9e8a0af1f2e438e5230d6dd8ec093f54b5dc79a42ca6aac3",
+   "original_digest": "b98d4d5695b91a268e9138b0ec40019a28d8873fe09df6ef12329324dd80e207",
+   "path": "src/pluggy/_result.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "30da50856d986cbd",
+   "tests": [
+    "testing/test_result.py"
+   ]
+  },
+  {
+   "commit": "9cf2eaa50dd1ad3ebf042978629e78c695197095",
+   "module": "pluggy",
+   "mutated_digest": "454dc1440a06e056b81cae70dd93c2e1cf32caea5ec2c92cebf188ef86bd2568",
+   "original_digest": "65d7f1e7f94cbfe617508b81bd27282dc2b58be1d826911d93d90cb8301d1e93",
+   "path": "src/pluggy/_callers.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "8fa5838059fc0448",
+   "tests": [
+    "testing/test_multicall.py"
+   ]
+  },
+  {
+   "commit": "d5220f7b75a06f7fffedd9cad431ebf9407701a6",
+   "module": "pluggy",
+   "mutated_digest": "4e215cd9f9f2f41eca03f926c949e974a96f3232b91828c65a11e04dc3de8340",
+   "original_digest": "b5cd6ab78227e5f0b88c652e8abd565093c306244cb87cd8384abbb88d6aa13a",
+   "path": "src/pluggy/_tracing.py",
+   "repo": "pluggy",
+   "split": "fit",
+   "task_id": "fbb42a02158e24ba",
+   "tests": [
+    "testing/test_pluginmanager.py",
+    "testing/test_tracer.py"
+   ]
+  },
+  {
+   "commit": "7ab249bc8c8af45b078ff375cfd0f6b9f49d9024",
+   "module": "python-dotenv",
+   "mutated_digest": "c15a98626f6301177891a5e11706cb49ec397bfe1ee458bb851227e8d1e001c6",
+   "original_digest": "045d05201bcbb432e7c20a8f19a8283d92b8d72ce21a9d2f7702d4a6f5f42ec2",
+   "path": "dotenv/main.py",
+   "repo": "python-dotenv",
+   "split": "tune",
+   "task_id": "228934546a7781cd",
+   "tests": [
+    "tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "7b172fe24830bb8fd8cd943b73570e8cd6515ba1",
+   "module": "python-dotenv",
+   "mutated_digest": "d7eb3875d15e8e8c2a78c814da2b23fc82aff3b15d425e5c161c1ee53a993682",
+   "original_digest": "0fc61834dd6b46b4e995028de22ba50422f65f32d7434243d8e774336021d08f",
+   "path": "src/dotenv/parser.py",
+   "repo": "python-dotenv",
+   "split": "tune",
+   "task_id": "978f65f736a28e8c",
+   "tests": [
+    "tests/test_parser.py"
+   ]
+  },
+  {
+   "commit": "bca6644d9aedbe287b792b756b3ae3d650cd0d3a",
+   "module": "python-dotenv",
+   "mutated_digest": "22fa42916cadf6571e5da259ec2943f01c6315e904f65ed1ed2172d27ea6ef38",
+   "original_digest": "a825ccd721ac64823fec55f382b8d67decb2520882b1253a482089cd2620a07e",
+   "path": "src/dotenv/parser.py",
+   "repo": "python-dotenv",
+   "split": "tune",
+   "task_id": "11fef6c509b11c52",
+   "tests": [
+    "tests/test_parser.py"
+   ]
+  },
+  {
+   "commit": "f5485a61eefa5e686d6d5bdc7aa9ad6b104b1e92",
+   "module": "python-dotenv",
+   "mutated_digest": "c3ccfc1ded5d3f11d8dd4c78cbe6b1a93caa9cade21582838cb9836bc871cc98",
+   "original_digest": "ac3c54f54fee478bc43b7ba52488eb4216d95b8a9eb3885fd764670b4f7a5bc9",
+   "path": "src/dotenv/parser.py",
+   "repo": "python-dotenv",
+   "split": "tune",
+   "task_id": "6b01f12ec52e4e49",
+   "tests": [
+    "tests/test_main.py",
+    "tests/test_parser.py"
+   ]
+  },
+  {
+   "commit": "0b7da2847cfe398a450a7f34c5f4586904e9df4e",
+   "module": "structlog",
+   "mutated_digest": "4bc1675b20049aa9a019138a0a193f60dc71324f72f2cca807ef0cc816765247",
+   "original_digest": "816a61b0ac887e099d555dc61f2fff562148e6aeab270d2e021fb2edef7f78a9",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "5350e97f86e4be65",
+   "tests": [
+    "tests/test_stdlib.py"
+   ]
+  },
+  {
+   "commit": "1944bcafa584b78c8e06f4509895bd2d5b8906db",
+   "module": "structlog",
+   "mutated_digest": "1e09d75f7890b6a119654fdc4de3fa73c02765da15d0b828e89a5f2bde900588",
+   "original_digest": "3fdadfd7b9c15293e6752007ef48d62566d8f25e0433f142f766df1288f8357e",
+   "path": "src/structlog/_base.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "85e9cb18bd88c1ec",
+   "tests": [
+    "tests/test_base.py"
+   ]
+  },
+  {
+   "commit": "1d66f67fbb519282db670999250cdd99474470be",
+   "module": "structlog",
+   "mutated_digest": "270008c524b148dce8725be8cc8cfe22e4ba7bf13f72545f6546175912036fc5",
+   "original_digest": "cd22068a27b52a97df89339be096d822ae9a5c6630d60fc66e8cd74fa1fb8a04",
+   "path": "src/structlog/__init__.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "86bdb65ddb237693",
+   "tests": [
+    "tests/test_optimized.py"
+   ]
+  },
+  {
+   "commit": "2134a446a1a16c91374d42b1caafd4fed91b31a5",
+   "module": "structlog",
+   "mutated_digest": "e62f68e7473cf410029eff6606722dd636cc090662962dd2f00e3e977dfcb372",
+   "original_digest": "600071a5b984ae01dcc3c5e140920e90086541463b3c576c4ec5a9f8af96efc1",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "68735479f793a40a",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "27cb2ab774b82a7e7122050989ee33dabeefe918",
+   "module": "structlog",
+   "mutated_digest": "aeba6dc8480cb77b050760854173deec1d9ccedf543361864c593f09dbe335e7",
+   "original_digest": "bdfb4b1ef22abf82ff094d7886105929f7be8662f708b5a0c76af0d5dcaed6e3",
+   "path": "structlog/stdlib.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "df43a6566ada26bd",
+   "tests": [
+    "tests/test_stdlib.py"
+   ]
+  },
+  {
+   "commit": "2b57d5239240e9611744240b09058fe3f1003ddd",
+   "module": "structlog",
+   "mutated_digest": "02e19cd9379b07c9b6aabd8f07c6ad4da7ef4b3c4e1739829c6a5e605874faed",
+   "original_digest": "8df2f01e66da1f5010a32d06afdb7db38e20daae7ea3da2f24c8451668122930",
+   "path": "src/structlog/dev.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "b776bcf18028fb9c",
+   "tests": [
+    "tests/test_dev.py"
+   ]
+  },
+  {
+   "commit": "334f0297549e3464204d2407e8b8eb4ebd732411",
+   "module": "structlog",
+   "mutated_digest": "82e79277008b673da0a3ec80dcf098579a568df6b8546145a7f15778362d2a29",
+   "original_digest": "32ec64f9022bdbf326f02b0e1f1f1ab507a4b58328db1eedbcce2df019a592cc",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "47449cb8e750b62d",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "3763c623c1a230b40fc2bd9cfcd1266f3a31b7a6",
+   "module": "structlog",
+   "mutated_digest": "e9b24f284828fa4167b759c15a117d4b28772850240087057dacf0bf64d25572",
+   "original_digest": "1a9e2d1814378592fdba13280dad79df70fc027c381781919e18714a59000f24",
+   "path": "src/structlog/_output.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "aa8e51296c775755",
+   "tests": [
+    "tests/test_output.py",
+    "tests/test_stdlib.py"
+   ]
+  },
+  {
+   "commit": "41496ec16b3608706dcaa84a4cede11a3c47d65d",
+   "module": "structlog",
+   "mutated_digest": "fe3bc51f0c8ced38f7a00689686242f8e4710aa43cb215c6606f9bdcbf0274bd",
+   "original_digest": "fc732b4c203065cc48b28724477be12f6e8f63434593c36d3979d9da9b937740",
+   "path": "src/structlog/_loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "f47c1e5e87d6135d",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "48ee400699060ae5c6d1309c887c9c6d5c4524fe",
+   "module": "structlog",
+   "mutated_digest": "600071a5b984ae01dcc3c5e140920e90086541463b3c576c4ec5a9f8af96efc1",
+   "original_digest": "9947a3ddb3befefb6455611ede38a1990ed23bb0fa25495c46f84bc89c6ccdc8",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "1b0bb25b858c9637",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "4b7593bdc963b378593f2675978c237865e7488a",
+   "module": "structlog",
+   "mutated_digest": "4eea8a3ba744552f3d36653d0df3b7b47d6ffc02fd2253f3f443ab9b9ddd04b7",
+   "original_digest": "a4d6a99b7b251e246cced1610d29399e0cd8e5da9acb8c192984d98945720fa5",
+   "path": "src/structlog/processors.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "e01a38f76b6f8b0a",
+   "tests": [
+    "tests/test_processors.py"
+   ]
+  },
+  {
+   "commit": "5871e78d48600436289db90282a7a11976f835f6",
+   "module": "structlog",
+   "mutated_digest": "313b2ce0a116bfc7941d26da0ab5d33b2cf240d36b0869c9e459edbf7afa4951",
+   "original_digest": "cd6021a15d07903517f498a12d5bb8fef0b374d3e6f89e99b111bc56e7975217",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "015a8919fe5aa248",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "5a3d3e59805f1e2b82738e14f73d1ff395b24f3a",
+   "module": "structlog",
+   "mutated_digest": "4ebe12118121719624596ab48f6e4e2a601bf4c5bd967c598c3151b45cc3e389",
+   "original_digest": "4f69560fe817d0e3d1b3a7edbece2c8e6e1155dcddd4b6a13532447fe933815e",
+   "path": "src/structlog/dev.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "02dbdb830c4da379",
+   "tests": [
+    "tests/test_dev.py"
+   ]
+  },
+  {
+   "commit": "5cb5f8c228ac23a86d7e7aeb316b26d3134211f5",
+   "module": "structlog",
+   "mutated_digest": "cd6021a15d07903517f498a12d5bb8fef0b374d3e6f89e99b111bc56e7975217",
+   "original_digest": "2171a4ebcf3613a2a41657a5046829c265b7538936523e36eb91511ade140db3",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "1aafb6728abcc631",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "5dc17b561826feb8f2d5d7760f631edeea50d8b8",
+   "module": "structlog",
+   "mutated_digest": "e88b48e56aaf4fddb789f59b3412b44cad1b39e90268291a925f3ad784ff0091",
+   "original_digest": "d782bf6feb00ddb72925637c2991a1db08bd8c7d32b8188e33b6b25d5425b4bc",
+   "path": "structlog/common.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "b24ea63ee8197936",
+   "tests": [
+    "tests/test_common.py"
+   ]
+  },
+  {
+   "commit": "5f19b0c0a347cead3b713e4e9553802b493d6879",
+   "module": "structlog",
+   "mutated_digest": "dc9a2978bc9ec2ed603eb12aeadf14425dde83d04f02b28268295a6fd6166c2a",
+   "original_digest": "a4996fb27505705ff82ffa296ebd14dc301933046649bfaf9d9375ca47aed269",
+   "path": "structlog/threadlocal.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "e71f0a0de217c398",
+   "tests": [
+    "tests/test_threadlocal.py"
+   ]
+  },
+  {
+   "commit": "6b06c062dbcd166bfba0da407e9af63432bedea2",
+   "module": "structlog",
+   "mutated_digest": "6e21b73748fe29cdf90a55a0f3e8a9211acc987ed6c53cb4f14487b8426cc4c6",
+   "original_digest": "9faff0639f921b65b0944a7e9b667196c4d91ebddf77893852098c03de2b1270",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "7b86835e268f7039",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "705d3a3581ffca1180e72845dd3af829fe1d2ac2",
+   "module": "structlog",
+   "mutated_digest": "7755ad370188cb32af36067944001fc99d9804ec7f949c443dd4008436414144",
+   "original_digest": "6ba509ebaec903847dfd4b8cce516f3e140a0769ef3d375ede65af89adad3f9b",
+   "path": "src/structlog/processors.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "b5955c0a8f2d9569",
+   "tests": [
+    "tests/test_processors.py"
+   ]
+  },
+  {
+   "commit": "70ca975d1c8169229cda2198aed289f929a6e735",
+   "module": "structlog",
+   "mutated_digest": "6759b739f947270734539f19704ff589e4ec1271749d7b1544f5baef07b3847b",
+   "original_digest": "ff77d71ec8d2d20f08d7a6719d7723c690f4223edd5d0cab5a67acc96d174562",
+   "path": "src/structlog/testing.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "19fadf447bb47186",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "750e6749bdb9f9a2f1bebd9857c0dd942623febd",
+   "module": "structlog",
+   "mutated_digest": "16f453fc3117506932da170f8ea9c24792207df8c68d9a3056ecd6b858803dd2",
+   "original_digest": "fff2c47a48c0a0cd3ddd473b577b59fa5fac1f785d9500e9dc4982745b4a5828",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "70f2f375862353c8",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "79032b3f93740e1e2430f9fe3937f2f3810d0975",
+   "module": "structlog",
+   "mutated_digest": "40e66d6f4eb0d4eee160c2d6483bc591ec7dc992eaff737eb241862c628cf486",
+   "original_digest": "e9b24f284828fa4167b759c15a117d4b28772850240087057dacf0bf64d25572",
+   "path": "src/structlog/_output.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "927c06772ede0378",
+   "tests": [
+    "tests/test_output.py"
+   ]
+  },
+  {
+   "commit": "7f5aaba92da4fa618f533f28dcead7140220331d",
+   "module": "structlog",
+   "mutated_digest": "a747430aa48cd66529b96144d036768dd4e2045a07b949091a77ecb388c33c09",
+   "original_digest": "974d7185160ea7d430cc0f4c2a794e51576a535ab96e4422b20244edd8f0020d",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "f856128cf5c986dc",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "87cdcaf0205f9b62f793f331160d17cb12316e0d",
+   "module": "structlog",
+   "mutated_digest": "9faff0639f921b65b0944a7e9b667196c4d91ebddf77893852098c03de2b1270",
+   "original_digest": "e62f68e7473cf410029eff6606722dd636cc090662962dd2f00e3e977dfcb372",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "33ceb42724cef2c9",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "881d84145fa8364596317ffd04ed54eb66fb17fe",
+   "module": "structlog",
+   "mutated_digest": "2d2e52d9819a8a0b9955dc5eaff8080efd64fe8d8f25dba399ede5e0697aafdd",
+   "original_digest": "8a60dbe30220b425d0b77eebd7ae4ef509bb690b223f34316e197a9639f3f363",
+   "path": "src/structlog/testing.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "5c0eefb5c67d6705",
+   "tests": [
+    "tests/test_testing.py"
+   ]
+  },
+  {
+   "commit": "8a584af869ec747578439c943debf0f1691da2fc",
+   "module": "structlog",
+   "mutated_digest": "d9f85c9ff3f3f4159624929263c35b95ef49b208a00632d0e0f3eb7a1f2d7d34",
+   "original_digest": "33898cb6844e21794780e6bdc6e5410074fff85d4535af86cf8d44eca76228df",
+   "path": "structlog/__init__.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "c26b88b4e9e10b92",
+   "tests": [
+    "tests/test_boundlogger.py"
+   ]
+  },
+  {
+   "commit": "92d57d7d0265d4baa0aed9377b5611d1aa4e2333",
+   "module": "structlog",
+   "mutated_digest": "3b2f2f93c76e6847ff770eea73533cebf2eec539c5019407fabc2b946b56d962",
+   "original_digest": "854ca0adaa91142cf31cdf936ee4ffeab3d5a70b25fbe6830145ea5a3373a4f1",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "df9bec1cf01760fa",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "950bfdc75deda14ae1061254b51471a570b562a1",
+   "module": "structlog",
+   "mutated_digest": "2a1ef024cc7e0d16f8ca9ad417fb656c0d4c18f117113b76f2e91131257bba1a",
+   "original_digest": "cea09a7cff37ff0fe644f0d8682496051bfa618f6bb8386ad693429ae2503fd7",
+   "path": "src/structlog/processors.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "dd16dcd9a0713a17",
+   "tests": [
+    "tests/test_processors.py"
+   ]
+  },
+  {
+   "commit": "9732ac660618e5c02375881db08e14ecb806f8bc",
+   "module": "structlog",
+   "mutated_digest": "99aee934acda31e3192a16c9eb1b9ac3be106f80f8624defdfbe5f19cb8a07d0",
+   "original_digest": "7d95fbae340a7d9550e5a34bc28d859ee872b4a878723540e93716727292f9a7",
+   "path": "src/structlog/_config.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "910bbe106851e75d",
+   "tests": [
+    "tests/test_config.py"
+   ]
+  },
+  {
+   "commit": "9fe6a93ceaa2611817fedd88a716d34712f2259c",
+   "module": "structlog",
+   "mutated_digest": "adda0c3b7893742eba66c98178e47092824bf3205b1eb3478926edfc27d30e87",
+   "original_digest": "b83f3751ad5e8253cedb9d95ed24b4cbeb3ddcf6ddba3ff3e13ad7562e04ec12",
+   "path": "src/structlog/_config.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "d07e0ad3662bb7ea",
+   "tests": [
+    "tests/test_config.py"
+   ]
+  },
+  {
+   "commit": "a48e1246b1cb41d202d32928a67b745b42588c02",
+   "module": "structlog",
+   "mutated_digest": "1f5b83871c863d80116f1da63f5cf31abdebd0a14bbb74185c9dab1fc7606831",
+   "original_digest": "fb80e8f55eecabf940d1140e74b8c5a11facc9be587a49610fe1855f740c545e",
+   "path": "src/structlog/__init__.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "dbc0b12d373e8de2",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "a4ec63d7161f1daa774ec968d7ac766803776a79",
+   "module": "structlog",
+   "mutated_digest": "092c8c5fcb7ca06a777a97856e1a15e6751e12478bca7e4eeb07c539f6e2456f",
+   "original_digest": "c235ca3872803e9c4f35f4bbc3469872825fd85467e2565e371744613531399a",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "14cd74588718a53b",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "b0be0441d0a6ad92059f16d662f8d67de7925619",
+   "module": "structlog",
+   "mutated_digest": "a8f361b033ed3515464c5763a2d389ffd81e349f07a21da4a627747642df745c",
+   "original_digest": "20b1d9b7137c0e7d1fb1d9bc18d323036c0d11585566ba94177933cd1304c078",
+   "path": "src/structlog/dev.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "a4aee1153df33851",
+   "tests": [
+    "tests/test_config.py",
+    "tests/test_dev.py"
+   ]
+  },
+  {
+   "commit": "bf80fa60ac248467feae45ff719b28afcb55302e",
+   "module": "structlog",
+   "mutated_digest": "c5f18381cec54b8cc9b6caf84d18fb91224d75a864a8b2fd30b1753909084b6d",
+   "original_digest": "b455def9ee33cb087f0cdba6ce358dfe935293cb44adc3d70fec1d1974f98fa9",
+   "path": "structlog/threadlocal.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "024288b4950a3974",
+   "tests": [
+    "tests/test_threadlocal.py"
+   ]
+  },
+  {
+   "commit": "c3a8a77e453fcd4bab403828219df437df7db055",
+   "module": "structlog",
+   "mutated_digest": "e9ae1fbe9409e8a8f33194567bfca53d8a3532b09f70c202a7913381675c6c22",
+   "original_digest": "643d968165fa9c13febc8e2e298d6403fab67a258cf24b70bf3e2ec6c4cff8c7",
+   "path": "structlog/_config.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "804d3f8d958ad7ab",
+   "tests": [
+    "tests/test_config.py"
+   ]
+  },
+  {
+   "commit": "c6e7cad18ffe91febf2b97dac03a465134b1a5d1",
+   "module": "structlog",
+   "mutated_digest": "1a9e2d1814378592fdba13280dad79df70fc027c381781919e18714a59000f24",
+   "original_digest": "5792c932c29c15b7db38de323669f78a09c5a62ba4d80e437f078d46af4b8959",
+   "path": "src/structlog/_output.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "64d8b165f0cf3c20",
+   "tests": [
+    "tests/test_output.py"
+   ]
+  },
+  {
+   "commit": "c7a6a101fdf644fd8c1ece7388ff1405895f3a4a",
+   "module": "structlog",
+   "mutated_digest": "bb36077ee937cb5a89471a7edfba5ea3bafae8854bf7a524592ae54417de2978",
+   "original_digest": "6ae8aa3f6c134ed9316deb4f5c5f9665cb02097cabd55496b5db99a597a9f84c",
+   "path": "src/structlog/_native.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "ac5560adc24fe670",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "c86c9ff8d61bbffeb4d293e2863958bc2ac91395",
+   "module": "structlog",
+   "mutated_digest": "9ef37c6122e3db36b0e5b1dff9a8f2b0f693a435e13d2112bc928a207e8e4ee6",
+   "original_digest": "f7bb178e91c85b2be0b29676e443984fc8357724d5ba85b94f01e4fc5a94b632",
+   "path": "structlog/boundlogger.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "311c6657bd906b25",
+   "tests": [
+    "tests/test_boundlogger.py"
+   ]
+  },
+  {
+   "commit": "ca328b70aa7fe976bab5119aad7fb4f35852f654",
+   "module": "structlog",
+   "mutated_digest": "4f69560fe817d0e3d1b3a7edbece2c8e6e1155dcddd4b6a13532447fe933815e",
+   "original_digest": "5d3f7935da258e3a9ae34f289d6f11f9e0221c953f49fdd3f3423864f9d6d75e",
+   "path": "src/structlog/dev.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "566f6aed20b8ac54",
+   "tests": [
+    "tests/test_dev.py"
+   ]
+  },
+  {
+   "commit": "d3cf2549683326249fd2d2a1bfd276ea147a5237",
+   "module": "structlog",
+   "mutated_digest": "6cd7798a2174f4ea5f3c142398e0524ae9613b53bec2b9f31bb2997633925c6d",
+   "original_digest": "c303f3546f3bdc01556616767fbeca58230a52b0bca27c838dc404f4267d3c20",
+   "path": "structlog/__init__.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "b64550304d418b9e",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "e20ca64c0c35ea857dd084fa67c269bc823fbde1",
+   "module": "structlog",
+   "mutated_digest": "9ee91e832b607d27630595a3d70258b58e5653799ce9c96913d36cc4f6bc5a3f",
+   "original_digest": "878244f268838489894b45c8867d74a6b026e7b24c11d699a0967419596c4b9b",
+   "path": "src/structlog/_loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "95e436654959d31b",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "e37066b6737a5679d07c747745a4195927842bc5",
+   "module": "structlog",
+   "mutated_digest": "c78d327de70c0cb29cc447c383783f88efe5661a23201fac3432903ed14768ae",
+   "original_digest": "e6534eb5fdd9e245f38e5c5def44e836c6191799cc9424f30b1b6286740c6a39",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "1eacf91df12edbc9",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "e67d12ce50370cc4d6c1da538df10b81e3ff466f",
+   "module": "structlog",
+   "mutated_digest": "01819219fe9923c17ba8a3f2188212e800022c87936b33e54bd56f64630a44e1",
+   "original_digest": "d86966b911ac1d90124e6a1776e9923c4384f3839eb53ab47c2acdac36ab772d",
+   "path": "structlog/loggers.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "dbef8819fdf2ddde",
+   "tests": [
+    "tests/test_loggers.py"
+   ]
+  },
+  {
+   "commit": "ea950f6638daf332d5bc1c29a25f20e032798351",
+   "module": "structlog",
+   "mutated_digest": "9947a3ddb3befefb6455611ede38a1990ed23bb0fa25495c46f84bc89c6ccdc8",
+   "original_digest": "b2d690eb7c187858fe609b53af2c0c5f8813c0ee05b3bf8a1bd99ea9a56c4640",
+   "path": "src/structlog/_log_levels.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "c89f649b01870257",
+   "tests": [
+    "tests/test_log_levels.py"
+   ]
+  },
+  {
+   "commit": "fd01af7acb0c2e6d3cd0caa78972c66b932ad120",
+   "module": "structlog",
+   "mutated_digest": "33410959f1899d39feba3e88525c89ece6b3d420890fafde8167a30bc8a23c7e",
+   "original_digest": "1fd27bdafd86f7052bb3bb0125ef3bcf82e46a96f92e65407817ea74798351e0",
+   "path": "src/structlog/_base.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "aacdb021a053eeb6",
+   "tests": [
+    "tests/test_base.py"
+   ]
+  },
+  {
+   "commit": "fe4cd562af43286644e6532184c3471da8e8dc8d",
+   "module": "structlog",
+   "mutated_digest": "376f9283c48f2a43b898f99ab462d397a31c44944d5ddbc5ec9ea3d0a1f72944",
+   "original_digest": "71019e854394f3bc32e059229a9dc6285b7f9f7b52ef9bbc3284849483b185b9",
+   "path": "src/structlog/_frames.py",
+   "repo": "structlog",
+   "split": "fit",
+   "task_id": "0d893a9b0ffa0074",
+   "tests": [
+    "tests/test_frames.py",
+    "tests/test_processors.py",
+    "tests/test_tracebacks.py"
+   ]
+  },
+  {
+   "commit": "96dfe2cef79eb4c2a441d5b1b36c3ef357372c9f",
+   "module": "tomli",
+   "mutated_digest": "9bb27682c6a1ddd23717878f9f3dd068cfd1430b4c08c693b096a7451edd5ee8",
+   "original_digest": "bf7110bfc9acfd4fb6cfa89380043e9d4f610469e3ba816c53f614a1a484f02d",
+   "path": "tomli/__init__.py",
+   "repo": "tomli",
+   "split": "fit",
+   "task_id": "ad0705e0a5bc248c",
+   "tests": [
+    "tests/test_error.py"
+   ]
+  },
+  {
+   "commit": "9eb2125ef49071e673d42e383b5221a268665193",
+   "module": "tomli",
+   "mutated_digest": "c6e660786e194b0985c86d1e328983d89148fd18b6620361898d7d4ff472d690",
+   "original_digest": "7dd68000a0fbcb474610b199e120bc1357f857f906a66c380d715881a838d1ac",
+   "path": "src/tomli/_re.py",
+   "repo": "tomli",
+   "split": "fit",
+   "task_id": "e563fd546118ed9b",
+   "tests": [
+    "tests/test_data.py"
+   ]
+  },
+  {
+   "commit": "004fce630d2537542a03fa8d4d6d62dae418b422",
+   "module": "tomlkit",
+   "mutated_digest": "98f3452ba8c91a1052a36e9764c9fe971517c60f3f99ecefedf4ee168a261770",
+   "original_digest": "fdc40c47a7acc45eab357828ec4a602ce868c032ad4224f35034d085f36201a6",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "87a45631d7ae2fc5",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "01b0f45cd43ca6d250e733b2db3a2ac84426c055",
+   "module": "tomlkit",
+   "mutated_digest": "7e6361b17c6b771510b9c981da476f5f61d18cdf1412d609185ff2bc2dc1dfce",
+   "original_digest": "13e1099c15e9413e90f2ae1976287f3de4d448540fa547e8c9ed67a5b27b6be7",
+   "path": "tomlkit/_utils.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "3f804081e826641f",
+   "tests": [
+    "tests/test_write.py"
+   ]
+  },
+  {
+   "commit": "020fe1b76c8c2e0b824b2f666354cc92acf3cc68",
+   "module": "tomlkit",
+   "mutated_digest": "94542331b51234d69c057931ae5e25c77a8ca741760df5f0e97ee6b92bc2aa4a",
+   "original_digest": "bab91b0e356aa20e42c6154522f5af7b033f96c6f91284006792578875585282",
+   "path": "tomlkit/container.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "54f120d669e7cc66",
+   "tests": [
+    "tests/test_toml_document.py"
+   ]
+  },
+  {
+   "commit": "2c87eafe7c852d19c1b91a1c9bed4d47bd03816f",
+   "module": "tomlkit",
+   "mutated_digest": "6cd2ed2b3b42adca52fef80f60da577b5d0de6d0eb74d03ad290233081cc1958",
+   "original_digest": "f9691c26fce844cc04e1f6d6157ba7311027c1be105b6a69c93a8bcd17a92b4c",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "707b72359e6b1aa0",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "483f240ea7d45bd9c82fbd16d8e63270a69770c3",
+   "module": "tomlkit",
+   "mutated_digest": "b1b625f81ca46f5bd3285427a353481b5421496e6b4fa25cc05c2f5b02ac984d",
+   "original_digest": "64ad17796a73b8d4aacd33caaaaac39061cb4adf7fbd49b583e021f5c0c87280",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "e6dde3504c242636",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "5b2b1ffbc1a62df387d7114b733a606933bea17a",
+   "module": "tomlkit",
+   "mutated_digest": "860b1d2392240b5f3f8357d6ab686b76f474d15aee20240ad713555f75cc6b5b",
+   "original_digest": "b1b625f81ca46f5bd3285427a353481b5421496e6b4fa25cc05c2f5b02ac984d",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "a8e56e8b08b34e17",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "691dc33379163b775980109ae7871468b42a964c",
+   "module": "tomlkit",
+   "mutated_digest": "a0ad2aa486e6b33bc340bb0dadbbeef43ad69343643b3733eb144825e1e9a594",
+   "original_digest": "2b10099ecfe7c118f00652605c4606d209c6fc4dcac9926194a10baa0db9bb76",
+   "path": "tomlkit/container.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "ab14c24decbe41dd",
+   "tests": [
+    "tests/test_toml_document.py"
+   ]
+  },
+  {
+   "commit": "90365ea1d67cee7aa3bc62e03ba817a6ddb6f67d",
+   "module": "tomlkit",
+   "mutated_digest": "86723f32fda30286277a71bcd911f8a5b74b7734d4b58f3829f8b17b6a8a586e",
+   "original_digest": "fdebd982f42178a8342e65cb5ff5129ec720d404cf98cb0d1ccc81b9bf822fbd",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "cf0d220b7fb0851d",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "afa41a570bfa26d585f851f2a081e3da80e629c9",
+   "module": "tomlkit",
+   "mutated_digest": "f9691c26fce844cc04e1f6d6157ba7311027c1be105b6a69c93a8bcd17a92b4c",
+   "original_digest": "860b1d2392240b5f3f8357d6ab686b76f474d15aee20240ad713555f75cc6b5b",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "c9d0c270dc37bcdd",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "c07c0c15c49a893bb8a4c9f63401822d31e08942",
+   "module": "tomlkit",
+   "mutated_digest": "d52e6c99ee3864a934984d673a096ad0a10e75a8a143639b8c4d3b1070616b66",
+   "original_digest": "8791d83b39e264104fe66ec85fcb714b4a49ac639d9b62c99583458e8bb15c01",
+   "path": "tomlkit/source.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "08eefcc77fb4172b",
+   "tests": [
+    "tests/test_parser.py"
+   ]
+  },
+  {
+   "commit": "f466807e253b7479a3dbd9621f8b0782384ade9e",
+   "module": "tomlkit",
+   "mutated_digest": "64ad17796a73b8d4aacd33caaaaac39061cb4adf7fbd49b583e021f5c0c87280",
+   "original_digest": "86723f32fda30286277a71bcd911f8a5b74b7734d4b58f3829f8b17b6a8a586e",
+   "path": "tomlkit/api.py",
+   "repo": "tomlkit",
+   "split": "fit",
+   "task_id": "0a13b00c4678a939",
+   "tests": [
+    "tests/test_api.py"
+   ]
+  },
+  {
+   "commit": "3e2449c7bbc4ab378a2381b753a63d1dfd6d82ef",
+   "module": "toolz",
+   "mutated_digest": "f91f6f513e38ed9f47d37bf5f5788ede5bc9ddc4aff42cb815e5ba3b25c4857e",
+   "original_digest": "9dda55108ce80195426b1ea8dea449019c1369b78d539c7b3cae309cbcddef79",
+   "path": "toolz/sandbox/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "0ffa2634f81564a7",
+   "tests": [
+    "toolz/sandbox/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "404a4c38b7d32ddf1c0fcbcd50f0d64f36a2481c",
+   "module": "toolz",
+   "mutated_digest": "1e236bde5654d26d7aa5150725971babc2d8f6e6465646a2faecf0cc52396ed1",
+   "original_digest": "05b7d1094e01ef54d606000477aa5ad02acde553a208917c05e1a84aae904c23",
+   "path": "toolz/dicttoolz/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "2559f4551b4c5f18",
+   "tests": [
+    "toolz/dicttoolz/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "4453b32b15d0b21ddfd411be3cef5243147aaad6",
+   "module": "toolz",
+   "mutated_digest": "9d197194cb3818c8126f89fe238d0cb5b0a25bab5a0e3a0656fc6984134f7629",
+   "original_digest": "4e5f7c9ea76a3e82276f61f708d98f419123299a5d39d56e9146b13c4da87971",
+   "path": "toolz/itertoolz/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "d985369f7d68b04e",
+   "tests": [
+    "toolz/itertoolz/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "6dfb2ff7bd2145b9be2441e391c4f4c9d9761619",
+   "module": "toolz",
+   "mutated_digest": "56b5534822f8bb4ef520708f3736c67cc7fe372309114beee91afb487a3c2482",
+   "original_digest": "fe113304c48d947728df3cc3c08961b673d66e7139c6f582807a96f2b420c102",
+   "path": "toolz/sandbox/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "c8e1c70b5a0e9512",
+   "tests": [
+    "toolz/sandbox/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "7b3b0eafb942474c4cc7308a5e62f6872784736e",
+   "module": "toolz",
+   "mutated_digest": "86393a175815fcf5e549ab5aa8aad4fcb16667dc7c75869e83f18925d5d734c1",
+   "original_digest": "f716a248faa2ddb09f2bbf296e846c63de9552aef3bc1bb7e8f61a9534927864",
+   "path": "toolz/__init__.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "565b3cdae1c05842",
+   "tests": [
+    "toolz/tests/test_compatibility.py"
+   ]
+  },
+  {
+   "commit": "9a98927f61889ab9c3ddfe3179b5a1b49a1f376d",
+   "module": "toolz",
+   "mutated_digest": "84fc6c5b4fe9006830fa00cd7e5d5f67c4eba52c46dce7944075e5513211e99d",
+   "original_digest": "81635012ad2a32f0914046994b7e6f518373b6016bbe1aca7d5d2da2a8704e17",
+   "path": "toolz/dicttoolz.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "761fca03c41e069a",
+   "tests": [
+    "toolz/tests/test_dicttoolz.py"
+   ]
+  },
+  {
+   "commit": "a2afca875e06fef6d4fc6794725fcfebb6fc1004",
+   "module": "toolz",
+   "mutated_digest": "5e64ca4236b8073e6a4e98a0cbc78180fa0905edac7de9ce779525acc125a5a9",
+   "original_digest": "f787117d31c1051417faea79b6781a96d840c3bc68961fe2fc0778c452cbdfa9",
+   "path": "toolz/__init__.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "62962e71b295bb44",
+   "tests": [
+    "toolz/tests/test_functoolz.py",
+    "toolz/tests/test_iterrecipes.py",
+    "toolz/tests/test_itertoolz.py",
+    "toolz/tests/test_utils.py"
+   ]
+  },
+  {
+   "commit": "b11e428af7ee41cebb53bd0b37c58064d5e9df93",
+   "module": "toolz",
+   "mutated_digest": "40a1a3f0ff9db3a158396dd657e2fbff36dcc55650d02cb742ee9ca3ae8a54bd",
+   "original_digest": "16c400e0f3174607dfe5d569dc33fcf5559bfdf34fae7561e51ca23493730b2c",
+   "path": "toolz/recipes.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "9e83897e0dc66eec",
+   "tests": [
+    "toolz/tests/test_recipes.py"
+   ]
+  },
+  {
+   "commit": "c25af6d107c2a46850c0da83d750ef19a1211e8b",
+   "module": "toolz",
+   "mutated_digest": "83d6d0f2d67482c56fd4b96c48eb89f2feaca2f54921c07edf5c8c24a7bfc030",
+   "original_digest": "84fc6c5b4fe9006830fa00cd7e5d5f67c4eba52c46dce7944075e5513211e99d",
+   "path": "toolz/dicttoolz.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "81c736b7d409d8f8",
+   "tests": [
+    "toolz/tests/test_dicttoolz.py"
+   ]
+  },
+  {
+   "commit": "cbc780248b62b059bb1922ccc2ed7b1e8f84bc3d",
+   "module": "toolz",
+   "mutated_digest": "0cb71755186f688a1819960c74c055ae4251fc73e25fb35d0307b74e6926af40",
+   "original_digest": "f7d03f6b79390ed8a66f311b3e01298c5e8ad96521a038fa24dd6ef423a078ff",
+   "path": "toolz/dicttoolz.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "3460da8e9dad4b4f",
+   "tests": [
+    "toolz/tests/test_dicttoolz.py"
+   ]
+  },
+  {
+   "commit": "cfd4a8028e63253aa83067bb8c7f8bc4511b5940",
+   "module": "toolz",
+   "mutated_digest": "05b7d1094e01ef54d606000477aa5ad02acde553a208917c05e1a84aae904c23",
+   "original_digest": "e0a471237f79cde975b1506a90acd65b2fc4e618a11a83068ab83dbf6416e249",
+   "path": "toolz/dicttoolz/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "3d2d301fd767afc1",
+   "tests": [
+    "toolz/dicttoolz/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "e90e362ed8f90b00cc8285682f8cdea51fe6f177",
+   "module": "toolz",
+   "mutated_digest": "4b30cfcf8ede6f3d063455e5b7893aa535c3c3ab10ce6a322554de470e8fe983",
+   "original_digest": "d860eaf6ef112ba2d4e4be646d39bb5bee4a47873f20fc21bb1d1ffd2ebcf585",
+   "path": "toolz/sandbox/core.py",
+   "repo": "toolz",
+   "split": "fit",
+   "task_id": "03f52b49fdb760dd",
+   "tests": [
+    "toolz/sandbox/tests/test_core.py"
+   ]
+  },
+  {
+   "commit": "759dda1ecc5f3f6d6697808aa6fa3d5ff5a82628",
+   "module": "typeguard",
+   "mutated_digest": "f4fe641f4c64a6f9586a7fda18e91f062e5ddaf5e7c3f2669385a3bda44431a0",
+   "original_digest": "76453a0fcbdcb57828cd4d5bb5a0315b62db6f1a6335a7b3df2c4caee3d8d427",
+   "path": "src/typeguard/_decorators.py",
+   "repo": "typeguard",
+   "split": "fit",
+   "task_id": "ec4dc159ff531d7f",
+   "tests": [
+    "tests/test_typechecked.py"
+   ]
+  },
+  {
+   "commit": "0a1df21e4430659f48db3b81a82a17412103d1a1",
+   "module": "w3lib",
+   "mutated_digest": "1fca89f1dd64f0fb1ebd69e8ea11b5c2377e1d3a6d5a8ce5c41ecbfeee772514",
+   "original_digest": "b4c05bea422e655e9427a3c134bcc4dee68d29ece61f7b77787bfa26f39d5eca",
+   "path": "w3lib/encoding.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "7b7fea764dd60eb8",
+   "tests": [
+    "tests/test_encoding.py"
+   ]
+  },
+  {
+   "commit": "11779e416116625d3ccaeb04ff6367749b44db52",
+   "module": "w3lib",
+   "mutated_digest": "e77708fe6a1a512591fcf5824d474b4485d3ae1778225eb7396ec3826d4becb6",
+   "original_digest": "2289e07bb5fe916e2898492ebd8c66e3fcbcfabba54db24d09bd3767283e0491",
+   "path": "w3lib/http.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "1acca6f163b8eac3",
+   "tests": [
+    "w3lib/tests/test_http.py"
+   ]
+  },
+  {
+   "commit": "32abc6d7e4265411ec5e0178a6609ab223596bd4",
+   "module": "w3lib",
+   "mutated_digest": "1fca89f1dd64f0fb1ebd69e8ea11b5c2377e1d3a6d5a8ce5c41ecbfeee772514",
+   "original_digest": "4cb7e2f9b4a07369540414aaeb7a24cf470dafb323c51e22a603f5729d0cf144",
+   "path": "w3lib/encoding.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "99547d34a6efb03b",
+   "tests": [
+    "tests/test_encoding.py"
+   ]
+  },
+  {
+   "commit": "54ee9e68b10f9e16b5dd222df3c271e0fa0a7d31",
+   "module": "w3lib",
+   "mutated_digest": "84bcc0a97190f04ac3b2f9d8fc2301cd2003f250c113933590fcc32190b77b79",
+   "original_digest": "1fca89f1dd64f0fb1ebd69e8ea11b5c2377e1d3a6d5a8ce5c41ecbfeee772514",
+   "path": "w3lib/encoding.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "e4e77b148595edb5",
+   "tests": [
+    "tests/test_encoding.py"
+   ]
+  },
+  {
+   "commit": "7ae50742646854048082cf210d8bcbe46385c591",
+   "module": "w3lib",
+   "mutated_digest": "09142657c3e6525a8f9521f803e70c3ae860a71dca45e50cdf3340c2c22c67b2",
+   "original_digest": "285474483bbceda5494a8ef37f83bbc9cc0a223c52cf5459e01e21678ae8b760",
+   "path": "w3lib/http.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "0ff45ed188a842ae",
+   "tests": [
+    "tests/test_http.py"
+   ]
+  },
+  {
+   "commit": "bcf722f19eb30abfbd7fee3c7d9d617a30e56f91",
+   "module": "w3lib",
+   "mutated_digest": "b0e1f44a39eaddf976a186cc4ee4347d3955d7f4ead00fdaccbb3620c103d73e",
+   "original_digest": "af98a3dd78b4dfa0ddac8b18511f3005a1ca3a4531c2286019cabdb94ff028e3",
+   "path": "w3lib/encoding.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "87b8237337a539ce",
+   "tests": [
+    "tests/test_encoding.py"
+   ]
+  },
+  {
+   "commit": "ee44afc5da048f5da6a413fa78b4ba48832498a4",
+   "module": "w3lib",
+   "mutated_digest": "2289e07bb5fe916e2898492ebd8c66e3fcbcfabba54db24d09bd3767283e0491",
+   "original_digest": "80907cb1980eb487333dcd2cf5179f208f0c6b38f26188c92428b1cdc4e528a3",
+   "path": "w3lib/http.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "066e03127be2dca9",
+   "tests": [
+    "w3lib/tests/test_http.py"
+   ]
+  },
+  {
+   "commit": "f5f55f345078bf98928b69c4e87a605298fb387c",
+   "module": "w3lib",
+   "mutated_digest": "1fca89f1dd64f0fb1ebd69e8ea11b5c2377e1d3a6d5a8ce5c41ecbfeee772514",
+   "original_digest": "7903ce81e6c693980b207ece489da1a4896257176923e3648f42b1e1c829d898",
+   "path": "w3lib/encoding.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "58c8de3b6cfcaa14",
+   "tests": [
+    "tests/test_encoding.py"
+   ]
+  },
+  {
+   "commit": "fef8724ca817a00a9e57d25dfe422c193db715f3",
+   "module": "w3lib",
+   "mutated_digest": "db74af745c3175d95a9470498b2ba173ef8abdbf60bcbcc839afdd2135a1c9ec",
+   "original_digest": "48e66d8c4f7538518df8a55feb1a08fbfe5136abfadbe69657933847572de748",
+   "path": "w3lib/html.py",
+   "repo": "w3lib",
+   "split": "fit",
+   "task_id": "a5e2be415ecbc0e8",
+   "tests": [
+    "tests/test_html.py"
+   ]
+  }
+ ]
+}
