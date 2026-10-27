@@ -33,7 +33,7 @@ from caduceus.ledger import Ledger  # noqa: E402
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
 PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee", "018": "exp-018-coder-trainee", "019": "exp-019-structural-bugs", "020": "exp-020-real-bugs"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7, "019": 8, "020": 9}[N])
+MANIFEST = os.path.join(REPO, "tasks", "realbugs-v1.manifest.json") if N == "020" else os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7, "019": 8}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
 GENTLE = ("011", "012", "013", "014", "015", "016", "017", "018", "019", "020")
 CLONES = os.path.expanduser(os.environ.get("REALBUGS_CLONES", "~/hsi-runs/realbugs/repos"))
