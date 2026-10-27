@@ -63,6 +63,17 @@ contrast mean is negative or retention breaks. Otherwise Inconclusive.
   features, not repairs. A real-bug test needs an external corpus of fix commits with
   regression tests (for example SWE-bench-style repositories), which is a separate
   experiment with its own oracle audit.
+  Feasibility check on the one real-bug corpus available locally (SWE-bench Lite, Docker
+  oracle): 111 of 300 instances have a local image (django 58, sympy 17, scikit-learn 8,
+  pytest 7, sphinx 7, others 14). Gold patches resolve through the harness (3 of 3, 46 s
+  for three in parallel), so the oracle works. The experiment is still underpowered by
+  construction: a module-disjoint split leaves about 58 django instances for fit and
+  about 53 others for assess, so even if the 32B solved a quarter of the fit instances the
+  training set would be on the order of 15 repairs, far below the 100-example floor used
+  here, and a 53-task assess set cannot resolve a 10-point effect. Lite is also public,
+  so the 32B proposer may have seen the fixes. This is an estimate, not a run; no
+  experiment was preregistered. A powered real-bug test needs hundreds of fix commits
+  with regression tests from repositories outside the proposer's likely training data.
 - Other repositories. One repo, stdlib Python only.
 
 ## Process notes
