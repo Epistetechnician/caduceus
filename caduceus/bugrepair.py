@@ -22,7 +22,10 @@ MICRO = 1000000
 
 
 def user_prompt(view: Dict[str, Any]) -> str:
-    return "File: %s\nFailing tests: %s\n\n%s" % (view["path"], " ".join(view["tests"]), view["source"])
+    head = "File: %s\nFailing tests: %s\n\n" % (view["path"], " ".join(view["tests"]))
+    if view.get("spec"):
+        head += "Intended behaviour (from the fix commit):\n%s\n\nSource:\n" % view["spec"]
+    return head + view["source"]
 
 
 def format_edit(search: str, replace: str) -> str:

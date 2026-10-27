@@ -38,7 +38,18 @@ def _git(clone: str, *a: str) -> str:
     return subprocess.run(["git", "-C", clone, *a], capture_output=True).stdout.decode("utf-8", "replace")
 
 
-def build(clones_dir: str, entries: Sequence[Dict[str, Any]], split_seed: int) -> List[Dict[str, Any]]:
+SPEC_CHARS = 2500
+
+
+def spec_of(clone: str, parent: str, commit: str, tests: Sequence[str]) -> str:
+    """Commit subject plus the fix commit's changes to its test files, truncated. The tests are the oracle's
+    own spec; no source-file hunk is included."""
+    subject = _git(clone, "log", "-1", "--format=%s", commit).strip()
+    diff = _git(clone, "diff", "-U2", parent, commit, "--", *tests)
+    return ("Commit message: %s\nTest changes:\n%s" % (subject, diff))[:SPEC_CHARS]
+
+
+def build(clones_dir: str, entries: Sequence[Dict[str, Any]], split_seed: int, with_spec: bool = False) -> List[Dict[str, Any]]:
     """Tasks from manifest-style entries (repo, commit, path, tests). Sources come from the clones."""
     out = []
     for e in entries:
@@ -52,6 +63,8 @@ def build(clones_dir: str, entries: Sequence[Dict[str, Any]], split_seed: int) -
              "mutated_digest": domain_digest("caduceus.bugtasks.src.v1", old)}
         t["task_id"] = domain_digest("caduceus.realbugs.task.v1", t)[:16]
         t["mutated_source"] = old
+        if with_spec:
+            t["spec"] = spec_of(clone, parent, e["commit"], e["tests"])
         out.append(t)
     return out
 

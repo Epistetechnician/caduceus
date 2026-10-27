@@ -290,7 +290,10 @@ def split_commitment(tasks: Sequence[Dict[str, Any]], split: str) -> str:
 
 def proposer_view(task: Dict[str, Any]) -> Dict[str, Any]:
     """Everything a proposer may see: the buggy source and which tests cover it. No op, no original."""
-    return {"task_id": task["task_id"], "path": task["path"], "source": task["mutated_source"], "tests": task["tests"]}
+    v = {"task_id": task["task_id"], "path": task["path"], "source": task["mutated_source"], "tests": task["tests"]}
+    if task.get("spec"):
+        v["spec"] = task["spec"]
+    return v
 
 
 def oracle_audit(repo: str, modules: Sequence[str]) -> Dict[str, Any]:
