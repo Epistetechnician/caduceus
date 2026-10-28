@@ -109,8 +109,27 @@ and it is not shown to be absent.
 - Admission: the exp-012 result passes through `caduceus/bugrepair_bridge.py` into Exchange
   lanes. Seven lanes are Checked by evidence; the rest were waived by the repo owner as
   ledger audit_notes, not evidence. The verdict grants no authority.
-- Cost: the 32B proposer ran on a rented H100 (gman) for four experiments; all training
-  and evaluation ran locally with MLX LoRA (rank 8, 16 layers, steps = 3 x examples).
+- Cost: the 32B proposer ran on a rented H100 (gman) for four experiments; exp-008..021 training and evaluation ran locally with MLX LoRA; exp-022 trained and evaluated on the H100 (scripts/train_remote.py, eval_remote.py) (rank 8, 16 layers, steps = 3 x examples).
+
+### exp-022: real changes, 32B self-trained (Fail)
+
+Same 157 held-out real-change tasks and spec prompt as exp-021, but the trainee is
+Qwen2.5-Coder-32B (bf16, PEFT LoRA on the H100, vLLM greedy eval). Training data: the 346
+exp-021 verified attempts (89 examples after the 3-per-task cap), so this is self-training.
+
+| Arm | Repair rate |
+|---|---|
+| Untouched base | 15.9% |
+| Few-shot policy | 16.6% |
+| Verified adapter (3 seeds) | 17.2 / 18.5 / 17.8% |
+| Unverified pool adapter (3 seeds) | 17.8 / 16.6 / 15.3% |
+
+Verdict **Fail** by the preregistered rule (a contrast mean was negative: seed 1 verified
+was 0.6 pt below pool). No seed met the Pass rule. The base is now well above floor, so
+this is not a floor artifact: verified self-training moved the rate +1 to +3 pts over base
+and 0 to +3 over the pool, all inside noise (n=157). Retention held. Together with
+exp-014, self-proposed verified data is not shown to help; it helps only when a stronger
+proposer supplies the repairs (exp-015, exp-018).
 
 ## Reproduce
 

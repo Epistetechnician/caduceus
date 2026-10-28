@@ -175,3 +175,4 @@ What it does **not** establish:
 * equivalence between the two canonical encoders on arbitrary input (only
   differential tests); a Lean/formal lane is not implemented.
 * that verified-data recursion compounds, that data proximity improves the learning ratio, or that hsi-lab's synthetic-world PROMOTE (single seed, verified arm below real-only, held-out-rule-types guardrail failed) transfers to real tasks.
+* exp-022 (Fail, LocalDevelopmentEvidenceOnly): Coder-32B self-trained on its own 89 verified real-change repairs did not beat a pool-matched unverified adapter on 157 held-out real changes (17.2-18.5% verified vs 15.3-17.8% pool, base 15.9%). No claim that verification helps self-training on real code.
