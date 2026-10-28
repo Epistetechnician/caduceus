@@ -30,12 +30,13 @@ except ImportError:
 from caduceus.digest import domain_digest  # noqa: E402
 from caduceus.ledger import Ledger  # noqa: E402
 
+REAL = ("020", "021", "022")
 WORK = os.environ.get("EXP008_WORK", os.path.expanduser("~/hsi-runs/exp-%s" % os.environ.get("EXP", "008")))
 N = os.environ.get("EXP", "008")
-PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee", "018": "exp-018-coder-trainee", "019": "exp-019-structural-bugs", "020": "exp-020-real-bugs", "021": "exp-021-real-bugs-spec"}[N] + ".json")
-MANIFEST = os.path.join(REPO, "tasks", "realbugs-v1.manifest.json") if N in ("020", "021") else os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7, "019": 8}[N])
+PREREG = os.path.join(REPO, "prereg", {"008": "exp-008-bugrepair-round1", "009": "exp-009-bugrepair-round2", "010": "exp-010-bugrepair-round3", "011": "exp-011-gentle-round1", "012": "exp-012-gentle-replication", "013": "exp-013-recursion-round2", "014": "exp-014-recursion-round2b", "015": "exp-015-distill-scale", "016": "exp-016-second-trainee", "017": "exp-017-llama-trainee", "018": "exp-018-coder-trainee", "019": "exp-019-structural-bugs", "020": "exp-020-real-bugs", "021": "exp-021-real-bugs-spec", "022": "exp-022-real-spec-32b"}[N] + ".json")
+MANIFEST = os.path.join(REPO, "tasks", "realbugs-v1.manifest.json") if N in REAL else os.path.join(REPO, "tasks", "bugtasks-v%d.manifest.json" % {"008": 1, "009": 2, "010": 2, "011": 3, "012": 4, "013": 5, "014": 6, "015": 7, "016": 7, "017": 7, "018": 7, "019": 8}[N])
 LEDGER = os.path.join(REPO, "ledgers", "exp-%s-bugrepair.jsonl" % N)
-GENTLE = ("011", "012", "013", "014", "015", "016", "017", "018", "019", "020", "021")
+GENTLE = ("011", "012", "013", "014", "015", "016", "017", "018", "019", "020", "021", "022")
 CLONES = os.path.expanduser(os.environ.get("REALBUGS_CLONES", "~/hsi-runs/realbugs/repos"))
 MAX_EXAMPLES = 150 if N == "019" else None
 TRAINEE = {"016": "qwen2.5-1.5b", "017": "llama3.1-8b", "018": "qwen2.5-coder-7b", "019": "qwen2.5-coder-7b", "020": "qwen2.5-coder-7b", "021": "qwen2.5-coder-7b"}.get(N, "qwen2.5-7b")
@@ -75,7 +76,7 @@ def modules_of(split):
 
 def gen_split(m, split):
     if m.get("family") == "real":
-        return realbugs.build(CLONES, [e for e in m["tasks"] if e["split"] == split], m["split_seed"], with_spec=(N == "021"))
+        return realbugs.build(CLONES, [e for e in m["tasks"] if e["split"] == split], m["split_seed"], with_spec=(N in ("021", "022")))
     ts = bugtasks.generate(p("repo"), modules_of(split), m["split_seed"], m["per_module"], m.get("family", "syntactic"))
     return [t for t in ts if t["split"] == split]
 
@@ -161,7 +162,7 @@ def judge(task, text):
     new = br.apply_edit(task["mutated_source"], *e)
     if new is None:
         return False, False, "edit_not_applicable", ""
-    r = realbugs.verify_repair(CLONES, task, new) if N in ("020", "021") else bugtasks.verify_repair(p("repo"), task, new)
+    r = realbugs.verify_repair(CLONES, task, new) if N in REAL else bugtasks.verify_repair(p("repo"), task, new)
     return True, r["passed"], r["reason"], r.get("repaired_digest", "")
 
 
@@ -278,6 +279,66 @@ def train_one(llm, examples, tasks, seed):
     return steps, last
 
 
+def stage_import():
+    """exp-022: the fit attempts are the exp-021 attempts (same tasks, prompts, oracle); copied and re-verified, never regenerated."""
+    src = os.path.expanduser("~/hsi-runs/exp-021/attempts_fit.json")
+    recs = [{k: r[k] for k in ("task_id", "k", "text")} for r in jload(src)]
+    judge_all({t["task_id"]: t for t in tasks_for("fit")}, recs)
+    jdump(p("attempts_fit.json"), recs)
+    print("attempts", len(recs), "verified", sum(r["passed"] for r in recs))
+
+
+def stage_rexport():
+    """Write remote jobs: train.jsonl (one job per adapter) and eval.jsonl (one row per arm/seed/task)."""
+    pr = prereg()
+    jobs = []
+    for seed in pr["seeds"]:
+        ver, pool, tasks = training_sets(seed)
+        if len(ver) < 60:
+            Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
+            sys.exit("training floor not met: %d" % len(ver))
+        for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
+            jobs.append({"key": "%s-%d" % (arm, seed), "seed": seed, "examples": [
+                {"messages": messages_for(bugtasks.proposer_view(tasks[e["task_id"]])), "completion": e["completion"]} for e in ex],
+                "data_digest": domain_digest("caduceus.exp008.train.v1", sorted((e["task_id"], e["completion"]) for e in ex))})
+    with open(p("train.jsonl"), "w") as fh:
+        for j in jobs:
+            fh.write(json.dumps(j) + "\n")
+    m = jload(MANIFEST)
+    assess, tune = gen_split(m, "assess"), tasks_for("tune")
+    if {t["task_id"] for t in assess} != {t["task_id"] for t in m["tasks"] if t["split"] == "assess"}:
+        sys.exit("assess regeneration does not match manifest")
+    recs = jload(p("attempts_fit.json"))
+    ftasks = {t["task_id"]: t for t in tasks_for("fit")}
+    bank, seen = [], set()
+    for r in recs:
+        if r["passed"] and r["task_id"] not in seen:
+            seen.add(r["task_id"])
+            bank.append({"view": bugtasks.proposer_view(ftasks[r["task_id"]]), "completion": br.format_edit(*br.parse_edit(r["text"]))})
+    plan = [("untouched_base", 0), ("fixed_policy", 0)] + [(a, s) for s in pr["seeds"] for a in ("candidate", "deterministic_random")]
+    n = 0
+    with open(p("eval.jsonl"), "w") as fh:
+        for arm, seed in plan:
+            for split, ts in (("assess", assess), ("tune", tune if arm in ("untouched_base", "candidate") else [])):
+                for t in ts:
+                    view = bugtasks.proposer_view(t)
+                    shots = fewshot(view, bank) if arm == "fixed_policy" else ()
+                    fh.write(json.dumps({"arm": arm, "seed": seed, "split": split, "task_id": t["task_id"], "messages": messages_for(view, shots)}) + "\n")
+                    n += 1
+    print("jobs", len(jobs), "eval rows", n)
+
+
+def stage_ringest():
+    """argv: adapters.json from the node, eval_out.jsonl from the node."""
+    jdump(p("adapters.json"), jload(sys.argv[2]))
+    outs = [json.loads(ln) for ln in open(sys.argv[3])]
+    m = jload(MANIFEST)
+    byid = {t["task_id"]: t for t in gen_split(m, "assess") + tasks_for("tune")}
+    judge_all(byid, outs)
+    jdump(p("outcomes.json"), outs)
+    print("outcomes", len(outs), "passed", sum(o["passed"] for o in outs))
+
+
 def stage_train():
     pr = prereg()
     llm = load_llm()
@@ -285,7 +346,7 @@ def stage_train():
     meta = jload(meta_path) if os.path.exists(meta_path) else {}
     for seed in pr["seeds"]:
         ver, pool, tasks = training_sets(seed)
-        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100, "017": 100, "018": 100, "019": 100, "020": 60, "021": 60}[N]:
+        if len(ver) < {"008": 1, "009": 30, "010": 30, "011": 100, "012": 100, "013": 100, "014": 100, "015": 100, "016": 100, "017": 100, "018": 100, "019": 100, "020": 60, "021": 60, "022": 60}[N]:
             Ledger(LEDGER).append("verdict", {"experiment_id": EID, "verdict": "NotRun", "reason": "training floor not met", "verified_examples": len(ver)})
             sys.exit("training floor not met: %d verified examples" % len(ver))
         for arm, ex in (("candidate", ver), ("deterministic_random", pool)):
@@ -400,4 +461,4 @@ def stage_report():
 
 
 if __name__ == "__main__":
-    {"lock": stage_lock, "export": stage_export, "ingest": stage_ingest, "gen": stage_gen, "train": stage_train, "eval": stage_eval, "report": stage_report}[sys.argv[1]]()
+    {"lock": stage_lock, "export": stage_export, "ingest": stage_ingest, "gen": stage_gen, "train": stage_train, "import": stage_import, "rexport": stage_rexport, "ringest": stage_ringest, "eval": stage_eval, "report": stage_report}[sys.argv[1]]()
