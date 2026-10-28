@@ -86,6 +86,18 @@ the training floor (60) was not met: **NotRun**, no training, no assess run. Rea
 the intended behaviour stated, which the injected-mutant prompts never needed. A new
 candidate (exp-021) adds a specification to the prompt; exp-020 is closed.
 
+### exp-021: real changes with a specification in the prompt (Inconclusive)
+
+Same mined set (realbugs-v1), prompt now carries the commit subject and the commit's test
+diff. The 32B verified 346 of 2,220 attempts (89 distinct repairs on 47 of 185 tasks), above
+the floor of 60. On 157 sealed assess tasks from held-out libraries: verified adapter 7.0 to
+7.6%, pool-matched unverified 3.2 to 7.0%, base 3.2%, few-shot 3.2%. Candidate minus pool
+-0.0 to +4.4 points, lower bounds -4.5 to +1.2. Rule met in 0 of 3 seeds: **Inconclusive**.
+The direction is positive in 2 of 3 seeds, but everything is near floor (a 7B trainee solves
+3 to 8% of real changes), so the test cannot resolve a 10-point effect. Real-change results
+are not a pass and not a fail: the effect is not shown to carry over to real code changes,
+and it is not shown to be absent.
+
 ## Process notes
 
 - Lock before any model run: every experiment appends a `prediction_lock` to its own
