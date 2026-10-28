@@ -1,0 +1,73 @@
+{
+ "alpha_micro": 50000,
+ "arms": {
+  "candidate": "same base + adapter trained on verified fit-split repairs only",
+  "deterministic_random": "same base + adapter trained on an equal number of unverified fit-split attempts (pool-matched, includes failing ones)",
+  "fixed_policy": "same base, k=4 verified fit repairs retrieved by module similarity as few-shot, no training",
+  "untouched_base": "qwen2.5-coder-7b 4-bit, zero-shot"
+ },
+ "bootstrap_resamples": 10000,
+ "decision_rule": "Pass iff candidate minus each of the three other arms has paired-bootstrap 95% lower bound >= min_effect_micro/2 and mean >= min_effect_micro, in at least 2 of 3 seeds, retention holds. Fail if any contrast mean < 0 or retention breaks. Otherwise Inconclusive (never positive). n_assess is small, so Inconclusive is the expected outcome unless the effect is large; per_module may be raised only in a NEW experiment id.",
+ "domain": "60 outside Python libraries; each task is one fix commit that changed exactly one source file and its tests. Buggy source = file at the parent commit; oracle = the commit changed test files, run in a network-less Docker container (python:3.11-slim plus the library test deps), green on the fix tree. Pass iff only the target file changes and those tests go green.",
+ "experiment_id": "exp-023-real-spec-scaled",
+ "falsifier": "if the pool-matched unverified adapter matches the verified one (difference lower bound <= 0), verification added nothing and the recursion thesis is not supported in this domain",
+ "hypothesis": "Scaled-corpus distillation on real changes: exp-021 (7B trainee, 191 fit tasks) was near floor. With 36 more libraries mined on GCP (fit 353 tasks) the 32B proposer yields more verified repairs for the 7B trainee; the verified-vs-pool contrast is re-tested on a fresh assess split.",
+ "known_limits": [
+  "public repositories: the 32B proposer, the trainee base model, or both may have seen these fixes (contamination); the pool-matched control shares the exposure, so it isolates verification, but absolute rates are not clean",
+  "selection: tasks exist only where the fix commit changes exactly one source file with a regression test that fails before the fix and passes after, in small modules (<=12000 chars); this under-represents hard multi-file bugs",
+  "repository split is by library, so assess libraries are unseen but similar in style",
+  "tune split has only 36 tasks, so the retention check is coarse",
+  "assess tasks are regenerated from local git clones; the commit hashes are in the manifest",
+  "single trainee, one proposer, Python only",
+  "about 37% of the mined commits have fix-like subjects (fix, bug, error, ...); the rest are small feature or behaviour changes, so this is \"real historical single-file changes with regression tests\", not strictly bug fixes",
+  "the commit subject and test diff are visible to proposer and trainee: the test diff is the oracle spec, the subject may hint at the fix",
+  "assess prompts are rendered only to the evaluated arms, never to a proposer or trainer",
+  "the 36 added libraries were cloned, built and mined on a GCP VM (scripts/mine_gcp.sh) with images from pip install of the package then uninstall of the package itself; the oracle pre-check (green on fix tree, red with only the source file reverted) still gates every task",
+  "tune split is large (179) because many added libraries hash into it; retention check is more precise but evaluation is slower"
+ ],
+ "leakage_controls": [
+  "assess repositories disjoint from fit/tune repositories",
+  "assess sources read from git at run time; no assess prompt is rendered to any proposer or trainer",
+  "oracle runs only the commit changed test files on the fix tree with a single source file replaced"
+ ],
+ "matched": [
+  "data volume (examples and tokens)",
+  "optimizer steps",
+  "LoRA rank and lr",
+  "decoding settings",
+  "wall-clock budget per arm"
+ ],
+ "metric": "repair_pass_rate_micro (tests green / attempts)",
+ "min_effect_micro": 100000,
+ "mutant_family": "real",
+ "n_by_split": {
+  "assess": 172,
+  "fit": 353,
+  "tune": 179
+ },
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "oracle_audit": "every task passed a pre-check: tests green on the fix tree and red with only the target file reverted to its parent version (scripts/mine_realbugs.py)",
+ "proposer": "fit-split attempts from Qwen2.5-Coder-32B-Instruct (bf16, vLLM, temp 0.8, K=12) on a gman H100; trainee and evaluated model: Qwen2.5-Coder-7B-Instruct 4-bit (MLX LoRA).",
+ "recipe": "LoRA rank 8, 16 layers, lr 1e-5, scale 4 (series 1 used lr 1e-4, scale 20 and every adapter, including the pool control, scored below the untouched base). Steps = 3 x examples, batch 1. Training aborts as NotRun if loss exceeds max(2.0, 5 x first-step loss). Recipe fixed before any model run and not tuned on assess.",
+ "recursion_next": "None.",
+ "retention": "tune-split pass rate (evaluated for untouched_base and candidate only) must not drop for the candidate versus untouched_base by more than 0.02",
+ "round_policy": "Follows exp-021 Inconclusive and exp-022 Fail. New manifest realbugs-v2 (60 libraries, 704 tasks, new split seed 20411074 so the assess split is fresh), same prompt with spec, same 7B Coder trainee and gentle recipe, same rule and thresholds, training floor raised to >=100 verified examples (<=3 per task). No tuning. exp-021 and exp-022 are closed; this is a new candidate with new proposer data.",
+ "schema": "caduceus.prereg.bugrepair.v1",
+ "seeds": [
+  20421074,
+  20421075,
+  20421076
+ ],
+ "seeds_note": "training seeds are separate from the split seed",
+ "split_commitments": {
+  "assess": "3a6bf2424589477d5b96f0be28346ee4c0544211536bad818d047a3efedb002f",
+  "fit": "4e1944a9db91ab0ceb9a8b1d5996fd947e7a2f25b0f7ddc8322b717a68a29544",
+  "tune": "e2cd81e7d071ef0ce5666205d464f746ef50abf2e3b9307b9696933f3db2a1d2"
+ },
+ "split_seed": 20411074,
+ "status": "Locked by ledger entry in ledgers/exp-023-bugrepair.jsonl before any model run.",
+ "task_manifest": "tasks/realbugs-v2.manifest.json",
+ "task_manifest_digest": "3b03766bdef986968ae36d1769162ff2b66ee3c3124afec45a1c078ed1d11653",
+ "training_floor": ">=100 distinct verified fit repairs (<=3 per task); otherwise NotRun.",
+ "unit": "assess task, one attempt per arm per seed"
+}
