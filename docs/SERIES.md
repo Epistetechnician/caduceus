@@ -131,6 +131,27 @@ and 0 to +3 over the pool, all inside noise (n=157). Retention held. Together wi
 exp-014, self-proposed verified data is not shown to help; it helps only when a stronger
 proposer supplies the repairs (exp-015, exp-018).
 
+### exp-023 / exp-024: scaled real-change corpus (NotRun, then Fail at floor)
+
+Mined 36 more libraries on a GCP CPU VM (`scripts/mine_gcp.sh`): 704 tasks over 60
+libraries (fit 353 / tune 179 / assess 172, fresh split seed). The 32B proposer solved
+816 of 4,140 attempts. exp-023 (local MLX 7B training) was killed by memory twice before
+any adapter existed and is closed NotRun. exp-024 reran the same data and rule with the 7B
+trained and evaluated on the H100 (PEFT bf16 + vLLM), new seeds.
+
+| Arm | Repair rate (assess, n=172) |
+|---|---|
+| Untouched base | 2.9% |
+| Few-shot policy | 4.1% |
+| Verified adapter (3 seeds) | 4.1 / 3.5 / 4.1% |
+| Unverified pool adapter (3 seeds) | 1.7 / 1.2 / 2.3% |
+
+Verdict **Fail** by the rule (the verified-minus-few-shot mean was negative in one seed).
+The reading is floor-limited, not a clean negative: the 7B solves 3-4% of real changes,
+so 5-7 tasks decide each contrast. Verified beat the unverified adapter by 1.7-2.3 pts with
+lower bounds ~0, the right direction but not resolvable. Retention held. Real-change
+distillation to a 7B is not shown and not ruled out; the 7B is the limit, not the data.
+
 ## Reproduce
 
 ```sh
