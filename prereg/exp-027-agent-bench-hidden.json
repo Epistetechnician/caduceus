@@ -1,8 +1,8 @@
 {
  "agents": [
-  "Claude Code CLI, Haiku 5.5 (claude-haiku-5-5)",
-  "Claude Code CLI, Sonnet 5.5 (claude-sonnet-5-5)"
+  "Claude Code CLI, Haiku 5.5 (claude-haiku-5-5), --effort low (primary; chosen to conserve subscription usage)"
  ],
+ "agents_note": "Original plan had Haiku 5.5 and Sonnet 5.5; reduced to one low-effort Haiku arm at the owner request to conserve usage.",
  "design_changes": [
   "harder subset: fix changes the source file in >=2 hunks and >=10 lines; at most 8 tasks per library (deterministic digest order)",
   "hidden tests: the agent sees only a written issue statement; the fix commit's tests are never in its working tree and are applied only at scoring",
@@ -21,15 +21,16 @@
  ],
  "manifest": "tasks/fresh-v2.manifest.json",
  "nonclaim": "LocalDevelopmentEvidenceOnly",
- "primary_outcome": "pass rate per agent; paired bootstrap (10000 resamples, seed 20451074) of Sonnet minus Haiku",
+ "primary_outcome": "pass rate of the Haiku 5.5 (low effort) agent with exact binomial 95% interval; statement-generation also run with Haiku 5.5 low",
  "purpose": "Redesign of the exp-026 agent arm, which saturated (Claude Code + Haiku 5.5 solved 231/232 with the tests visible and runnable). Goal: a fresh-commit agent benchmark that discriminates tool-using agents.",
  "schema": "caduceus.prereg.agentbench.v1",
  "scoring": "pass iff the fix commit's changed test files, restored over the agent's tree, are green in a network-less container",
  "settings": {
   "attempts_per_task": 1,
+  "effort": "low",
   "max_turns": 30,
   "tools": "Bash,Read,Edit,Write,Glob,Grep"
  },
  "status": "Locked by ledger entry in ledgers/exp-027-agentbench.jsonl after statements are generated and before any agent run.",
- "success_criteria": "The benchmark discriminates iff (a) neither agent is >=95% or <=5%, and (b) the paired Sonnet-minus-Haiku 95% interval excludes 0. Reported either way; no task or threshold changes after the first agent run."
+ "success_criteria": "The set is non-saturated iff the agent pass rate is below 95% and above 5%. Whether it discriminates between agents is NOT tested here: that needs a second agent (for example Sonnet 5.5 or Haiku at higher effort), run only if usage allows and recorded as a separate assessment with a paired bootstrap (10000 resamples, seed 20451074). Reported either way; no task or threshold changes after the first agent run."
 }
