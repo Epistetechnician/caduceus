@@ -152,6 +152,25 @@ so 5-7 tasks decide each contrast. Verified beat the unverified adapter by 1.7-2
 lower bounds ~0, the right direction but not resolvable. Retention held. Real-change
 distillation to a 7B is not shown and not ruled out; the 7B is the limit, not the data.
 
+### exp-025: real changes, 14B trainee (Fail)
+
+Same corpus, spec prompt, 32B-proposer data (816 verified of 4,140) and rule as exp-024;
+only the trainee changes to Qwen2.5-Coder-14B (bf16, PEFT on the H100). 172 assess tasks.
+
+| Arm | Repair rate |
+|---|---|
+| Untouched base | 8.7% |
+| Few-shot policy | 6.4% |
+| Verified adapter (3 seeds) | 7.6 / 7.0 / 7.6% |
+| Unverified pool adapter (3 seeds) | 7.0 / 6.4 / 7.0% |
+
+Verdict **Fail**. Verified beat unverified by 0.6 pt (one task) in every seed, within noise,
+and both adapters scored 1-2 pts *below* the untouched base. So on real changes, fine-tuning
+on the 32B's verified repairs did not help a 14B trainee, verified or not. The base is only
+8.7%, still low, so absolute headroom is small; but this is a clean null, not a floor
+artifact like exp-021/024. Taken with exp-015/018/019, verified distillation helps on injected
+bugs and is not shown on real single-file changes.
+
 ## Reproduce
 
 ```sh
