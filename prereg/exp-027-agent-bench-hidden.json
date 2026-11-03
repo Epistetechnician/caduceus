@@ -1,0 +1,35 @@
+{
+ "agents": [
+  "Claude Code CLI, Haiku 5.5 (claude-haiku-5-5)",
+  "Claude Code CLI, Sonnet 5.5 (claude-sonnet-5-5)"
+ ],
+ "design_changes": [
+  "harder subset: fix changes the source file in >=2 hunks and >=10 lines; at most 8 tasks per library (deterministic digest order)",
+  "hidden tests: the agent sees only a written issue statement; the fix commit's tests are never in its working tree and are applied only at scoring",
+  "issue statements are written by Haiku 5.5 from the commit message and the test diff only (no fix source), instructed to name every public name, signature and example the tests depend on and to give no implementation",
+  "network allowlist: the agent runs as an unprivileged user whose only outbound path is a CONNECT proxy allowing anthropic.com, claude.ai, claude.com; all other egress is rejected by iptables; denied attempts are logged",
+  "the agent can run only the repository's existing tests, in a no-network container, through a fixed root wrapper",
+  "full stream-json transcript saved per task for command audit"
+ ],
+ "experiment_id": "exp-027-agent-bench-hidden",
+ "known_limits": [
+  "statements are model-written from the tests, so some tasks may be underspecified or leak behaviour implicitly; a statement-quality audit is reported but no task is removed after seeing agent results",
+  "single attempt per task per agent; about 72 tasks gives roughly +-11 points of sampling error",
+  "tasks overlap the realbugs-v2 training corpus; do not evaluate models trained on it",
+  "model providers may have seen these public commits; commits are dated 2025-07-01 or later",
+  "subscription usage limits may truncate a run; a truncated run is reported partial, not as failures"
+ ],
+ "manifest": "tasks/fresh-v2.manifest.json",
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "primary_outcome": "pass rate per agent; paired bootstrap (10000 resamples, seed 20451074) of Sonnet minus Haiku",
+ "purpose": "Redesign of the exp-026 agent arm, which saturated (Claude Code + Haiku 5.5 solved 231/232 with the tests visible and runnable). Goal: a fresh-commit agent benchmark that discriminates tool-using agents.",
+ "schema": "caduceus.prereg.agentbench.v1",
+ "scoring": "pass iff the fix commit's changed test files, restored over the agent's tree, are green in a network-less container",
+ "settings": {
+  "attempts_per_task": 1,
+  "max_turns": 30,
+  "tools": "Bash,Read,Edit,Write,Glob,Grep"
+ },
+ "status": "Locked by ledger entry in ledgers/exp-027-agentbench.jsonl after statements are generated and before any agent run.",
+ "success_criteria": "The benchmark discriminates iff (a) neither agent is >=95% or <=5%, and (b) the paired Sonnet-minus-Haiku 95% interval excludes 0. Reported either way; no task or threshold changes after the first agent run."
+}

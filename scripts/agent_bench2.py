@@ -96,7 +96,7 @@ def statements(model):
     def one(t):
         if t["task_id"] in st:
             return
-        p = claude(STMT_PROMPT.format(spec=t["spec"]), model, 1, "/tmp", ["--output-format", "json", "--allowedTools", ""])
+        p = claude(STMT_PROMPT.format(spec=t["spec"]), model, 1, "/tmp", ["--output-format", "json", "--disallowedTools", "Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch"])
         try:
             st[t["task_id"]] = json.loads(p.stdout)["result"].strip()
         except Exception:
