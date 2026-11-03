@@ -28,7 +28,8 @@ def git(repo, *a, binary=False):
 
 def candidates(repo, limit):
     out = []
-    for c in git(repo, "log", "--no-merges", "--format=%H", "-n", str(limit)).split():
+    since = ["--since=" + os.environ["SINCE"]] if os.environ.get("SINCE") else []
+    for c in git(repo, "log", "--no-merges", "--format=%H", *since, "-n", str(limit)).split():
         names = git(repo, "diff-tree", "--no-commit-id", "--name-status", "-r", "-m", "--first-parent", c).splitlines()
         src, tests = [], []
         for ln in names:
@@ -92,7 +93,7 @@ def main():
     if os.path.exists(out):
         done = {json.loads(l)["commit"] for l in open(out)}
     jobs = [(repo, name, image, c) for c in cands if c[0] not in done]
-    with ThreadPoolExecutor(3) as ex, open(out, "a") as fh:
+    with ThreadPoolExecutor(int(os.environ.get("MINE_THREADS", "3"))) as ex, open(out, "a") as fh:
         for r in ex.map(check, jobs):
             if r:
                 fh.write(json.dumps(r) + "\n")
