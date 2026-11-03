@@ -200,6 +200,24 @@ agent could in principle fetch a fixed library release; commands were not logged
 unchecked. A discriminating agent benchmark needs harder tasks, no test visibility, and a network
 allowlist.
 
+### exp-027: hidden-test agent benchmark (redesign of the exp-026 agent arm)
+
+Fixes for the saturation above: a harder subset (72 tasks, 19 libraries: fix touches >=2 hunks and
+>=10 lines, <=8 per library), hidden tests (the agent sees only a Haiku-written issue statement
+generated from commit message + test diff, never the fix source), and a network allowlist (the
+agent runs as an unprivileged user; iptables rejects all egress except a proxy that allows only
+anthropic.com/claude.ai; denied attempts are logged). Prereg and a lock with the statements digest
+were committed before any agent ran. Agent: Claude Code CLI, Haiku 5.5, `--effort low`, 30 turns.
+
+Result: **61 / 72 (84.7%)**, 95% interval about 74-92%, $27 of usage, 12.4 turns on average, 1 error.
+The set is no longer saturated (the exp-026 agent arm was 99.6% with tests visible), so hiding the
+tests and shrinking to harder tasks cost the agent about 15 points. Whether the set discriminates
+between agents is **not tested**: that needs a second agent (Sonnet or higher effort) and I ran one
+agent to conserve usage. The proxy denied a handful of connections (npm registry, PyPI, GitHub raw);
+a scan of the transcripts found no pip/curl/wget/git-fetch commands, so the denials most likely
+came from the CLI's own checks, but this is a regex scan, not proof. Statements were not audited
+for leakage beyond a spot check (code blocks in statements are usage examples).
+
 ## Reproduce
 
 ```sh
