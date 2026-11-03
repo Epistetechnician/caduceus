@@ -171,6 +171,25 @@ on the 32B's verified repairs did not help a 14B trainee, verified or not. The b
 artifact like exp-021/024. Taken with exp-015/018/019, verified distillation helps on injected
 bugs and is not shown on real single-file changes.
 
+### exp-026: fresh-commit eval (calibration, not a hypothesis test)
+
+232 real fix commits dated 2025-07-01 or later from 26 libraries (after the open models'
+training cutoffs), each scored by its own tests in a network-less container, spec in the
+prompt, greedy. Manifest `tasks/fresh-v1.manifest.json`, locked in `ledgers/exp-026-fresh.jsonl`
+before any model ran.
+
+| Model (base, zero-shot) | Pass |
+|---|---|
+| Qwen2.5-Coder-32B | 45 / 232 (19.4%) |
+| Qwen2.5-Coder-14B | 42 / 232 (18.1%) |
+| Qwen2.5-Coder-7B | 13 / 232 (5.6%) |
+
+The set separates the 7B from the larger two. It does not separate 32B from 14B (3 tasks,
+inside noise). The 32B scored 19.4% here versus ~16% on the older assess split, so there is
+no sign that the earlier numbers were inflated by exposure. Caveats: 26 libraries, uneven
+(mistune, validators, dnspython and packaging dominate); 228 of the 232 commits also sit in
+the realbugs-v2 corpus, so this set must not be used to evaluate models trained on that corpus.
+
 ## Reproduce
 
 ```sh
