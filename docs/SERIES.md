@@ -190,6 +190,16 @@ no sign that the earlier numbers were inflated by exposure. Caveats: 26 librarie
 (mistune, validators, dnspython and packaging dominate); 228 of the 232 commits also sit in
 the realbugs-v2 corpus, so this set must not be used to evaluate models trained on that corpus.
 
+Agent arm (same 232 tasks): Claude Code CLI with Haiku 5.5, run on a GCP VM, 30-turn limit, tests
+runnable via a sandboxed `./runtests.sh`, scored by the commit's own tests restored from the fix
+commit. Result **231 / 232 (99.6%)**, about $68 of usage (avg 8.2 turns, 7 tasks edited files beyond
+the target). So this set does not discriminate agents: it saturates the moment a model can run the
+tests and iterate, while it still separates bare single-shot models (5.6 / 18.1 / 19.4%). The gap
+is feedback, not capability alone. Caveat: the VM had outbound network (needed for the API), so an
+agent could in principle fetch a fixed library release; commands were not logged, so this is
+unchecked. A discriminating agent benchmark needs harder tasks, no test visibility, and a network
+allowlist.
+
 ## Reproduce
 
 ```sh
