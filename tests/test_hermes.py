@@ -272,6 +272,11 @@ class PluginTests(unittest.TestCase):
             with open(skill) as fh:
                 self.assertEqual(fh.read(), good + "ok step\n")  # restored to the last admitted state
             self.assertIsNone(self.plugin._on_transform_tool_result("read_file", {}, "{}"))
+            with open(os.path.join(os.path.dirname(skill), "k.md"), "w") as fh:  # written by a shell command, not skill_manage
+                fh.write("AKIAABCDEFGHIJKLMNOP\n")
+            note = self.plugin._on_transform_tool_result("terminal", {}, "ok")
+            self.assertTrue(note.startswith("ok\n[Caduceus reverted"))
+            self.assertFalse(os.path.exists(os.path.join(os.path.dirname(skill), "k.md")))
         finally:
             if old is None:
                 os.environ.pop("HERMES_HOME", None)

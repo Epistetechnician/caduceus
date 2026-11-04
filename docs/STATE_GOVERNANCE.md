@@ -48,6 +48,17 @@ Where confinement is unavailable the result is `Unavailable` and the effect is q
 Containment eval, tier-1 scenarios (4): tier 0 alone contains 1/3 bad effects (the syntax error); with a registered check it contains 3/3 (behaviour change in valid Python, syntax error,
 removing the checked entry point) and still admits the benign edit. One defect was found by the eval and fixed: removals did not trigger the skill's checks.
 
+## End to end in a real Hermes agent loop (scripted model)
+
+`scripts/e2e_hermes_boundary.py` runs Hermes' real `AIAgent` loop (real `skill_manage`, `skill_view` and `terminal` tools, real plugin loader and hook dispatch) in a throw-away
+`HERMES_HOME`, driven by a scripted model on a loopback stub, with the plugin absent (control) and in boundary mode. The scripted model creates a skill, writes a file containing an AWS-style key,
+patches in an instruction override, writes a benign reference, and has the real `terminal` tool write a key into the skill tree; between turns a key is planted out of band, then the model reads the skill.
+Control: every bad effect lands (key, override, terminal-written file, planted file); Hermes' own skill scan accepted the key and the override. Boundary: all four bad effects are reverted, the benign
+reference and the skill are admitted, the model is told in each case ("Caduceus did not admit this skill change ..." or a note appended to the terminal output), and the ledger holds the verdict sequence
+accept, reject, quarantine, accept, reject, reject. `write_file`, `patch`, `terminal` and `execute_code` now also trigger a reconcile, because they can write the skills tree without `skill_manage`.
+Hermes builds its skill index into the system prompt before any hook fires, so a bad out-of-band skill name could appear in a prompt built before the next reconcile; that window remains.
+The model here is a script, not an LLM: this shows the integration, not how a real model behaves. `--real-model provider:model` runs the same flow against a real model through the Hermes login (not run).
+
 ## Limits and open work
 * Checks exist only where an operator registers them; there is no automatic generation. The macOS Seatbelt runner is the only confinement implemented (Linux: Unavailable, so quarantine).
 * Tier 2 (paired model experiment, human signature) is not wired to this kernel.

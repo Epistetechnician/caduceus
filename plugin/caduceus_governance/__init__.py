@@ -120,6 +120,7 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
 
 
 SWEEP_TOOLS = frozenset({"skill_view", "skills_list", "skill_manage"})
+WRITER_TOOLS = frozenset({"write_file", "patch", "terminal", "execute_code"})  # can write the skills tree without skill_manage
 
 
 def _kernel(base: str):
@@ -148,13 +149,17 @@ def _reconcile(base: str):
 
 def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any = None, **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
-    if tool_name != GATED_TOOL or _mode(base) != "boundary":
+    if (tool_name != GATED_TOOL and tool_name not in WRITER_TOOLS) or _mode(base) != "boundary":
         return None
     try:
         out = _reconcile(base)
     except Exception as exc:  # noqa: BLE001 - boundary mode is fail-open; the next reconcile re-checks the whole tree
         logger.warning("caduceus boundary reconcile error: %s", type(exc).__name__)
         return None
+    if out and out.get("status") == "restored" and tool_name != GATED_TOOL:
+        v = out["verdict"]
+        note = "[Caduceus reverted a change to the skills directory made by this command (%s: %s).]" % (v["decision"], ", ".join(v["reason_codes"]) or "policy")
+        return (result + "\n" + note) if isinstance(result, str) else note
     if out and out.get("status") == "restored":
         v = out["verdict"]
         return json.dumps({"success": False, "error": "Caduceus did not admit this skill change (%s: %s). The skills directory was restored to its last admitted state."
