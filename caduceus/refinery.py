@@ -127,21 +127,23 @@ class Refinery:
         self.ledger.append("rollback", {"snapshot_id": snapshot_id, "reason": reason[:200]})
 
     # -- capabilities ---------------------------------------------------------
-    def issue_capability(self, candidate: Candidate, verdict: Verdict, ttl_seconds: int) -> str:
+    def issue_capability(self, candidate: Candidate, verdict: Verdict, ttl_seconds: int, args_digest: Optional[str] = None) -> str:
         if verdict.decision != "accept" or verdict.candidate_digest != candidate.digest():
             raise RefineryError("capability requires an accept verdict for this candidate")
         if not 0 < ttl_seconds <= 3600:
             raise RefineryError("ttl must be between 1 and 3600 seconds")
+        if args_digest is not None and not (isinstance(args_digest, str) and len(args_digest) == 64 and all(c in "0123456789abcdef" for c in args_digest)):
+            raise RefineryError("args_digest must be 64 lowercase hex characters")
         token = secrets.token_hex(32)
-        self.ledger.append(
-            "capability_issued",
-            {
-                "token_sha256": sha256_hex(token.encode()),
-                "candidate_digest": candidate.digest(),
-                "verdict_digest": verdict.digest(),
-                "expires_at": self.clock() + ttl_seconds,
-            },
-        )
+        body = {
+            "token_sha256": sha256_hex(token.encode()),
+            "candidate_digest": candidate.digest(),
+            "verdict_digest": verdict.digest(),
+            "expires_at": self.clock() + ttl_seconds,
+        }
+        if args_digest is not None:
+            body["args_digest"] = args_digest  # binds the capability to one exact tool call (see plugin/caduceus_governance)
+        self.ledger.append("capability_issued", body)
         return token
 
     def _consume(self, token: str, candidate: Candidate) -> None:

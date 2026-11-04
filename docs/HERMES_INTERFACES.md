@@ -24,6 +24,21 @@ Re-verify before relying on any line; Hermes moves fast.
 | Memory providers: ABC with `initialize, system_prompt_block, prefetch, sync_turn, get_tool_schemas, handle_tool_call, shutdown`, hooks incl. `on_memory_write`; one external provider at a time | `agent/memory_provider.py` | Mem0/TencentDB-style memory enters only through this ABC; Caduceus observes via `on_memory_write` (future) |
 | MEMORY.md / USER.md injected as a frozen snapshot at session start | `agent/memory_provider.py`, docs | Basis for the freshness semantics above |
 
+## Live check against current Hermes (2026-11-04)
+
+`scripts/verify_hermes_plugin.py` loads the plugin through Hermes' own loader and calls `hermes_cli.plugins.get_pre_tool_call_directive` with a
+temporary `HERMES_HOME` (the real home is never written) at Hermes HEAD `67d47601bc`, using the Hermes venv Python (3.11). No model, no network.
+12 of 12 checks pass: the plugin is discovered when listed under `plugins.enabled` in `config.yaml` (opt-in), the `pre_tool_call` hook is registered,
+observe mode allows and records an intent, enforce mode blocks an unadmitted `skill_manage` call, admits a call with a matching unexpired capability exactly
+once, blocks different arguments, ignores an expired capability, fails closed on a corrupt ledger, and never touches non-gated tools. Result: `ledgers/hermes-plugin-live.result.json`.
+
+Two gaps found by this check and fixed: (1) no production code issued a capability keyed by the tool-call `args_digest` the plugin matches on, so enforce mode could
+admit a legitimate mutation only in tests; `Refinery.issue_capability` now takes an optional `args_digest`; (2) the plugin ignored `expires_at`, so an expired capability
+still admitted; it now skips expired or malformed expiries.
+
+Still not done: an end-to-end run with a real model driving `skill_manage` (needs model calls), and a wired operator flow that computes the digest of a proposed call and
+asks the Refinery for a capability (the building blocks exist; the glue does not).
+
 ## Not yet verified
 * The exact plugin settings API (for moving `mode.json` into `config.yaml`).
 * How `approve` surfaces in the gateway vs. CLI for human signatures.

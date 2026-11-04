@@ -188,11 +188,18 @@ class PluginTests(unittest.TestCase):
         self.assertTrue(out["message"])
         led = Ledger(os.path.join(self.base, "ledger.jsonl"))
         digest = self.plugin.args_digest("skill_manage", args)
-        led.append("capability_issued", {"token_sha256": "a" * 64, "args_digest": digest, "expires_at": 1})
+        led.append("capability_issued", {"token_sha256": "a" * 64, "args_digest": digest, "expires_at": 4102444800})
         self.assertIsNone(self.plugin.decide("skill_manage", args, self.base))
         self.assertEqual(self.plugin.decide("skill_manage", args, self.base)["action"], "block")  # consumed
         other = {"operations": [{"name": "x", "action": "patch", "new_string": "different"}]}
         self.assertEqual(self.plugin.decide("skill_manage", other, self.base)["action"], "block")
+
+    def test_enforce_ignores_expired_capability(self):
+        self._mode("enforce")
+        args = {"operations": [{"name": "x", "action": "patch", "new_string": "b"}]}
+        led = Ledger(os.path.join(self.base, "ledger.jsonl"))
+        led.append("capability_issued", {"token_sha256": "c" * 64, "args_digest": self.plugin.args_digest("skill_manage", args), "expires_at": 1})
+        self.assertEqual(self.plugin.decide("skill_manage", args, self.base)["action"], "block")
 
     def test_hook_fails_closed_in_enforce_and_open_in_observe(self):
         with open(os.path.join(self.base, "ledger.jsonl"), "w") as fh:

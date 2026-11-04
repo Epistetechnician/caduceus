@@ -1,0 +1,65 @@
+{
+ "hermes_head": "67d47601bc",
+ "results": [
+  {
+   "check": "plugin discovered and loaded by Hermes",
+   "ok": true,
+   "detail": "['browser/browser_use', 'browser/browserbase', 'browser/firecrawl', 'dashboard_auth/basic', 'dashboard_auth/drain', 'dashboard_auth/nous', 'dashboard_auth/self_hosted', 'dashboard_auth/session_token',"
+  },
+  {
+   "check": "pre_tool_call hook registered",
+   "ok": true,
+   "detail": "['pre_tool_call']"
+  },
+  {
+   "check": "observe: skill_manage allowed",
+   "ok": true,
+   "detail": "(None, None)"
+  },
+  {
+   "check": "observe: intent recorded in ledger",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "non-gated tool untouched",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "enforce: unadmitted mutation blocked",
+   "ok": true,
+   "detail": "('block', 'Caduceus: skill mutation has no admitted capability (args_digest=01a3412da1adcbf5)')"
+  },
+  {
+   "check": "enforce: call with a matching capability admitted once",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "enforce: capability is single use",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "enforce: different args blocked",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "enforce: expired capability does not admit",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "enforce: corrupt ledger fails closed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "Refinery.issue_capability can bind args_digest",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

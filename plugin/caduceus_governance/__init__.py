@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,11 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
     ledger = Ledger(path)  # enforce mode needs the full, verified history
     issued = [e for e in ledger.find("capability_issued") if e["body"].get("args_digest") == digest]
     consumed = {e["body"].get("token_sha256") for e in ledger.find("capability_consumed")}
+    now = int(time.time())
     for entry in issued:
+        exp = entry["body"].get("expires_at")
+        if not isinstance(exp, int) or isinstance(exp, bool) or exp < now:
+            continue  # expired or malformed expiry never admits
         if entry["body"]["token_sha256"] not in consumed:
             ledger.append(
                 "capability_consumed",

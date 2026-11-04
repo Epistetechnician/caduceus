@@ -266,6 +266,16 @@ class RefineryTests(unittest.TestCase):
         with self.assertRaises(RefineryError):
             self.sb.refinery.apply(cand, v, tok, w, lambda: [])  # single use
 
+    def test_capability_can_bind_a_tool_call_digest(self):
+        from caduceus.demo import evaluate_scenario
+
+        cand, v, w = evaluate_scenario(self.sb, "t3", "skill_refine", "slugify", spec_text(SLUG_REFACTOR), "refactor")
+        with self.assertRaises(RefineryError):
+            self.sb.refinery.issue_capability(cand, v, 60, args_digest="XYZ")
+        self.sb.refinery.issue_capability(cand, v, 60, args_digest="ab" * 32)
+        last = self.sb.refinery.ledger.find("capability_issued")[-1]["body"]
+        self.assertEqual(last["args_digest"], "ab" * 32)
+
     def test_expired_capability_and_undeclared_path(self):
         from caduceus.demo import evaluate_scenario
 
