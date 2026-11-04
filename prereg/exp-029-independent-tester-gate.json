@@ -1,0 +1,30 @@
+{
+ "experiment_id": "exp-029-independent-tester-gate",
+ "schema": "caduceus.prereg.agentbench.v1",
+ "purpose": "exp-028 failed because the fixer wrote its own test, so the gate certified self-consistency. Test whether an INDEPENDENT tester (separate session, issue statement and parent tree only, never the fixer's tree or patch) makes the admission gate raise the hidden-test pass rate of the same cheap agent.",
+ "manifest": "tasks/fresh-v2.manifest.json",
+ "statements": "tasks/fresh-v2.statements.json (unchanged)",
+ "agent": "Claude Code CLI, Haiku 5.5, --effort low; fixer 30 turns per attempt (exp-027 prompt, no test-writing instruction), tester 20 turns",
+ "arms": {
+  "control": "fixer attempt 1, no gate feedback",
+  "treatment": "final fixer attempt after up to 2 gate-rejection retries"
+ },
+ "oracle_validity": "the tester's tests count only if they exit 1 (assertion failures) on the parent source; the tester may be resumed once to repair an invalid test; tasks with no valid test are admitted ungated and reported as NoValidTest, never as passes of the gate",
+ "gate": {
+  "G3": "the tester's tests pass on the fixer's patched tree",
+  "G4": "the existing suite (tester files ignored) passes on the patched tree; NotRun and non-blocking if the parent suite is not green within 180 s",
+  "feedback": "on rejection the fixer is resumed with the pytest output tail only; the tester's source is never shown",
+  "determinism": "no model call inside the gate itself; the tester is a separate proposer whose output is checked by execution; hidden tests are never visible to tester, gate or feedback"
+ },
+ "primary_outcome": "paired difference in hidden-test pass rate, final minus attempt 1, paired bootstrap 95% interval (10000 resamples, seed 20451074)",
+ "secondary": ["oracle coverage: fraction of tasks with a valid tester test", "false-admit rate vs exp-028 (11/72)", "false-reject rate", "cost per resolved task", "retries used"],
+ "success_criteria": "Pass iff the paired difference is >= +4 points and the interval lower bound is > 0. Inconclusive if the lower bound <= 0 and the point estimate > 0. Fail if the point estimate <= 0. No change to prompts, gate or thresholds after the first agent run; a failed design closes this candidate identity.",
+ "known_limits": [
+  "tester and fixer are the same model family and read the same statement, so shared misreadings can still pass the gate",
+  "the statements were written from the hidden tests, which may make the tester unusually well aligned with the scoring tests relative to real deployment",
+  "72 tasks; paired contrast still wide",
+  "providers may have seen these public commits (dated 2025-07-01 or later)"
+ ],
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "status": "Locked by ledger entry in ledgers/exp-029-independent-tester.jsonl before any agent run."
+}
