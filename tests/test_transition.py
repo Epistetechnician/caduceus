@@ -57,6 +57,12 @@ class KernelTests(unittest.TestCase):
         self.assertEqual(self.snap(), before)
         self.assertFalse(os.path.exists(os.path.join(self.root, "dev", "a", "ref.md")))
 
+    def test_published_aws_example_credentials_are_not_secrets_but_real_looking_ones_are(self):
+        write(self.root, "dev/a/env.md", "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\nAWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n")
+        self.assertEqual(self.k.reconcile()["status"], "accepted")
+        write(self.root, "dev/a/env2.md", "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\nreal AKIAABCDEFGHIJKLMNOP\n")
+        self.assertIn("secrets:Fail", self.k.reconcile()["verdict"]["reason_codes"])
+
     def test_out_of_band_writer_is_governed_like_any_other(self):
         before = self.snap()
         os.symlink("/etc", os.path.join(self.root, "dev", "a", "link"))

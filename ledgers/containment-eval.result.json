@@ -21,9 +21,9 @@
  },
  "deterministic_replay": true,
  "latency": {
-  "clean_reconcile_ms": 19.4,
+  "clean_reconcile_ms": 51.5,
   "files": 900,
-  "one_change_reconcile_ms": 25.2
+  "one_change_reconcile_ms": 89.2
  },
  "n_scenarios": 37,
  "none": {

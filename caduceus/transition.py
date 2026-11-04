@@ -56,6 +56,16 @@ INJECTION_PATTERNS = (
 )
 
 
+# AWS's published documentation example credentials are not secrets; exact strings only, so a real key can never hide behind this list.
+KNOWN_EXAMPLES = ("AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY")
+
+
+def _without_examples(text: str) -> str:
+    for ex in KNOWN_EXAMPLES:
+        text = text.replace(ex, "")
+    return text
+
+
 class TransitionError(Exception):
     pass
 
@@ -155,7 +165,7 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     for p in written:
         if cur[p]["kind"] == "file" and cur[p]["size"] <= policy.max_file_bytes:
             texts[p] = read(p)
-    out["secrets"] = "Fail" if any(r.search(t.decode("utf-8", "replace")) for t in texts.values() for r in SECRET_PATTERNS) else "Pass"
+    out["secrets"] = "Fail" if any(r.search(_without_examples(t.decode("utf-8", "replace"))) for t in texts.values() for r in SECRET_PATTERNS) else "Pass"
     out["injection"] = "Quarantine" if any(r.search(t.decode("utf-8", "replace")) for t in texts.values() for r in INJECTION_PATTERNS) else "Pass"
     out["binary_exec"] = "Quarantine" if any(b"\x00" in t or cur[p]["exec"] for p, t in texts.items()) else "Pass"
     bad_fm = False
