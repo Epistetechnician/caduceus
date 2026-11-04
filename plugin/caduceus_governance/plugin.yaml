@@ -4,3 +4,4 @@ description: "Observe (default) or gate Hermes skill mutations through the Caduc
 author: "Epistetechnician"
 hooks:
   - pre_tool_call
+  - transform_tool_result

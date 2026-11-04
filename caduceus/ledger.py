@@ -39,6 +39,12 @@ KINDS = (
     "breaker_event",
     "memory_event",
     "audit_note",
+    "transition_baseline",
+    "transition_head",
+    "transition_verdict",
+    "transition_quarantined",
+    "transition_restored",
+    "transition_released",
 )
 
 FORBIDDEN_KEYS = frozenset(

@@ -165,7 +165,7 @@ class PluginTests(unittest.TestCase):
                 hooks.append(name)
 
         self.plugin.register(Ctx())
-        self.assertEqual(hooks, ["pre_tool_call"])
+        self.assertEqual(hooks, ["pre_tool_call", "transform_tool_result"])
 
     def test_observe_never_blocks_and_records(self):
         args = {"operations": [{"name": "x", "action": "patch", "old_string": "a", "new_string": "b"}]}
@@ -250,6 +250,33 @@ class PluginTests(unittest.TestCase):
         control.freeze(self.base, Ledger(os.path.join(self.base, "ledger.jsonl")), "op", "test")
         with self.assertRaises(ToolCallError):
             issue_for_call(gov, cand, "skill_manage", {"operations": []}, self.base, 60)
+
+    def test_boundary_mode_restores_unadmitted_state_and_tells_the_model(self):
+        old = os.environ.get("HERMES_HOME")
+        os.environ["HERMES_HOME"] = self.tmp.name
+        try:
+            self._mode("boundary")
+            skill = os.path.join(self.tmp.name, "skills", "dev", "a", "SKILL.md")
+            os.makedirs(os.path.dirname(skill))
+            good = "---\nname: a\ndescription: d\n---\nbody\n"
+            with open(skill, "w") as fh:
+                fh.write(good)
+            self.assertIsNone(self.plugin._on_pre_tool_call("skill_view", {}))  # baseline; never blocks
+            with open(skill, "w") as fh:
+                fh.write(good + "ok step\n")
+            self.assertIsNone(self.plugin._on_transform_tool_result("skill_manage", {}, "{}"))  # admitted
+            with open(skill, "w") as fh:
+                fh.write(good + "ok step\nkey AKIAABCDEFGHIJKLMNOP\n")
+            msg = self.plugin._on_transform_tool_result("skill_manage", {}, "{}")
+            self.assertIn("did not admit", json.loads(msg)["error"])
+            with open(skill) as fh:
+                self.assertEqual(fh.read(), good + "ok step\n")  # restored to the last admitted state
+            self.assertIsNone(self.plugin._on_transform_tool_result("read_file", {}, "{}"))
+        finally:
+            if old is None:
+                os.environ.pop("HERMES_HOME", None)
+            else:
+                os.environ["HERMES_HOME"] = old
 
     def test_hook_fails_closed_in_enforce_and_open_in_observe(self):
         with open(os.path.join(self.base, "ledger.jsonl"), "w") as fh:

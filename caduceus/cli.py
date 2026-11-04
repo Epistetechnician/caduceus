@@ -90,6 +90,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     ac.add_argument("--plugin-base", required=True, help="the plugin's own caduceus directory, e.g. <HERMES_HOME>/caduceus")
     ac.add_argument("--ttl", type=int, default=600)
 
+    rc = sub.add_parser("reconcile", help="state governance: judge the skills tree against its last admitted HEAD and restore anything not admitted")
+    rc.add_argument("--skills-root", required=True)
+    rc.add_argument("--base", required=True, help="state directory (the plugin's <HERMES_HOME>/caduceus)")
+    rc.add_argument("--allow-live", action="store_true", help="permit governing a real Hermes home")
+    rl = sub.add_parser("release-effect", help="operator releases a quarantined effect (HEAD must not have moved)")
+    rl.add_argument("effect_digest")
+    rl.add_argument("--skills-root", required=True)
+    rl.add_argument("--base", required=True)
+    rl.add_argument("--operator", required=True)
+    rl.add_argument("--reason", required=True)
+    rl.add_argument("--allow-live", action="store_true")
+
     sub.add_parser("corpus", help="run the adversarial corpus; non-zero exit on any miss")
 
     dg = sub.add_parser("diagnostics", help="lane vector report (read-only)")
@@ -136,7 +148,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -226,6 +238,18 @@ def _ops(args) -> int:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0
+    if args.cmd in ("reconcile", "release-effect"):
+        from .transition import Kernel, TransitionError
+
+        try:
+            k = Kernel(args.skills_root, args.base, allow_live=args.allow_live)
+            out = k.reconcile() if args.cmd == "reconcile" else k.release(args.effect_digest, args.operator, args.reason)
+        except TransitionError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        v = out.get("verdict") or {}
+        _print({"status": out["status"], "tree": out["tree"], "decision": v.get("decision"), "reason_codes": v.get("reason_codes"), "effect_digest": v.get("effect_digest")})
+        return 0 if out["status"] in ("clean", "baseline", "accepted", "released") else 3
     if args.cmd == "admit-source":
         from .candidate import parse_json_strict
         from .source_admission import admit

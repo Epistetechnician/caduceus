@@ -9,7 +9,7 @@
   {
    "check": "pre_tool_call hook registered",
    "ok": true,
-   "detail": "['pre_tool_call']"
+   "detail": "['pre_tool_call', 'transform_tool_result']"
   },
   {
    "check": "observe: skill_manage allowed",
@@ -58,6 +58,31 @@
   },
   {
    "check": "operator: Hermes admits exactly that call once",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary: pre_tool_call never blocks (baseline taken)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary: benign skill_manage effect admitted (no rewrite)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary: unadmitted effect restored and the model is told",
+   "ok": true,
+   "detail": "['{\"success\": false, \"error\": \"Caduceus did not admit this skill change (reject: secrets:Fail). The skills directory was restored to its last admitted state.\"}']"
+  },
+  {
+   "check": "boundary: out-of-band writer caught at the next skill_view",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary: non-skill tools untouched",
    "ok": true,
    "detail": ""
   },

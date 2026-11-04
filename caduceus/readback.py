@@ -17,7 +17,8 @@ _KINDS = frozenset(
     (
         "candidate holdout_commitment prediction_lock assessment verdict lyre_report "
         "capability_issued capability_consumed review_signature snapshot release rollback "
-        "canary_observation breaker_event memory_event audit_note"
+        "canary_observation breaker_event memory_event audit_note "
+        "transition_baseline transition_head transition_verdict transition_quarantined transition_restored transition_released"
     ).split()
 )
 _HEX = frozenset("0123456789abcdef")

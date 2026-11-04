@@ -1,10 +1,13 @@
 """Caduceus governance plugin for Hermes (standalone; install into ~/.hermes/plugins/).
 
-Uses only the documented `pre_tool_call` hook. Modes (read from
+Uses only the documented `pre_tool_call` and `transform_tool_result` hooks. Modes (read from
 `$HERMES_HOME/caduceus/mode.json`, default observe):
 
   observe  record an intent entry in the Caduceus ledger for every
            `skill_manage` call and never block. Fail-open on any error.
+  boundary govern the STATE a mutation leaves behind instead of the call (caduceus/transition.py): never blocks; after each skill_manage
+           (and before skill_view) the skills tree is reconciled against the last admitted HEAD and any non-admitted effect, from any writer, is
+           restored. The model is told when its change was reverted. Fail-open on internal error (the next reconcile re-checks everything).
   enforce  block `skill_manage` mutations unless an unconsumed capability for
            the exact call arguments exists in the ledger (single use). Any
            internal error blocks (fail closed), matching Hermes' policy-hook
@@ -42,7 +45,7 @@ def _mode(base: str) -> str:
     try:
         with open(os.path.join(base, "mode.json"), "r", encoding="utf-8") as fh:
             mode = json.load(fh).get("mode", "observe")
-        return mode if mode in ("observe", "enforce") else "observe"
+        return mode if mode in ("observe", "enforce", "boundary") else "observe"
     except (OSError, ValueError):
         return "observe"
 
@@ -116,8 +119,58 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
     }
 
 
+SWEEP_TOOLS = frozenset({"skill_view", "skills_list", "skill_manage"})
+
+
+def _kernel(base: str):
+    from caduceus.transition import Kernel, Policy
+
+    live = False
+    pol = Policy()
+    try:
+        with open(os.path.join(base, "mode.json"), "r", encoding="utf-8") as fh:
+            cfg = json.load(fh)
+        live = cfg.get("live") is True
+        if isinstance(cfg.get("policy"), dict):
+            pol = Policy(**{k: (tuple(v) if k == "pinned" else v) for k, v in cfg["policy"].items()})
+    except (OSError, ValueError, TypeError):
+        pass
+    return Kernel(os.path.join(_home(), "skills"), base, pol, allow_live=live)
+
+
+def _reconcile(base: str):
+    from caduceus import control
+
+    if not control.load(base).enabled("admission"):
+        return None
+    return _kernel(base).reconcile()
+
+
+def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any = None, **kwargs: Any):
+    base = os.path.join(_home(), "caduceus")
+    if tool_name != GATED_TOOL or _mode(base) != "boundary":
+        return None
+    try:
+        out = _reconcile(base)
+    except Exception as exc:  # noqa: BLE001 - boundary mode is fail-open; the next reconcile re-checks the whole tree
+        logger.warning("caduceus boundary reconcile error: %s", type(exc).__name__)
+        return None
+    if out and out.get("status") == "restored":
+        v = out["verdict"]
+        return json.dumps({"success": False, "error": "Caduceus did not admit this skill change (%s: %s). The skills directory was restored to its last admitted state."
+                           % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
+    return None
+
+
 def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
+    if _mode(base) == "boundary":
+        if tool_name in SWEEP_TOOLS:
+            try:
+                _reconcile(base)  # catches out-of-band writers (shell, forked review agent) before anything reads the tree
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("caduceus boundary sweep error: %s", type(exc).__name__)
+        return None
     try:
         return decide(tool_name, args, base)
     except Exception as exc:  # noqa: BLE001 - policy hook must never crash the agent
@@ -129,3 +182,4 @@ def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", *
 
 def register(ctx) -> None:
     ctx.register_hook("pre_tool_call", _on_pre_tool_call)
+    ctx.register_hook("transform_tool_result", _on_transform_tool_result)
