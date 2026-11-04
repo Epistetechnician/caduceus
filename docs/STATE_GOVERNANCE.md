@@ -71,6 +71,29 @@ So with this model the kernel was never needed against an attack it attempted: H
 which the scripted runs could not. One fix followed: AWS's published example credentials (exact strings only) no longer trip the secrets lane; with it the same scenario is admitted first time. The installer one-liner
 still needs a human release, which is the intended behaviour for pipe-to-shell but a real cost for skills that document vendor installers. Results: `ledgers/real-model-e2e.result.json`.
 
+## Provenance lane (added)
+
+Content lanes cannot see intent (tier 0 missed all four evasions above). The provenance lane does not read intent: `post_tool_call` records that an untrusted-source tool
+(`web_search`, `web_extract`, `browser_*`, `mcp_*`; policy-configurable) returned content in a session (`taint.json`: tool name, 16-hex digest prefix, time; never content). A skill
+write whose scope holds an in-window observation is quarantined (`provenance:Quarantine`) whatever it says; an operator releases it with `release-effect`. Scope: a known session sees its own
+observations; an unknown writer (shell, forked reviewer) inherits every in-window observation; observations expire after `taint_window_s` (1 h). `Policy.provenance="off"` disables it.
+This applies information-flow integrity labelling (cf. FIDES, CaMeL) across sessions: the skills tree is the persistent channel through which a one-session injection becomes a standing one.
+The verdict is a pure function of (policy, effect, the in-scope observation list).
+
+Measured, descriptive (`scripts/eval_provenance.py`, 23 scenarios written before the first run, none reused from the four evasions; `ledgers/provenance-eval.result.json`):
+
+| group | provenance off | provenance on |
+|---|---|---|
+| hostile write after untrusted content (10: paraphrase, base64, zero-width, non-English, HTML comment, markdown exfil, persuasion, reference file, browser, MCP) | 10/10 live | **0/10 live** |
+| benign write after untrusted content (4) | 4/4 live | **0/4 live** (all quarantined: the cost) |
+| benign write, no untrusted content (4) | 4/4 live | 4/4 live |
+| hostile write, no untrusted content (3) | 3/3 live | 3/3 live (**the lane cannot help**) |
+| stale observation / another session's observation (2) | 2/2 live | 2/2 live (by design) |
+
+Reading: it contains every evasion the content lanes miss, provided the session touched untrusted content, and it does so by refusing ALL skill learning in such a session until a human releases it. That
+is a real usability cost (legitimate skills distilled from web research are held). It does nothing for malice with no untrusted input (a user-instructed or model-originated write) and cannot tell which
+observation influenced which line. The scenario author is the kernel author; the tool list is a policy guess, not measured coverage of Hermes' tool surface. Not run under a real model.
+
 ## Limits and open work
 * Checks exist only where an operator registers them; there is no automatic generation. The macOS Seatbelt runner is the only confinement implemented (Linux: Unavailable, so quarantine).
 * Tier 2 (paired model experiment, human signature) is not wired to this kernel.

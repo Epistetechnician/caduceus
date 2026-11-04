@@ -54,6 +54,9 @@ What this repository does establish (by tests in `tests/`):
   and evidence from another experiment cannot be attached; candidates bind
   their exact contents (`content_digest`) and the broker refuses any other
   content;
+* the provenance lane (`docs/STATE_GOVERNANCE.md`): in 23 author-written scenarios it holds 10/10 hostile writes made after untrusted content and 4/4 benign ones made after it, and
+  admits all writes made without it (so it does not stop untrusted-input-free malice); descriptive, no model, not an independent benchmark;
+* `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,
   Haiku 5.5), **failed** its preregistered rule: +0.08 [0, +0.24] vs the
   current skill (base was 46/50), though +0.30 vs a wrong-source skill. The

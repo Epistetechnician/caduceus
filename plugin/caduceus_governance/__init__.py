@@ -33,6 +33,17 @@ from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
+# The catalog installs only this directory, so a vendored copy of the kernel ships beside this file (scripts/vendor_plugin.py keeps it in sync).
+# A caduceus already importable (a dev install) wins.
+try:
+    import caduceus  # noqa: F401
+except ImportError:
+    import sys
+
+    _VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_vendor")
+    if _VENDOR not in sys.path:
+        sys.path.insert(0, _VENDOR)
+
 GATED_TOOL = "skill_manage"
 SKILL_MANAGE_ACTIONS = frozenset({"create", "patch", "delete", "write_file", "remove_file"})
 
@@ -139,20 +150,36 @@ def _kernel(base: str):
     return Kernel(os.path.join(_home(), "skills"), base, pol, allow_live=live)
 
 
-def _reconcile(base: str):
+def _reconcile(base: str, session_id: str = ""):
     from caduceus import control
 
     if not control.load(base).enabled("admission"):
         return None
-    return _kernel(base).reconcile()
+    k = _kernel(base)
+    return k.reconcile(taint=k.taint_scope(session_id) if k.policy.provenance != "off" else [])
 
 
-def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any = None, **kwargs: Any):
+def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str = "", **kwargs: Any) -> None:
+    """Provenance: remember that untrusted content (web, browser, MCP) entered this session. Stores a tool name, a digest prefix and a time; never content."""
+    base = os.path.join(_home(), "caduceus")
+    if _mode(base) != "boundary":
+        return None
+    try:
+        from caduceus import control
+
+        if control.load(base).enabled("admission"):
+            _kernel(base).observe_taint(session_id or "", tool_name, result)
+    except Exception as exc:  # noqa: BLE001 - observer; a missed observation only weakens the lane, and the next reconcile still judges the effect
+        logger.warning("caduceus taint observe error: %s", type(exc).__name__)
+    return None
+
+
+def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any = None, session_id: str = "", **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
     if (tool_name != GATED_TOOL and tool_name not in WRITER_TOOLS) or _mode(base) != "boundary":
         return None
     try:
-        out = _reconcile(base)
+        out = _reconcile(base, session_id)
     except Exception as exc:  # noqa: BLE001 - boundary mode is fail-open; the next reconcile re-checks the whole tree
         logger.warning("caduceus boundary reconcile error: %s", type(exc).__name__)
         return None
@@ -167,12 +194,12 @@ def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any
     return None
 
 
-def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", **kwargs: Any):
+def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", session_id: str = "", **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
     if _mode(base) == "boundary":
         if tool_name in SWEEP_TOOLS:
             try:
-                _reconcile(base)  # catches out-of-band writers (shell, forked review agent) before anything reads the tree
+                _reconcile(base, session_id)  # catches out-of-band writers (shell, forked review agent) before anything reads the tree
             except Exception as exc:  # noqa: BLE001
                 logger.warning("caduceus boundary sweep error: %s", type(exc).__name__)
         return None
@@ -188,3 +215,4 @@ def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", *
 def register(ctx) -> None:
     ctx.register_hook("pre_tool_call", _on_pre_tool_call)
     ctx.register_hook("transform_tool_result", _on_transform_tool_result)
+    ctx.register_hook("post_tool_call", _on_post_tool_call)

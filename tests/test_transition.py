@@ -236,3 +236,77 @@ class ChecksTests(unittest.TestCase):
         out = self.k.reconcile()
         self.assertIn("checks:Fail", out["verdict"]["reason_codes"])
         self.assertTrue(os.path.exists(os.path.join(self.root, "dev", "t", "scripts", "tool.py")))
+
+
+class ProvenanceTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "skills")
+        self.base = os.path.join(self.tmp.name, "caduceus")
+        write(self.root, "dev/a/SKILL.md", SKILL % ("a", "a"))
+        self.now = [5000]
+        self.k = Kernel(self.root, self.base, Policy(), clock=lambda: self.now[0])
+        self.k.reconcile()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def edit(self):
+        write(self.root, "dev/a/references/n.md", "plain note\n")
+
+    def test_untainted_write_is_admitted(self):
+        self.edit()
+        self.assertEqual(self.k.reconcile(taint=self.k.taint_scope("s"))["status"], "accepted")
+
+    def test_tainted_write_is_quarantined_whatever_it_says(self):
+        self.assertTrue(self.k.observe_taint("s", "web_extract", "page"))
+        self.edit()
+        out = self.k.reconcile(taint=self.k.taint_scope("s"))
+        self.assertEqual(out["verdict"]["decision"], "quarantine")
+        self.assertIn("provenance:Quarantine", out["verdict"]["reason_codes"])
+        self.assertFalse(os.path.exists(os.path.join(self.root, "dev/a/references/n.md")))
+
+    def test_operator_release_still_works(self):
+        self.k.observe_taint("s", "web_extract", "page")
+        self.edit()
+        ed = self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["effect_digest"]
+        self.assertEqual(self.k.release(ed, "op", "reviewed")["status"], "released")
+
+    def test_trusted_tools_do_not_taint(self):
+        self.assertFalse(self.k.observe_taint("s", "read_file", "x"))
+        self.assertEqual(self.k.taint_scope("s"), [])
+
+    def test_prefix_tools_taint(self):
+        self.assertTrue(self.k.observe_taint("s", "mcp_anything", "x"))
+        self.assertTrue(self.k.observe_taint("s", "browser_click", "x"))
+
+    def test_stale_and_other_session_taint_does_not_apply(self):
+        self.k.observe_taint("other", "web_search", "x")
+        self.assertEqual(self.k.taint_scope("s"), [])
+        self.k.observe_taint("s", "web_search", "x")
+        self.now[0] += self.k.policy.taint_window_s + 1
+        self.assertEqual(self.k.taint_scope("s"), [])
+
+    def test_unknown_session_inherits_all_in_window_taint(self):
+        self.k.observe_taint("s", "web_search", "x")
+        self.assertEqual(self.k.taint_scope(""), ["web_search"])
+
+    def test_off_disables_the_lane_and_observation(self):
+        k = Kernel(self.root, self.base, Policy(provenance="off"), clock=lambda: 5000)
+        self.assertFalse(k.observe_taint("s", "web_search", "x"))
+        self.edit()
+        self.assertEqual(k.reconcile(taint=["web_search"])["status"], "accepted")
+
+    def test_taint_store_holds_no_content(self):
+        self.k.observe_taint("s", "web_search", "SECRET-PAGE-BODY")
+        with open(os.path.join(self.base, "taint.json")) as fh:
+            self.assertNotIn("SECRET-PAGE-BODY", fh.read())
+
+    def test_deterministic_verdict_digest(self):
+        self.k.observe_taint("s", "web_search", "x")
+        self.edit()
+        a = self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["verdict_digest"]
+        self.k.reconcile()
+        self.edit()
+        b = self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["verdict_digest"]
+        self.assertEqual(a, b)

@@ -1,0 +1,14 @@
+# Draft for a PR to NousResearch/hermes-agent as plugin-catalog/caduceus-governance.yaml. Set `sha` to the pushed commit that contains plugin/caduceus_governance.
+name: caduceus-governance
+title: Caduceus Governance
+description: "Deterministic, model-free admission control for what Hermes writes into its own skills: content lanes, operator-owned executable checks, a provenance lane for writes made after untrusted web/browser/MCP content, a tamper-evident ledger, and operator release/rollback. Observe by default."
+repo: https://github.com/Epistetechnician/caduceus
+subdir: plugin/caduceus_governance
+sha: "0000000000000000000000000000000000000000"
+tier: community
+maintainer: Epistetechnician
+version: "0.1.0"
+capabilities:
+  hooks: [pre_tool_call, transform_tool_result, post_tool_call]
+# Disclosure (rule 13): reads and writes only under $HERMES_HOME/skills and $HERMES_HOME/caduceus; no network, no model calls; optional operator-registered check commands run
+# under macOS Seatbelt (no network, no writes outside a copy) and are Unavailable (quarantined, never passed) elsewhere; boundary mode can restore the skills directory to its last admitted state.
