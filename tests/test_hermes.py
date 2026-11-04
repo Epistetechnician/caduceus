@@ -201,6 +201,56 @@ class PluginTests(unittest.TestCase):
         led.append("capability_issued", {"token_sha256": "c" * 64, "args_digest": self.plugin.args_digest("skill_manage", args), "expires_at": 1})
         self.assertEqual(self.plugin.decide("skill_manage", args, self.base)["action"], "block")
 
+    def _governed(self, decision="accept"):
+        from caduceus import exchange
+        from caduceus.admission import Verdict
+        from tests.test_gate import _cand
+
+        cand = _cand()
+        gov = Ledger(os.path.join(self.tmp.name, "gov.jsonl"))
+        exchange.record(gov, cand, Verdict(decision, (), (), cand.digest(), "a" * 64), None)
+        return cand, gov
+
+    def test_admit_call_issues_a_capability_the_plugin_honours_once(self):
+        from caduceus.toolcall import issue_for_call
+
+        self._mode("enforce")
+        cand, gov = self._governed()
+        args = {"operations": [{"name": "x", "action": "patch", "new_string": "b"}]}
+        out = issue_for_call(gov, cand, "skill_manage", args, self.base, 60)
+        self.assertEqual(out["args_digest"], self.plugin.args_digest("skill_manage", args))
+        self.assertIsNone(self.plugin.decide("skill_manage", args, self.base))
+        self.assertEqual(self.plugin.decide("skill_manage", args, self.base)["action"], "block")
+        other = {"operations": [{"name": "x", "action": "patch", "new_string": "other"}]}
+        self.assertEqual(self.plugin.decide("skill_manage", other, self.base)["action"], "block")
+
+    def test_admit_call_refuses_without_an_accept_verdict(self):
+        from caduceus.toolcall import ToolCallError, issue_for_call
+        from tests.test_gate import _cand
+
+        args = {"operations": [{"name": "x", "action": "patch"}]}
+        cand, gov = self._governed("reject")
+        with self.assertRaises(ToolCallError):
+            issue_for_call(gov, cand, "skill_manage", args, self.base, 60)
+        with self.assertRaises(ToolCallError):  # candidate never recorded
+            issue_for_call(gov, _cand(candidate_id="unseen"), "skill_manage", args, self.base, 60)
+        cand, gov = self._governed()
+        with self.assertRaises(ToolCallError):
+            issue_for_call(gov, cand, "read_file", args, self.base, 60)  # only skill_manage
+        with self.assertRaises(ToolCallError):
+            issue_for_call(gov, cand, "skill_manage", args, self.base, 99999)
+        with self.assertRaises(ToolCallError):
+            issue_for_call(gov, cand, "skill_manage", args, self.tmp.name, 60)  # not a 'caduceus' dir
+
+    def test_admit_call_refuses_when_frozen(self):
+        from caduceus import control
+        from caduceus.toolcall import ToolCallError, issue_for_call
+
+        cand, gov = self._governed()
+        control.freeze(self.base, Ledger(os.path.join(self.base, "ledger.jsonl")), "op", "test")
+        with self.assertRaises(ToolCallError):
+            issue_for_call(gov, cand, "skill_manage", {"operations": []}, self.base, 60)
+
     def test_hook_fails_closed_in_enforce_and_open_in_observe(self):
         with open(os.path.join(self.base, "ledger.jsonl"), "w") as fh:
             fh.write("corrupt\n")

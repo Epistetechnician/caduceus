@@ -47,6 +47,21 @@
    "detail": ""
   },
   {
+   "check": "operator: unadmitted call blocked before admit-call",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "operator: admit-call CLI issues a capability",
+   "ok": true,
+   "detail": "rc=0 out=256e50657e744d5f75af398eb4d1e\",\n  \"expires_in_seconds\": 600,\n  \"verdict_digest\": \"343316f60a8209af57a8e58399812839363d286ce998f53907856b8ac154db17\"\n}\n err="
+  },
+  {
+   "check": "operator: Hermes admits exactly that call once",
+   "ok": true,
+   "detail": ""
+  },
+  {
    "check": "enforce: expired capability does not admit",
    "ok": true,
    "detail": ""

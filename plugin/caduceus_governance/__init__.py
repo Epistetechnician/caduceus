@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 GATED_TOOL = "skill_manage"
 SKILL_MANAGE_ACTIONS = frozenset({"create", "patch", "delete", "write_file", "remove_file"})
-TOOLCALL_DOMAIN = "caduceus.toolcall.v1"
 
 
 def _home() -> str:
@@ -59,22 +58,9 @@ def _actions(args: Dict[str, Any]) -> str:
 
 
 def args_digest(tool_name: str, args: Dict[str, Any]) -> str:
-    from caduceus.digest import domain_digest
+    from caduceus.toolcall import call_digest  # single definition shared with the operator step
 
-    return domain_digest(TOOLCALL_DOMAIN, {"tool": tool_name, "args": _jsonable(args)})
-
-
-def _jsonable(value: Any) -> Any:
-    """Reduce tool args to ledger-safe values; floats become strings."""
-    if isinstance(value, dict):
-        return {str(k): _jsonable(v) for k, v in sorted(value.items(), key=lambda kv: str(kv[0]))}
-    if isinstance(value, (list, tuple)):
-        return [_jsonable(v) for v in value]
-    if isinstance(value, float):
-        return repr(value)
-    if value is None or isinstance(value, (bool, int, str)):
-        return value
-    return str(value)
+    return call_digest(tool_name, args)
 
 
 def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str, str]]:

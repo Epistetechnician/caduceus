@@ -61,6 +61,29 @@ check("enforce: call with a matching capability admitted once", directive("skill
 check("enforce: capability is single use", directive("skill_manage", CALL)[0] == "block")
 other = {"operations": [{"name": "x", "action": "delete"}]}
 check("enforce: different args blocked", directive("skill_manage", other)[0] == "block")
+# operator flow end to end: accepted verdict -> `caduceus admit-call` CLI -> Hermes admits exactly that call once
+from caduceus import exchange  # noqa: E402
+from caduceus.admission import Verdict  # noqa: E402
+import importlib.util  # noqa: E402
+
+_spec = importlib.util.spec_from_file_location("caduceus_test_gate", os.path.join(REPO, "tests", "test_gate.py"))
+_tg = importlib.util.module_from_spec(_spec)
+sys.modules["tests"] = type(sys)("tests")  # Hermes ships its own `tests` package; test_gate needs `tests.*` siblings
+sys.modules["tests"].__path__ = [os.path.join(REPO, "tests")]
+_spec.loader.exec_module(_tg)
+_cand = _tg._cand
+
+cand = _cand()
+gov = Ledger(os.path.join(HH, "gov.jsonl"))
+exchange.record(gov, cand, Verdict("accept", (), (), cand.digest(), "a" * 64), None)
+json.dump(cand.as_dict(), open(os.path.join(HH, "cand.json"), "w"))
+op_call = {"operations": [{"name": "z", "action": "patch", "new_string": "ok"}]}
+json.dump({"tool": "skill_manage", "args": op_call}, open(os.path.join(HH, "call.json"), "w"))
+cli = [sys.executable, "-m", "caduceus", "admit-call", os.path.join(HH, "cand.json"), os.path.join(HH, "call.json"), "--governance-ledger", os.path.join(HH, "gov.jsonl"), "--plugin-base", base]
+check("operator: unadmitted call blocked before admit-call", directive("skill_manage", op_call)[0] == "block")
+r = subprocess.run(cli, capture_output=True, text=True, cwd=REPO, env=dict(os.environ, PYTHONPATH=REPO))
+check("operator: admit-call CLI issues a capability", r.returncode == 0, "rc=%s out=%s err=%s" % (r.returncode, r.stdout[-150:], r.stderr[-150:]))
+check("operator: Hermes admits exactly that call once", directive("skill_manage", op_call) == (None, None) and directive("skill_manage", op_call)[0] == "block")
 exp_call = {"operations": [{"name": "y", "action": "patch"}]}
 Ledger(os.path.join(base, "ledger.jsonl")).append("capability_issued", {"token_sha256": "d" * 64, "args_digest": args_digest("skill_manage", exp_call), "expires_at": 1})
 check("enforce: expired capability does not admit", directive("skill_manage", exp_call)[0] == "block")

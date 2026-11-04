@@ -28,7 +28,7 @@ Re-verify before relying on any line; Hermes moves fast.
 
 `scripts/verify_hermes_plugin.py` loads the plugin through Hermes' own loader and calls `hermes_cli.plugins.get_pre_tool_call_directive` with a
 temporary `HERMES_HOME` (the real home is never written) at Hermes HEAD `67d47601bc`, using the Hermes venv Python (3.11). No model, no network.
-12 of 12 checks pass: the plugin is discovered when listed under `plugins.enabled` in `config.yaml` (opt-in), the `pre_tool_call` hook is registered,
+15 of 15 checks pass (12 plugin checks plus the operator flow below): the plugin is discovered when listed under `plugins.enabled` in `config.yaml` (opt-in), the `pre_tool_call` hook is registered,
 observe mode allows and records an intent, enforce mode blocks an unadmitted `skill_manage` call, admits a call with a matching unexpired capability exactly
 once, blocks different arguments, ignores an expired capability, fails closed on a corrupt ledger, and never touches non-gated tools. Result: `ledgers/hermes-plugin-live.result.json`.
 
@@ -36,8 +36,13 @@ Two gaps found by this check and fixed: (1) no production code issued a capabili
 admit a legitimate mutation only in tests; `Refinery.issue_capability` now takes an optional `args_digest`; (2) the plugin ignored `expires_at`, so an expired capability
 still admitted; it now skips expired or malformed expiries.
 
-Still not done: an end-to-end run with a real model driving `skill_manage` (needs model calls), and a wired operator flow that computes the digest of a proposed call and
-asks the Refinery for a capability (the building blocks exist; the glue does not).
+Operator flow (added): `caduceus admit-call <candidate.json> <call.json> --governance-ledger <ledger from exchange --record> --plugin-base <HERMES_HOME>/caduceus [--ttl 600]`
+issues a single-use, expiring capability bound to the exact `skill_manage` call (`caduceus/toolcall.py`). It refuses unless the governance ledger holds the candidate and its
+latest verdict is a self-consistent `accept`, the base directory is the plugin's own `caduceus` directory (never a Hermes home root), the evolution is not frozen, and the tool
+is `skill_manage`. The live check drives this CLI and then confirms Hermes admits that call once and blocks it the second time.
+
+Still not done: an end-to-end run with a real model driving `skill_manage` (needs model calls), and producing the `accept` verdict itself for real skill edits (the paired experiment
+behind `exchange` spends model calls and was not run here).
 
 ## Not yet verified
 * The exact plugin settings API (for moving `mode.json` into `config.yaml`).

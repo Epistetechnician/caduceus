@@ -83,6 +83,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     ex.add_argument("--keyring", help="for code_patch signatures")
     ex.add_argument("--record", help="governance ledger to record candidate, lyre report digest and verdict")
 
+    ac = sub.add_parser("admit-call", help="issue a single-use capability for ONE exact skill_manage call from an accepted verdict")
+    ac.add_argument("candidate", help="candidate JSON (as printed by `propose`)")
+    ac.add_argument("call", help='JSON file {"tool": "skill_manage", "args": {...}}')
+    ac.add_argument("--governance-ledger", required=True, help="ledger holding the candidate and verdict (`exchange --record`)")
+    ac.add_argument("--plugin-base", required=True, help="the plugin's own caduceus directory, e.g. <HERMES_HOME>/caduceus")
+    ac.add_argument("--ttl", type=int, default=600)
+
     sub.add_parser("corpus", help="run the adversarial corpus; non-zero exit on any miss")
 
     dg = sub.add_parser("diagnostics", help="lane vector report (read-only)")
@@ -129,7 +136,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -203,6 +210,21 @@ def _ops(args) -> int:
 
         body = signing.sign(Ledger(args.ledger), args.keyring, args.signer, args.candidate_digest)
         _print({k: body[k] for k in ("candidate_digest", "signer", "role")})
+        return 0
+    if args.cmd == "admit-call":
+        from .candidate import candidate_from_dict, parse_json_strict
+        from .toolcall import ToolCallError, issue_for_call
+
+        with open(args.candidate, "r", encoding="utf-8") as fh:
+            raw = parse_json_strict(fh.read())
+        cand = candidate_from_dict(raw.get("candidate", raw) if isinstance(raw, dict) else raw)
+        with open(args.call, "r", encoding="utf-8") as fh:
+            call = parse_json_strict(fh.read())
+        try:
+            _print(issue_for_call(Ledger(args.governance_ledger), cand, call.get("tool", ""), call.get("args"), args.plugin_base, args.ttl))
+        except ToolCallError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
         return 0
     if args.cmd == "admit-source":
         from .candidate import parse_json_strict
