@@ -218,6 +218,20 @@ a scan of the transcripts found no pip/curl/wget/git-fetch commands, so the deni
 came from the CLI's own checks, but this is a regex scan, not proof. Statements were not audited
 for leakage beyond a spot check (code blocks in statements are usage examples).
 
+### exp-028: admission-gate A/B (does verify-before-accept help a cheap agent?)
+
+Question: if a harness admits an agent's patch only when a deterministic gate passes, does the agent resolve more hidden-test tasks?
+Gate (no model): the agent must add a regression test that fails on the parent source (G2), passes on the patched tree (G3), and the
+existing suite must not regress (G4, NotRun when the parent suite was not green within 180 s); a rejection resumes the same session with the
+verdict, at most 2 retries. Same 72 tasks, statements and agent as exp-027 (Haiku 5.5 low, 30 turns). Prereg and lock were committed before the run.
+
+Result: **Fail.** Attempt 1 (control) 61/72, final (treatment) 61/72, paired lift 0.0, no task changed outcome. 64 of 72 first attempts were admitted;
+8 were rejected (7 at G2, 1 at G1) and retried, and every retry was admitted, but none of the 8 flipped a hidden-test result. 11 of the 72 admitted
+patches fail the hidden tests (false admits) and 7 of the 8 rejected first attempts would have passed (false rejects). G4 was NotRun on 39 of 72 tasks.
+Cost $30. Reading: when the same agent writes both the test and the fix, the test encodes the agent's own reading of the issue, so a green gate
+certifies consistency, not correctness; it filtered nothing useful here. The candidate identity is closed per the prereg; a different gate (for example
+tests authored independently of the fixer) would be a new candidate with a new prereg.
+
 ## Reproduce
 
 ```sh

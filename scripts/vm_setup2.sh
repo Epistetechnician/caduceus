@@ -8,8 +8,8 @@ sudo install -m 755 ~/scripts/rb-run /usr/local/bin/rb-run
 echo 'agent ALL=(root) NOPASSWD: /usr/local/bin/rb-run' | sudo tee /etc/sudoers.d/agent-rbrun >/dev/null
 sudo chmod 440 /etc/sudoers.d/agent-rbrun
 pkill -f allowlist_proxy.py || true
-nohup python3 ~/scripts/allowlist_proxy.py 3128 ~/proxy-denied.log anthropic.com claude.ai claude.com > ~/proxy.log 2>&1 &
+nohup python3 ~/scripts/allowlist_proxy.py 3128 ~/proxy-denied.log ${ALLOW:-anthropic.com claude.ai claude.com} > ~/proxy.log 2>&1 &
 sudo iptables -F OUTPUT
-sudo iptables -A OUTPUT -m owner --uid-owner agent -d 127.0.0.1 -p tcp --dport 3128 -j ACCEPT
+sudo iptables -A OUTPUT -m owner --uid-owner agent -o lo -j ACCEPT
 sudo iptables -A OUTPUT -m owner --uid-owner agent -j REJECT
 echo SETUP_OK

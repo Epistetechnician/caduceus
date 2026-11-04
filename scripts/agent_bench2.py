@@ -82,7 +82,7 @@ def load_tasks(spec=False):
 
 
 def claude(prompt, model, max_turns, cwd, extra=()):
-    cmd = ["sudo", "-u", "agent", "-H", "env", "HTTPS_PROXY=" + PROXY, "HTTP_PROXY=" + PROXY, "NO_PROXY=", "claude", "-p", prompt, "--model", model,
+    cmd = ["sudo", "-u", "agent", "-H", "env", "HTTPS_PROXY=" + PROXY, "HTTP_PROXY=" + PROXY, "NO_PROXY=127.0.0.1,localhost", "claude", "-p", prompt, "--model", model,
            "--max-turns", str(max_turns), "--effort", os.environ.get("EFFORT", "low"), *extra]
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=1500)
 

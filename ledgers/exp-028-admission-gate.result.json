@@ -1,0 +1,1527 @@
+[
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_confusion_load.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_confusion_load.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.5442777,
+  "error": null,
+  "seconds": 78,
+  "task_id": "0312959779f6de74",
+  "turns": 19
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_trailing_ws.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.5360965,
+  "error": null,
+  "seconds": 78,
+  "task_id": "0651cdb8946aa9d5",
+  "turns": 19
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_begin_transaction.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3559697,
+  "error": null,
+  "seconds": 55,
+  "task_id": "0c15c92871feb480",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "test_issue_atomic_uppercase.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3213929,
+  "error": null,
+  "seconds": 42,
+  "task_id": "0f5111f99b26bd1c",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_manylinux_module_cache.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_manylinux_module_cache.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6866638,
+  "error": null,
+  "seconds": 78,
+  "task_id": "103f8e103b64a6b6",
+  "turns": 20
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "examples/tiny/tests/test_issue_semicolons.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.533775,
+  "error": null,
+  "seconds": 295,
+  "task_id": "1461922ac6b71114",
+  "turns": 19
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_bytes_logger_name.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.3569146,
+  "error": null,
+  "seconds": 50,
+  "task_id": "1b48a806a19e4b2d",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_spdx_with_licenseref.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.35321420000000003,
+  "error": null,
+  "seconds": 146,
+  "task_id": "29d849b4ee0ccb85",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_confusion_serialization.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_confusion_serialization.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.5444213000000001,
+  "error": null,
+  "seconds": 62,
+  "task_id": "2b574f91437ca92d",
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "examples/tiny/tests/test_issue_function_registration.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6820231,
+  "error": null,
+  "seconds": 311,
+  "task_id": "32e5c719093410ac",
+  "turns": 25
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_flags_unnamed.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.41881840000000004,
+  "error": null,
+  "seconds": 70,
+  "task_id": "34d55b8aaf388a6a",
+  "turns": 17
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_ddr_ip_compare.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.19473929999999998,
+  "error": null,
+  "seconds": 26,
+  "task_id": "385678fee8a6bb78",
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_currency_euro.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.31543090000000007,
+  "error": null,
+  "seconds": 36,
+  "task_id": "3e79e20b627aac68",
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_color_env_standard_streams.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.314148,
+  "error": null,
+  "seconds": 131,
+  "task_id": "403cf7e6d18c92fb",
+  "turns": 14
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_escaped_emphasis.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.9304327000000001,
+  "error": null,
+  "seconds": 104,
+  "task_id": "4041bc889302519a",
+  "turns": 34
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_cachedmethod_descriptor.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.5002615,
+  "error": null,
+  "seconds": 55,
+  "task_id": "4403ba3bc4916f4c",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "testing/test_issue_tracer_ambiguity.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.49870270000000005,
+  "error": null,
+  "seconds": 66,
+  "task_id": "4486ad366d3a674c",
+  "turns": 21
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_enc_index.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.5723063,
+  "error": null,
+  "seconds": 94,
+  "task_id": "45d1d154bbdfbe99",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "examples/tiny/tests/test_issue_tiny_semicolons.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6103792,
+  "error": null,
+  "seconds": 441,
+  "task_id": "469b4e1392b69c49",
+  "turns": 25
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_dir_info_file_url.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.1998654,
+  "error": null,
+  "seconds": 17,
+  "task_id": "4bb66fd756f440a9",
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_markdown_escape.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.5439826,
+  "error": null,
+  "seconds": 68,
+  "task_id": "4d60fe65c233eae4",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_modern_word_boundary.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3668998,
+  "error": null,
+  "seconds": 57,
+  "task_id": "4e545a0e56e81b6c",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_empty_project_name.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3012035,
+  "error": null,
+  "seconds": 296,
+  "task_id": "5005deddf1294168",
+  "turns": 14
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_score_bigrams_plain_encoding.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2603979,
+  "error": null,
+  "seconds": 37,
+  "task_id": "5242e7b9704f6fb5",
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_uri_telnet.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.38170020000000005,
+  "error": null,
+  "seconds": 62,
+  "task_id": "52f190afd3275710",
+  "turns": 18
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_hostname_trailing_dot.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3730688,
+  "error": null,
+  "seconds": 43,
+  "task_id": "5588e728518ad131",
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_jwks_no_redirect.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2992245,
+  "error": null,
+  "seconds": 57,
+  "task_id": "5c443833d47c1808",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_jsonl_rel_seek.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_jsonl_rel_seek.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6183993999999999,
+  "error": null,
+  "seconds": 240,
+  "task_id": "5ff6c0fce6c0f42e",
+  "turns": 14
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_sigtime.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.27669800000000006,
+  "error": null,
+  "seconds": 48,
+  "task_id": "60a7f2cf20c11a25",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_safe_protocols.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.4221965999999999,
+  "error": null,
+  "seconds": 55,
+  "task_id": "642d74b13364a516",
+  "turns": 18
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_setext_heading.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3177349,
+  "error": null,
+  "seconds": 44,
+  "task_id": "661918cbf379c4e3",
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_pep8_converter_special_names.py"
+     ]
+    },
+    "hidden_pass": false
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_pep8_converter_special_names.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.9569318,
+  "error": null,
+  "seconds": 333,
+  "task_id": "68d1f7ffea769315",
+  "turns": 25
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_bound_args.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.4040481,
+  "error": null,
+  "seconds": 50,
+  "task_id": "69dcd2139b81c999",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_memoize_kwargs.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3004967,
+  "error": null,
+  "seconds": 44,
+  "task_id": "6ecd5f95e7dcab94",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_keyword_receiver.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.4186252999999999,
+  "error": null,
+  "seconds": 36,
+  "task_id": "71012732d9e6f8c6",
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_stacked_cached.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6584801999999998,
+  "error": null,
+  "seconds": 48,
+  "task_id": "753a8df18bfe2135",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_cli_in_place.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.4058923,
+  "error": null,
+  "seconds": 64,
+  "task_id": "75ceff5d3bf38c81",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_lenient_meta.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3200255,
+  "error": null,
+  "seconds": 49,
+  "task_id": "7b7fea764dd60eb8",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_begin_end_split.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.4590602,
+  "error": null,
+  "seconds": 71,
+  "task_id": "7ddd3536af2e8214",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_cron_step_range.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.2842873,
+  "error": null,
+  "seconds": 39,
+  "task_id": "7ec6e3de3166f281",
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_hmac_pem_prepare_key.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.4054026,
+  "error": null,
+  "seconds": 66,
+  "task_id": "7f8183b7a3f905c8",
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_posix_classes.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.47394490000000006,
+  "error": null,
+  "seconds": 63,
+  "task_id": "83fc3576d6eafe0a",
+  "turns": 18
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_file_url.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.364152,
+  "error": null,
+  "seconds": 48,
+  "task_id": "8438f30ea8ef0786",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_autospec.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.7605906,
+  "error": null,
+  "seconds": 98,
+  "task_id": "886bcf8b23222d10",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_tiny_grammar.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_tiny_grammar.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 1.1919981999999998,
+  "error": null,
+  "seconds": 269,
+  "task_id": "937c1d954a19bd8c",
+  "turns": 31
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_nsec3_next.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.23521589999999998,
+  "error": null,
+  "seconds": 49,
+  "task_id": "9480c6896cd9edcc",
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_reverse_lines.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.6385705000000002,
+  "error": null,
+  "seconds": 55,
+  "task_id": "974e1336e56e9976",
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_gb18030_euro.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2585371,
+  "error": null,
+  "seconds": 36,
+  "task_id": "99547d34a6efb03b",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G2",
+     "new": [
+      "tests/test_issue_tiny_main.py"
+     ]
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_tiny_main.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.39264180000000004,
+  "error": null,
+  "seconds": 408,
+  "task_id": "9d7a1d2b58b6e43c",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_tsigkeyring_file.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3328634,
+  "error": null,
+  "seconds": 40,
+  "task_id": "a6acc74d300c6eea",
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_unterminated_quotes.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.466283,
+  "error": null,
+  "seconds": 102,
+  "task_id": "b40bd8fe16f482ea",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_bigram_tables.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3446589,
+  "error": null,
+  "seconds": 42,
+  "task_id": "b5b4a10ae8da5940",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_max_bytes_done.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.37743329999999997,
+  "error": null,
+  "seconds": 69,
+  "task_id": "ba483d65ee42ac77",
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_dependency_group_errors.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.48417520000000003,
+  "error": null,
+  "seconds": 139,
+  "task_id": "c39c015bd54696e4",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_utf16_utf32.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.49855309999999997,
+  "error": null,
+  "seconds": 62,
+  "task_id": "c41e42d9bbdbfeb1",
+  "turns": 17
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_requirement_replace.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.0,
+  "error": null,
+  "seconds": 277,
+  "task_id": "c4b118b84b322147",
+  "turns": 0
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "testing/test_issue_tracer_newlines.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.33564229999999995,
+  "error": null,
+  "seconds": 34,
+  "task_id": "c518e6114db9ab3a",
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_integer_underscores.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2972215,
+  "error": null,
+  "seconds": 27,
+  "task_id": "c70db2c727a3993e",
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_isin_checksum.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.32262270000000004,
+  "error": null,
+  "seconds": 42,
+  "task_id": "c895f85c33fae5d8",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_capture_logs_processors.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.28150769999999997,
+  "error": null,
+  "seconds": 40,
+  "task_id": "cfc5308042daca3b",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_output_escaping.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2093024,
+  "error": null,
+  "seconds": 36,
+  "task_id": "d8d43c2e5c53a6f3",
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_markdown_cache.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2772631,
+  "error": null,
+  "seconds": 37,
+  "task_id": "dbbbb675f9220a07",
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_optional_seconds.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3712567,
+  "error": null,
+  "seconds": 34,
+  "task_id": "e563fd546118ed9b",
+  "turns": 18
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_include_escape.py"
+     ]
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.31710289999999997,
+  "error": null,
+  "seconds": 30,
+  "task_id": "e71c9f8081f8fc2c",
+  "turns": 14
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_escape_renderer.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2747349,
+  "error": null,
+  "seconds": 34,
+  "task_id": "e76a4515f011e99e",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G1"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_formatting_linear.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.9958731000000001,
+  "error": null,
+  "seconds": 204,
+  "task_id": "ee2e01839e84828e",
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_requirement_error_messages.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.28990140000000003,
+  "error": null,
+  "seconds": 82,
+  "task_id": "eedd678b513d45ab",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_apl_unknown_family.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.33569010000000005,
+  "error": null,
+  "seconds": 50,
+  "task_id": "f19c1bbc4901bc2e",
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "testing/test_issue_multiline_indent.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2791443,
+  "error": null,
+  "seconds": 22,
+  "task_id": "f21d1b235c966a9d",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_line_endings.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.3167384999999999,
+  "error": null,
+  "seconds": 30,
+  "task_id": "f3893db5c4cf28b5",
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "Pass",
+     "new": [
+      "tests/test_issue_cli_truncate.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.2892872,
+  "error": null,
+  "seconds": 43,
+  "task_id": "f91a802e266aa1c1",
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g4": "NotRun",
+     "new": [
+      "tests/test_issue_dependency_group_malformed_cache.py"
+     ]
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.0,
+  "error": null,
+  "seconds": 398,
+  "task_id": "ff66451ea6fea6c0",
+  "turns": 0
+ }
+]

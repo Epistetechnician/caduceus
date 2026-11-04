@@ -1,0 +1,31 @@
+{
+ "experiment_id": "exp-028-admission-gate-ab",
+ "schema": "caduceus.prereg.agentbench.v1",
+ "purpose": "Test whether a deterministic admission gate (agent-authored fail-to-pass regression test + no-regression check, bounded retry with the gate's verdict as feedback) raises the hidden-test pass rate of a cheap coding agent. This is the product-relevant question for a harness-agnostic verify-before-accept tool.",
+ "manifest": "tasks/fresh-v2.manifest.json",
+ "statements": "tasks/fresh-v2.statements.json (unchanged from exp-027)",
+ "agent": "Claude Code CLI, Haiku 5.5, --effort low, 30 turns per attempt (same as exp-027)",
+ "arms": {
+  "control": "attempt 1 of each trajectory: same prompt plus the instruction to add a regression test; no gate feedback",
+  "treatment": "final attempt after up to 2 gate-rejection retries, resumed in the same session with the gate verdict"
+ },
+ "gate": {
+  "G1": "a new test file (name starting 'test') exists beyond the parent tree",
+  "G2": "the new tests exit 1 (assertion failure) on the parent source",
+  "G3": "the new tests pass on the patched tree",
+  "G4": "the existing suite (new tests ignored) passes on the patched tree; NotRun, and not blocking, if the parent suite is not green within 180 s",
+  "determinism": "no model call in the gate; hidden tests are never visible to the gate or the feedback"
+ },
+ "design_note": "Paired within trajectory: control and treatment share attempt 1, so the contrast is exactly the effect of the gate loop. The exp-027 result (61/72 without the test-writing instruction) is reported as a reference, not as the control.",
+ "primary_outcome": "paired difference in hidden-test pass rate, final minus attempt 1, with a paired bootstrap 95% interval (10000 resamples, seed 20451074)",
+ "secondary": ["false-admit rate: gate admits but hidden tests fail", "false-reject rate: gate rejects an attempt whose hidden tests pass", "per-gate failure counts", "cost per resolved task", "retries used"],
+ "success_criteria": "Pass iff the paired difference is >= +4 points and the interval lower bound is > 0. Inconclusive if the lower bound <= 0 but the point estimate > 0. Fail if the point estimate <= 0. A truncated run (usage limits) is reported partial. No gate, prompt or threshold change after the first agent run; a failed gate design closes this candidate identity.",
+ "known_limits": [
+  "72 tasks give about +-11 points of sampling error on a rate; the paired contrast is tighter but still wide",
+  "the agent may also have a test-writing effect on attempt 1 itself; the paired contrast removes it from the primary outcome",
+  "the agent can see the gate rules in its prompt, which is the intended deployment",
+  "providers may have seen these public commits (dated 2025-07-01 or later)"
+ ],
+ "nonclaim": "LocalDevelopmentEvidenceOnly",
+ "status": "Locked by ledger entry in ledgers/exp-028-admission-gate.jsonl before any agent run."
+}

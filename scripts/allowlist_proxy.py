@@ -1,6 +1,7 @@
 """CONNECT-only HTTPS proxy that allows a few hostnames. Runs on the VM as a normal user; the agent user can reach only this port.
 Usage: allowlist_proxy.py <port> <denied.log> <suffix> [suffix...]"""
 import asyncio
+import os
 import sys
 import time
 
@@ -50,7 +51,7 @@ async def handle(cr, cw):
 
 
 async def main():
-    srv = await asyncio.start_server(handle, "127.0.0.1", PORT)
+    srv = await asyncio.start_server(handle, os.environ.get("BIND", "127.0.0.1"), PORT)
     async with srv:
         await srv.serve_forever()
 
