@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import tempfile
 import unittest
 
@@ -146,3 +147,86 @@ class KernelTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChecksTests(unittest.TestCase):
+    """Tier 1. Needs Seatbelt confinement; without it the lane must say Unavailable (quarantine), never pass."""
+
+    def setUp(self):
+        from caduceus import checks
+        self.checks = checks
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "skills")
+        self.base = os.path.join(self.tmp.name, "caduceus")
+        write(self.root, "dev/t/SKILL.md", SKILL % ("t", "t"))
+        write(self.root, "dev/t/scripts/tool.py", "import sys\nprint('ok')\nsys.exit(0)\n")
+        self.k = Kernel(self.root, self.base, clock=lambda: 1000)
+        self.k.reconcile()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_syntax_lane_rejects_broken_python_and_json(self):
+        write(self.root, "dev/t/scripts/tool.py", "def broken(:\n")
+        self.assertIn("syntax:Fail", self.k.reconcile()["verdict"]["reason_codes"])
+        write(self.root, "dev/t/data.json", "{not json")
+        self.assertIn("syntax:Fail", self.k.reconcile()["verdict"]["reason_codes"])
+
+    def test_check_validation_is_strict(self):
+        for bad in ([], [{"id": "a"}], [{"id": "a", "argv": ["x"], "extra": 1}], [{"id": "a", "argv": [""]}], [{"id": "a", "argv": ["x"], "timeout_s": 999}],
+                    [{"id": "a", "argv": ["x"]}, {"id": "a", "argv": ["y"]}], [{"id": "a", "argv": ["x"], "expect_stdout_sha256": "zz"}]):
+            with self.assertRaises(self.checks.CheckError):
+                self.checks.validate(bad)
+
+    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    def test_semantic_regression_caught_only_by_an_operator_check(self):
+        chk = {"id": "runs", "argv": ["python3", "scripts/tool.py"], "expect_stdout_sha256": __import__("hashlib").sha256(b"ok\n").hexdigest()}
+        try:
+            self.k.register_check("dev/t", chk, "op")
+        except TransitionError as exc:
+            self.skipTest("confinement unavailable here: %s" % exc)
+        write(self.root, "dev/t/scripts/tool.py", "print('changed behaviour')\n")  # valid Python, passes every static lane
+        out = self.k.reconcile()
+        self.assertIn("checks:Fail", out["verdict"]["reason_codes"])
+        self.assertEqual(out["status"], "restored")
+        write(self.root, "dev/t/scripts/tool.py", "import sys\nprint('ok')\nsys.exit(0)\n# harmless edit\n")
+        self.assertEqual(self.k.reconcile()["status"], "accepted")
+
+    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    def test_a_check_that_fails_on_head_cannot_be_registered_and_checks_cannot_be_weakened_by_a_mutation(self):
+        with self.assertRaises(TransitionError):
+            self.k.register_check("dev/t", {"id": "bad", "argv": ["python3", "-c", "import sys; sys.exit(3)"]}, "op")
+        self.assertFalse(os.path.exists(self.checks.spec_path(self.base, "dev/t")))
+        write(self.root, "dev/t/checks.json", "[]")  # a skill-local file is not an oracle
+        self.assertEqual(self.k.reconcile()["status"], "accepted")
+
+    def test_unavailable_confinement_is_never_a_pass(self):
+        orig = self.checks.confinement_available
+        self.checks.confinement_available = lambda: False
+        try:
+            os.makedirs(os.path.join(self.base, "checks"), exist_ok=True)
+            with open(self.checks.spec_path(self.base, "dev/t"), "w") as fh:
+                json.dump([{"id": "x", "argv": ["true"]}], fh)
+            write(self.root, "dev/t/note.md", "hello\n")
+            out = self.k.reconcile()
+            self.assertEqual(out["status"], "restored")
+            self.assertIn("checks:Quarantine", out["verdict"]["reason_codes"])
+        finally:
+            self.checks.confinement_available = orig
+
+    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    def test_checks_run_confined_no_network_no_writes_outside_the_copy(self):
+        outside = os.path.join(self.tmp.name, "outside.txt")
+        probe = ("import socket,sys\ntry:\n    socket.create_connection(('1.1.1.1',53),timeout=2)\n    sys.exit(0)\nexcept OSError:\n    sys.exit(7)\n")
+        self.assertEqual(self.checks.run_check(os.path.join(self.root, "dev", "t"), {"id": "n", "argv": ["python3", "-c", probe], "timeout_s": 10, "expect_exit": 7}), "Pass")
+        w = "open(%r,'w').write('x')" % outside
+        self.assertEqual(self.checks.run_check(os.path.join(self.root, "dev", "t"), {"id": "w", "argv": ["python3", "-c", w], "timeout_s": 10, "expect_exit": 0}), "Fail")
+        self.assertFalse(os.path.exists(outside))
+
+    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    def test_removing_a_checked_file_runs_the_skill_check(self):
+        self.k.register_check("dev/t", {"id": "runs", "argv": ["python3", "scripts/tool.py"]}, "op")
+        os.remove(os.path.join(self.root, "dev", "t", "scripts", "tool.py"))
+        out = self.k.reconcile()
+        self.assertIn("checks:Fail", out["verdict"]["reason_codes"])
+        self.assertTrue(os.path.exists(os.path.join(self.root, "dev", "t", "scripts", "tool.py")))

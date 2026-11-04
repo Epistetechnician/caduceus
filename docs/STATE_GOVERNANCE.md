@@ -39,8 +39,18 @@ Reading, with the caveats that matter:
 * Reconcile cost on a 900-file tree: about 20 ms when clean, about 27 ms with one change (full hash, no stat cache yet).
 * Live through Hermes' own hook dispatch (`scripts/verify_hermes_plugin.py`, temporary home): 20/20 checks including boundary mode.
 
+## Tier 1: operator-owned executable checks (added)
+
+`caduceus check-add --skills-root R --base B --skill cat/name --id ID --operator OP -- argv...` registers a check (argv, timeout, expected exit, optional stdout digest). It is stored
+outside the governed tree (`<base>/checks/`), so a mutation cannot weaken its own oracle, and it must pass on the admitted HEAD copy of the skill before it is accepted. At reconcile, every
+skill touched by the effect (including by a removal) has its checks run against a copy of the candidate skill directory under macOS Seatbelt: no network, no writes outside the copy.
+Where confinement is unavailable the result is `Unavailable` and the effect is quarantined, never passed. A built-in syntax lane compiles `.py` (never executes) and parses `.json`.
+Containment eval, tier-1 scenarios (4): tier 0 alone contains 1/3 bad effects (the syntax error); with a registered check it contains 3/3 (behaviour change in valid Python, syntax error,
+removing the checked entry point) and still admits the benign edit. One defect was found by the eval and fixed: removals did not trigger the skill's checks.
+
 ## Limits and open work
-* Tier 0 only: static lanes, no semantic review. Tier 1 (executable protected-suite checks per skill) and tier 2 (paired model experiment, human signature) are not wired to this kernel.
+* Checks exist only where an operator registers them; there is no automatic generation. The macOS Seatbelt runner is the only confinement implemented (Linux: Unavailable, so quarantine).
+* Tier 2 (paired model experiment, human signature) is not wired to this kernel.
 * A mutation is briefly visible on disk between the write and the reconcile; a concurrent session could read it in that window. Single-writer sequencing, not isolation.
 * Baseline is trust on first use: a tree that is already bad when the kernel starts becomes HEAD.
 * Governs only the skills tree. Memory, prompts and config are not covered.

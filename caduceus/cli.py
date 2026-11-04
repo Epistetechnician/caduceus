@@ -102,6 +102,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     rl.add_argument("--reason", required=True)
     rl.add_argument("--allow-live", action="store_true")
 
+    ck = sub.add_parser("check-add", help="register an executable check for a skill (must pass on the admitted HEAD); argv follows --")
+    ck.add_argument("--skills-root", required=True)
+    ck.add_argument("--base", required=True)
+    ck.add_argument("--skill", required=True, help="category/name")
+    ck.add_argument("--id", required=True)
+    ck.add_argument("--operator", required=True)
+    ck.add_argument("--timeout", type=int, default=10)
+    ck.add_argument("--expect-exit", type=int, default=0)
+    ck.add_argument("--expect-stdout-sha256")
+    ck.add_argument("--allow-live", action="store_true")
+    ck.add_argument("argv", nargs="+")
+
     sub.add_parser("corpus", help="run the adversarial corpus; non-zero exit on any miss")
 
     dg = sub.add_parser("diagnostics", help="lane vector report (read-only)")
@@ -148,7 +160,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -235,6 +247,19 @@ def _ops(args) -> int:
         try:
             _print(issue_for_call(Ledger(args.governance_ledger), cand, call.get("tool", ""), call.get("args"), args.plugin_base, args.ttl))
         except ToolCallError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd == "check-add":
+        from .checks import CheckError
+        from .transition import Kernel, TransitionError
+
+        chk = {"id": args.id, "argv": args.argv, "timeout_s": args.timeout, "expect_exit": args.expect_exit}
+        if args.expect_stdout_sha256:
+            chk["expect_stdout_sha256"] = args.expect_stdout_sha256
+        try:
+            _print(Kernel(args.skills_root, args.base, allow_live=args.allow_live).register_check(args.skill, chk, args.operator))
+        except (TransitionError, CheckError) as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0

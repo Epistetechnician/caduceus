@@ -135,7 +135,8 @@ def _skill_of(rel: str) -> str:
     return "/".join(rel.split("/")[:2])
 
 
-def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable[[str], bytes], policy: Policy, recent: int, recent_removed: int = 0) -> Dict[str, str]:
+def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable[[str], bytes], policy: Policy, recent: int, recent_removed: int = 0,
+          check_results: Optional[Dict[str, str]] = None) -> Dict[str, str]:
     """Pure lane functions over (effect, content). status: Pass | Fail | Quarantine."""
     touched = sorted(list(effect["added"]) + list(effect["changed"]) + list(effect["removed"]))
     written = sorted(list(effect["added"]) + list(effect["changed"]))
@@ -165,6 +166,12 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
             if not fm.get("name") or not fm.get("description") or fm["name"] != parts[1]:
                 bad_fm = True
     out["format"] = "Fail" if bad_fm else "Pass"
+    from .checks import syntax_errors
+
+    out["syntax"] = "Fail" if syntax_errors(texts) else "Pass"
+    # tier 1: operator-owned executable checks, one result per touched skill; a check that could not run is never a pass
+    cr = check_results or {}
+    out["checks"] = "Fail" if "Fail" in cr.values() else ("Quarantine" if "Unavailable" in cr.values() else "Pass")
     return out
 
 
@@ -293,11 +300,20 @@ class Kernel:
         def read(rel: str) -> bytes:
             with open(os.path.join(self.root, *rel.split("/")), "rb") as fh:
                 return fh.read()
-        verdict = decide(lanes(effect, cur, read, self.policy, recent, recent_removed), effect, self.policy)
+        from . import checks as chk
+
+        skills = sorted({_skill_of(p) for p in list(effect["added"]) + list(effect["changed"]) + list(effect["removed"])})  # removals can break a check too
+        check_results, spec_digests = {}, {}
+        for sk in skills:
+            st, sd = chk.run_skill(self.base, self.root, sk)
+            if st != "NoChecks":
+                check_results[sk], spec_digests[sk] = st, sd
+        verdict = decide(lanes(effect, cur, read, self.policy, recent, recent_removed, check_results), effect, self.policy)
+        checks_digest = domain_digest("caduceus.transition.checks.v1", {"results": check_results, "specs": spec_digests})
         touched = list(effect["added"]) + list(effect["changed"]) + list(effect["removed"])
         led.append("transition_verdict", {"effect_digest": ed, "verdict_digest": verdict["verdict_digest"], "decision": verdict["decision"],
                                           "reason_codes": verdict["reason_codes"], "parent": effect["parent"], "child": effect["child"],
-                                          "paths": _bounded(sorted(touched)), "n_paths": len(touched), "n_removed": len(effect["removed"]), "at": now})
+                                          "paths": _bounded(sorted(touched)), "n_paths": len(touched), "n_removed": len(effect["removed"]), "checks_digest": checks_digest, "checks_run": len(check_results), "at": now})
         if verdict["decision"] == "accept":
             self._retain(cur)
             d = self._save_manifest(cur)
@@ -347,3 +363,39 @@ class Kernel:
             led.append("transition_released", {"effect_digest": effect_digest_hex, "operator": operator[:64], "reason": reason[:200]})
             led.append("transition_head", {"tree": d, "effect_digest": effect_digest_hex, "reason": "released"})
             return {"status": "released", "tree": d}
+
+    def register_check(self, skill: str, check: Dict[str, Any], operator: str) -> Dict[str, Any]:
+        """Operator adds an executable check for one skill. It must PASS on the admitted HEAD copy of that skill first."""
+        import tempfile
+
+        from . import checks as chk
+
+        if len(skill.split("/")) != 2 or ".." in skill.split("/"):
+            raise TransitionError("skill must be 'category/name'")
+        head = self.head()
+        if head is None:
+            raise TransitionError("no admitted HEAD yet; run reconcile first")
+        hm = self._load_manifest(head)
+        prefix = skill + "/"
+        files = {k: v for k, v in hm.items() if k.startswith(prefix) and v["kind"] == "file"}
+        if not files:
+            raise TransitionError("skill not present in the admitted HEAD")
+        existing = chk.load(self.base, skill) or []
+        spec = chk.validate(existing + [check])
+        tmp = tempfile.mkdtemp(prefix="cadreg-")
+        try:
+            for rel, e in files.items():
+                dest = os.path.join(tmp, *rel[len(prefix):].split("/"))
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                shutil.copyfile(self._blob(e["sha256"]), dest)
+                os.chmod(dest, 0o755 if e["exec"] else 0o644)
+            status = chk.run_check(tmp, spec[-1])
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        if status != "Pass":
+            raise TransitionError("check did not pass on the admitted HEAD (%s); it cannot become an oracle" % status)
+        os.makedirs(os.path.join(self.base, "checks"), exist_ok=True)
+        with open(chk.spec_path(self.base, skill), "w") as fh:
+            json.dump(spec, fh, sort_keys=True)
+        self.ledger().append("audit_note", {"event": "check_registered", "skill": skill[:120], "check_id": check["id"][:64], "specs_digest": chk.specs_digest(spec), "operator": operator[:64]})
+        return {"skill": skill, "check_id": check["id"], "specs_digest": chk.specs_digest(spec)}

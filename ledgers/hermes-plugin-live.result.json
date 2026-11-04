@@ -82,6 +82,11 @@
    "detail": ""
   },
   {
+   "check": "tier 1: operator check rejects a valid-Python behaviour change through Hermes' hook",
+   "ok": true,
+   "detail": "['{\"success\": false, \"error\": \"Caduceus did not admit this skill change (reject: checks:Fail). The skills directory was restored to its last admitted state.\"}']"
+  },
+  {
    "check": "boundary: non-skill tools untouched",
    "ok": true,
    "detail": ""
