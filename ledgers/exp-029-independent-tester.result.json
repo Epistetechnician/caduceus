@@ -1,0 +1,1810 @@
+[
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.015137820000000001,
+  "error": null,
+  "seconds": 70,
+  "task_id": "0312959779f6de74",
+  "tester": {
+   "files": [
+    "tests/test_qa_confusion_loader.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01953839,
+  "error": null,
+  "seconds": 85,
+  "task_id": "0651cdb8946aa9d5",
+  "tester": {
+   "files": [
+    "tests/test_qa_trailing_ws.py"
+   ],
+   "valid": true
+  },
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01728077,
+  "error": null,
+  "seconds": 94,
+  "task_id": "0c15c92871feb480",
+  "tester": {
+   "files": [
+    "tests/test_qa_begin_transaction.py"
+   ],
+   "valid": true
+  },
+  "turns": 15
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.010291830000000002,
+  "error": null,
+  "seconds": 52,
+  "task_id": "0f5111f99b26bd1c",
+  "tester": {
+   "files": [
+    "test_qa_uppercase_atomic.py"
+   ],
+   "valid": true
+  },
+  "turns": 4
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01451775,
+  "error": null,
+  "seconds": 64,
+  "task_id": "103f8e103b64a6b6",
+  "tester": {
+   "files": [
+    "tests/test_qa_manylinux_module_cache.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 3,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.07654327999999999,
+  "error": null,
+  "seconds": 721,
+  "task_id": "1461922ac6b71114",
+  "tester": {
+   "files": [
+    "examples/tiny/tests/test_qa_tiny_semicolons.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01450365,
+  "error": null,
+  "seconds": 77,
+  "task_id": "1b48a806a19e4b2d",
+  "tester": {
+   "files": [
+    "tests/test_qa_bytes_logger_name.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01247287,
+  "error": null,
+  "seconds": 38,
+  "task_id": "29d849b4ee0ccb85",
+  "tester": {
+   "files": [
+    "tests/test_qa_spdx_with_licenseref.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01506157,
+  "error": null,
+  "seconds": 53,
+  "task_id": "2b574f91437ca92d",
+  "tester": {
+   "files": [
+    "tests/test_qa_confusion_serialization.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": false
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 3,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.07165775,
+  "error": null,
+  "seconds": 368,
+  "task_id": "32e5c719093410ac",
+  "tester": {
+   "files": [
+    "examples/tiny/tests/test_qa_function_registration.py"
+   ],
+   "valid": true
+  },
+  "turns": 24
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01328147,
+  "error": null,
+  "seconds": 77,
+  "task_id": "34d55b8aaf388a6a",
+  "tester": {
+   "files": [
+    "tests/test_qa_flags_unnamed_bits.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.0138681,
+  "error": null,
+  "seconds": 57,
+  "task_id": "385678fee8a6bb78",
+  "tester": {
+   "files": [
+    "tests/test_qa_ddr_san_addresses.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01300722,
+  "error": null,
+  "seconds": 49,
+  "task_id": "3e79e20b627aac68",
+  "tester": {
+   "files": [
+    "tests/test_qa_currency_equivalence.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.012590680000000002,
+  "error": null,
+  "seconds": 150,
+  "task_id": "403cf7e6d18c92fb",
+  "tester": {
+   "files": [
+    "tests/test_qa_no_color_force_color_streams.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.02127528,
+  "error": null,
+  "seconds": 86,
+  "task_id": "4041bc889302519a",
+  "tester": {
+   "files": [
+    "tests/test_qa_markdown_escape_roundtrip.py"
+   ],
+   "valid": true
+  },
+  "turns": 17
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.029767500000000002,
+  "error": null,
+  "seconds": 90,
+  "task_id": "4403ba3bc4916f4c",
+  "tester": {
+   "files": [
+    "tests/test_qa_descriptor.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01435293,
+  "error": null,
+  "seconds": 48,
+  "task_id": "4486ad366d3a674c",
+  "tester": {
+   "files": [
+    "testing/test_qa_tracer_value_repr.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01758277,
+  "error": null,
+  "seconds": 102,
+  "task_id": "45d1d154bbdfbe99",
+  "tester": {
+   "files": [
+    "tests/test_qa_model_index.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.03801521,
+  "error": null,
+  "seconds": 140,
+  "task_id": "469b4e1392b69c49",
+  "tester": {
+   "files": [
+    "tests/test_qa_tiny_semicolons.py"
+   ],
+   "valid": true
+  },
+  "turns": 16
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.010923529999999999,
+  "error": null,
+  "seconds": 32,
+  "task_id": "4bb66fd756f440a9",
+  "tester": {
+   "files": [
+    "tests/test_qa_dir_info_absolute_file_url.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01230489,
+  "error": null,
+  "seconds": 45,
+  "task_id": "4d60fe65c233eae4",
+  "tester": {
+   "files": [
+    "tests/test_qa_markdown_escape_roundtrip.py"
+   ],
+   "valid": true
+  },
+  "turns": 5
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.020007670000000005,
+  "error": null,
+  "seconds": 91,
+  "task_id": "4e545a0e56e81b6c",
+  "tester": {
+   "files": [
+    "tests/test_qa_word_boundary_delimiters.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.014860120000000001,
+  "error": null,
+  "seconds": 196,
+  "task_id": "5005deddf1294168",
+  "tester": {
+   "files": [
+    "tests/test_qa_empty_project_name.py"
+   ],
+   "valid": true
+  },
+  "turns": 2
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01535451,
+  "error": null,
+  "seconds": 55,
+  "task_id": "5242e7b9704f6fb5",
+  "tester": {
+   "files": [
+    "tests/test_qa_plain_encoding_score.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01472192,
+  "error": null,
+  "seconds": 98,
+  "task_id": "52f190afd3275710",
+  "tester": {
+   "files": [
+    "tests/test_qa_telnet_uri.py"
+   ],
+   "valid": true
+  },
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01522532,
+  "error": null,
+  "seconds": 82,
+  "task_id": "5588e728518ad131",
+  "tester": {
+   "files": [
+    "tests/test_qa_hostname_trailing_dot.py"
+   ],
+   "valid": true
+  },
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.019179549999999997,
+  "error": null,
+  "seconds": 126,
+  "task_id": "5c443833d47c1808",
+  "tester": {
+   "files": [
+    "tests/test_qa_jwks_redirect.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.0118334,
+  "error": null,
+  "seconds": 91,
+  "task_id": "5ff6c0fce6c0f42e",
+  "tester": {
+   "files": [
+    "tests/test_qa_jsonl_rel_seek.py"
+   ],
+   "valid": true
+  },
+  "turns": 5
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01795359,
+  "error": null,
+  "seconds": 101,
+  "task_id": "60a7f2cf20c11a25",
+  "tester": {
+   "files": [
+    "tests/test_qa_sigtime.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.02985731,
+  "error": null,
+  "seconds": 84,
+  "task_id": "642d74b13364a516",
+  "tester": {
+   "files": [
+    "tests/test_qa_url_allowlist.py"
+   ],
+   "valid": true
+  },
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01420651,
+  "error": null,
+  "seconds": 67,
+  "task_id": "661918cbf379c4e3",
+  "tester": {
+   "files": [
+    "tests/test_qa_multiline_setext.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.052512939999999994,
+  "error": null,
+  "seconds": 604,
+  "task_id": "68d1f7ffea769315",
+  "tester": {
+   "files": [
+    "tests/test_qa_pep8_issue_names.py"
+   ],
+   "valid": true
+  },
+  "turns": 31
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01572783,
+  "error": null,
+  "seconds": 66,
+  "task_id": "69dcd2139b81c999",
+  "tester": {
+   "files": [
+    "tests/test_qa_bound_methods.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.013705430000000001,
+  "error": null,
+  "seconds": 71,
+  "task_id": "6ecd5f95e7dcab94",
+  "tester": {
+   "files": [
+    "tests/test_qa_memoize_kwargs.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.019301019999999995,
+  "error": null,
+  "seconds": 60,
+  "task_id": "71012732d9e6f8c6",
+  "tester": {
+   "files": [
+    "tests/test_qa_classaccess_kwargs.py"
+   ],
+   "valid": true
+  },
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01695407,
+  "error": null,
+  "seconds": 57,
+  "task_id": "753a8df18bfe2135",
+  "tester": {
+   "files": [
+    "tests/test_qa_stacked_cached.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.016351420000000002,
+  "error": null,
+  "seconds": 88,
+  "task_id": "75ceff5d3bf38c81",
+  "tester": {
+   "files": [
+    "tests/test_qa_cli_multi_file.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01267363,
+  "error": null,
+  "seconds": 69,
+  "task_id": "7b7fea764dd60eb8",
+  "tester": {
+   "files": [
+    "tests/test_qa_meta_charset.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01645738,
+  "error": null,
+  "seconds": 105,
+  "task_id": "7ddd3536af2e8214",
+  "tester": {
+   "files": [
+    "tests/test_qa_begin_end_split.py"
+   ],
+   "valid": true
+  },
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01254908,
+  "error": null,
+  "seconds": 70,
+  "task_id": "7ec6e3de3166f281",
+  "tester": {
+   "files": [
+    "tests/test_qa_cron_steps.py"
+   ],
+   "valid": true
+  },
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.02128806,
+  "error": null,
+  "seconds": 127,
+  "task_id": "7f8183b7a3f905c8",
+  "tester": {
+   "files": [
+    "tests/test_qa_hmac_pem_like_keys.py"
+   ],
+   "valid": true
+  },
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01512279,
+  "error": null,
+  "seconds": 66,
+  "task_id": "83fc3576d6eafe0a",
+  "tester": {
+   "files": [
+    "tests/test_qa_posix_classes.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.013041400000000002,
+  "error": null,
+  "seconds": 70,
+  "task_id": "8438f30ea8ef0786",
+  "tester": {
+   "files": [
+    "tests/test_qa_url_file_scheme.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01861347,
+  "error": null,
+  "seconds": 69,
+  "task_id": "886bcf8b23222d10",
+  "tester": {
+   "files": [
+    "tests/test_qa_cachedmethod_autospec.py"
+   ],
+   "valid": true
+  },
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": true
+   },
+   {
+    "attempt": 3,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.058295719999999995,
+  "error": null,
+  "seconds": 314,
+  "task_id": "937c1d954a19bd8c",
+  "tester": {
+   "files": [
+    "tests/test_qa_tiny_grammar.py"
+   ],
+   "valid": true
+  },
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.011963300000000001,
+  "error": null,
+  "seconds": 43,
+  "task_id": "9480c6896cd9edcc",
+  "tester": {
+   "files": [
+    "tests/test_qa_nsec3_next.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01774974,
+  "error": null,
+  "seconds": 74,
+  "task_id": "974e1336e56e9976",
+  "tester": {
+   "files": [
+    "tests/test_qa_jsonutils_reverse_text.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.010737660000000001,
+  "error": null,
+  "seconds": 50,
+  "task_id": "99547d34a6efb03b",
+  "tester": {
+   "files": [
+    "tests/test_qa_gb18030_euro.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.03689353,
+  "error": null,
+  "seconds": 152,
+  "task_id": "9d7a1d2b58b6e43c",
+  "tester": {
+   "files": [
+    "examples/tiny/tests/test_qa_tiny_main_grammar.py"
+   ],
+   "valid": true
+  },
+  "turns": 9
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": false,
+     "failed": "G3"
+    },
+    "hidden_pass": false
+   },
+   {
+    "attempt": 2,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.02824798,
+  "error": null,
+  "seconds": 95,
+  "task_id": "a6acc74d300c6eea",
+  "tester": {
+   "files": [
+    "tests/test_qa_tsigkeyring_from_file.py"
+   ],
+   "valid": true
+  },
+  "turns": 10
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01478376,
+  "error": null,
+  "seconds": 196,
+  "task_id": "b40bd8fe16f482ea",
+  "tester": {
+   "files": [
+    "tests/test_qa_split_unquoted_newlines.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01458404,
+  "error": null,
+  "seconds": 61,
+  "task_id": "b5b4a10ae8da5940",
+  "tester": {
+   "files": [
+    "tests/test_qa_flat_bigram_tables.py"
+   ],
+   "valid": true
+  },
+  "turns": 5
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.017856089999999998,
+  "error": null,
+  "seconds": 111,
+  "task_id": "ba483d65ee42ac77",
+  "tester": {
+   "files": [
+    "tests/test_qa_unified_pipeline.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.018721090000000003,
+  "error": null,
+  "seconds": 161,
+  "task_id": "c39c015bd54696e4",
+  "tester": {
+   "files": [
+    "tests/test_qa_dependency_group_errors.py"
+   ],
+   "valid": true
+  },
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01419037,
+  "error": null,
+  "seconds": 61,
+  "task_id": "c41e42d9bbdbfeb1",
+  "tester": {
+   "files": [
+    "tests/test_qa_utf16_utf32_bom_and_nullpattern.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.01858994,
+  "error": null,
+  "seconds": 239,
+  "task_id": "c4b118b84b322147",
+  "tester": {
+   "files": [
+    "tests/test_qa_requirement_replace.py"
+   ],
+   "valid": true
+  },
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01318589,
+  "error": null,
+  "seconds": 42,
+  "task_id": "c518e6114db9ab3a",
+  "tester": {
+   "files": [
+    "testing/test_qa_tracer_linebreaks.py"
+   ],
+   "valid": true
+  },
+  "turns": 5
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.014035680000000002,
+  "error": null,
+  "seconds": 53,
+  "task_id": "c70db2c727a3993e",
+  "tester": {
+   "files": [
+    "tests/test_qa_integer_literals.py"
+   ],
+   "valid": true
+  },
+  "turns": 13
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01281724,
+  "error": null,
+  "seconds": 81,
+  "task_id": "c895f85c33fae5d8",
+  "tester": {
+   "files": [
+    "tests/test_qa_isin_checksum.py"
+   ],
+   "valid": true
+  },
+  "turns": 8
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.011934529999999999,
+  "error": null,
+  "seconds": 62,
+  "task_id": "cfc5308042daca3b",
+  "tester": {
+   "files": [
+    "tests/test_qa_capture_logs_processors.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01515805,
+  "error": null,
+  "seconds": 64,
+  "task_id": "d8d43c2e5c53a6f3",
+  "tester": {
+   "files": [
+    "tests/test_qa_backslash_escape.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.017042150000000002,
+  "error": null,
+  "seconds": 76,
+  "task_id": "dbbbb675f9220a07",
+  "tester": {
+   "files": [
+    "tests/test_qa_markdown_cache.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.012017690000000001,
+  "error": null,
+  "seconds": 44,
+  "task_id": "e563fd546118ed9b",
+  "tester": {
+   "files": [
+    "tests/test_qa_optional_seconds.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": false
+   }
+  ],
+  "cost_usd": 0.010899470000000001,
+  "error": null,
+  "seconds": 42,
+  "task_id": "e71c9f8081f8fc2c",
+  "tester": {
+   "files": [
+    "tests/test_qa_include_sandbox.py"
+   ],
+   "valid": true
+  },
+  "turns": 5
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01014574,
+  "error": null,
+  "seconds": 43,
+  "task_id": "e76a4515f011e99e",
+  "tester": {
+   "files": [
+    "tests/test_qa_custom_renderer_escape.py"
+   ],
+   "valid": true
+  },
+  "turns": 4
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01639993,
+  "error": null,
+  "seconds": 93,
+  "task_id": "ee2e01839e84828e",
+  "tester": {
+   "files": [
+    "tests/test_qa_formatting_performance.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.011751069999999999,
+  "error": null,
+  "seconds": 84,
+  "task_id": "eedd678b513d45ab",
+  "tester": {
+   "files": [
+    "tests/test_qa_requirement_error_messages.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.019060190000000005,
+  "error": null,
+  "seconds": 98,
+  "task_id": "f19c1bbc4901bc2e",
+  "tester": {
+   "files": [
+    "tests/test_qa_apl_unknown_family.py"
+   ],
+   "valid": true
+  },
+  "turns": 11
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.012406069999999998,
+  "error": null,
+  "seconds": 33,
+  "task_id": "f21d1b235c966a9d",
+  "tester": {
+   "files": [
+    "testing/test_qa_multiline_indent.py"
+   ],
+   "valid": true
+  },
+  "turns": 7
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01639417,
+  "error": null,
+  "seconds": 69,
+  "task_id": "f3893db5c4cf28b5",
+  "tester": {
+   "files": [
+    "tests/test_qa_line_endings.py"
+   ],
+   "valid": true
+  },
+  "turns": 12
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "Pass"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01310872,
+  "error": null,
+  "seconds": 88,
+  "task_id": "f91a802e266aa1c1",
+  "tester": {
+   "files": [
+    "tests/test_qa_cli_truncation.py"
+   ],
+   "valid": true
+  },
+  "turns": 6
+ },
+ {
+  "attempts": [
+   {
+    "attempt": 1,
+    "gate": {
+     "admit": true,
+     "g": "Pass",
+     "g4": "NotRun"
+    },
+    "hidden_pass": true
+   }
+  ],
+  "cost_usd": 0.01677965,
+  "error": null,
+  "seconds": 230,
+  "task_id": "ff66451ea6fea6c0",
+  "tester": {
+   "files": [
+    "tests/test_qa_malformed_group_cache.py"
+   ],
+   "valid": true
+  },
+  "turns": 2
+ }
+]

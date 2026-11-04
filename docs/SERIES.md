@@ -232,6 +232,19 @@ Cost $30. Reading: when the same agent writes both the test and the fix, the tes
 certifies consistency, not correctness; it filtered nothing useful here. The candidate identity is closed per the prereg; a different gate (for example
 tests authored independently of the fixer) would be a new candidate with a new prereg.
 
+### exp-029: independent-tester gate (the exp-028 fix)
+
+exp-028 failed because the fixer wrote its own test. Here a separate tester session sees only the issue statement and the parent tree (never the
+fixer's tree) and writes a pytest file that must fail on the parent (valid for 72/72 tasks). The fixer is gated on those tests plus the existing suite,
+with up to 2 retries and only the pytest output tail as feedback. Same 72 tasks, statements and agent. Prereg and lock committed first.
+
+Result: **Fail.** Attempt 1 61/72, final 61/72, paired lift 0.0 (bootstrap interval about -4 to +4 points). 7 first attempts were rejected and retried;
+one flipped to a pass and one to a fail. 11 admitted patches fail the hidden tests; 5 of the 7 rejected first attempts would have passed. Three runs
+of the same agent (exp-027, exp-028 attempt 1, exp-029 attempt 1) all scored exactly 61/72, but not on the identical set of tasks, so the ceiling
+looks like a property of the statements and the agent, not of verification. Reading: the tester and fixer are the same model reading the same statement,
+so they share misreadings; execution checks catch implementation slips but not a wrong reading of the spec. Cost figures in this run's results are on a
+different accounting basis from exp-028 (cost_usd 1.37 vs 30.26 for similar turn counts) and should not be compared; turns were 648 vs 981.
+
 ## Reproduce
 
 ```sh
