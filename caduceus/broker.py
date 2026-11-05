@@ -23,7 +23,8 @@ pre-apply snapshot of a ledgered release (allowed while frozen).
 
 On macOS the broker runs under `sandbox-exec` with a profile that denies all
 network access and every file write outside the request's root, store and
-ledger directory (`sandbox_profile`). Elsewhere it runs unsandboxed and the
+ledger directory (`sandbox_profile`). On Linux with Landlock it runs under `linux_confine` (writes only under the same three
+directories, no TCP/UDP, reads limited to system roots plus the request's own paths). Elsewhere it runs unsandboxed and the
 claim drops accordingly.
 
 `apply_via_broker` runs the subprocess in its own process group with a timeout
@@ -205,6 +206,21 @@ def broker_command(request: Dict[str, Any]) -> list:
     cmd = [sys.executable, "-I", BROKER_FILE, REPO]
     if sys.platform == "darwin" and os.path.exists(SANDBOX_EXEC):
         return [SANDBOX_EXEC, "-p", sandbox_profile(request)] + cmd
+    if sys.platform.startswith("linux"):
+        from . import linux_confine
+
+        if linux_confine.abi_version() > 0:  # Landlock + seccomp: writes only under ledger dir, root, store; no TCP/UDP; reads limited to system roots and the paths below
+            if not isinstance(request.get("ledger"), str):
+                raise BrokerError("a request without a ledger cannot be confined")
+            work = os.path.dirname(os.path.realpath(request["ledger"]))
+            argv = [sys.executable, "-I", linux_confine.__file__, "--workdir", work]
+            for key in ("root", "store"):
+                if isinstance(request.get(key), str):
+                    argv += ["--rw", os.path.realpath(request[key])]
+            for key in ("keyring", "control_dir"):
+                if isinstance(request.get(key), str) and request[key]:
+                    argv += ["--ro", os.path.dirname(os.path.realpath(request[key])) if key == "keyring" else os.path.realpath(request[key])]
+            return argv + ["--ro", os.path.dirname(os.path.realpath(BROKER_FILE)), "--ro", REPO, "--"] + cmd
     return cmd
 
 

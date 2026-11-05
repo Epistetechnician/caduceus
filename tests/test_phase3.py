@@ -5,7 +5,7 @@ import tempfile
 import time
 import unittest
 
-from tests._seatbelt import needs_seatbelt
+from tests._seatbelt import needs_confinement, needs_seatbelt
 
 from caduceus import control, signing
 from caduceus.admission import AdmissionPolicy, evaluate
@@ -50,7 +50,7 @@ class _Fixture:
         return req
 
 
-@needs_seatbelt
+@needs_confinement
 class BrokerTest(unittest.TestCase):
     def setUp(self):
         self.f = _Fixture()
@@ -125,7 +125,7 @@ class BrokerTest(unittest.TestCase):
         self.assertFalse(apply_via_broker(self.f.request())["ok"])
 
 
-@needs_seatbelt
+@needs_confinement
 class CodePatchBrokerTest(unittest.TestCase):
     def setUp(self):
         from caduceus.candidate import writes_digest

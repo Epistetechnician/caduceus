@@ -4,7 +4,7 @@ import tempfile
 import time
 import unittest
 
-from tests._seatbelt import needs_seatbelt
+from tests._seatbelt import needs_confinement, needs_seatbelt
 
 from caduceus import exchange, experiment
 from caduceus.broker import apply_via_broker
@@ -64,7 +64,7 @@ class ExchangeTest(unittest.TestCase):
         experiment.run_paired(pre, Ledger(lpath), contracts, trees, _arms(quality))
         return cand, writes, cf, pre, lpath, root
 
-    @needs_seatbelt
+    @needs_confinement
     def test_better_candidate_quarantined_without_second_instrument_then_applied(self):
         with tempfile.TemporaryDirectory() as tmp:
             cand, writes, cf, pre, lpath, root = self._setup(tmp, "better")

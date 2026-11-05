@@ -27,12 +27,25 @@ SENSITIVE = (".ssh", ".aws", ".gnupg", ".hermes", ".claude", ".config", "Library
 _CONFINED: Optional[bool] = None
 
 
+def _linux_prefix(workdir: str) -> List[str]:
+    from . import linux_confine
+
+    return [sys.executable, "-I", linux_confine.__file__, "--workdir", workdir, "--"]
+
+
 def confinement_available() -> bool:
     """True only if a trivial command actually runs under Seatbelt here (sandbox-exec can exist yet be unusable, e.g. nested inside another sandbox)."""
     global _CONFINED
     if _CONFINED is None:
         _CONFINED = False
-        if sys.platform == "darwin" and os.path.exists(SANDBOX_EXEC):
+        if sys.platform.startswith("linux"):
+            try:
+                with tempfile.TemporaryDirectory() as d:  # the real launcher, so "available" means Landlock + seccomp apply here
+                    r = subprocess.run(_linux_prefix(d) + [sys.executable, "-I", "-c", "pass"], cwd=d, capture_output=True, timeout=20)
+                _CONFINED = r.returncode == 0
+            except (OSError, subprocess.SubprocessError):
+                _CONFINED = False
+        elif sys.platform == "darwin" and os.path.exists(SANDBOX_EXEC):
             try:
                 with tempfile.TemporaryDirectory() as d:  # the same profile real checks use, so "available" means that profile applies here
                     r = subprocess.run([SANDBOX_EXEC, "-p", _profile(d), "/usr/bin/true"], cwd=d, capture_output=True, timeout=10)
@@ -103,12 +116,13 @@ def run_check(skill_dir: str, check: Dict[str, Any]) -> str:
         shutil.copytree(skill_dir, dest, symlinks=True)
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "PYTHONDONTWRITEBYTECODE": "1", "HOME": work, "TMPDIR": work}
         try:
-            p = subprocess.run([SANDBOX_EXEC, "-p", _profile(work)] + check["argv"], cwd=dest, env=env, capture_output=True, timeout=check["timeout_s"])
+            prefix = _linux_prefix(work) if sys.platform.startswith("linux") else [SANDBOX_EXEC, "-p", _profile(work)]
+            p = subprocess.run(prefix + check["argv"], cwd=dest, env=env, capture_output=True, timeout=check["timeout_s"])
         except subprocess.TimeoutExpired:
             return "Fail"
         except OSError:
             return "Unavailable"
-        if p.returncode == 71 and b"sandbox_apply" in p.stderr:  # confinement could not be applied (for example a nested sandbox)
+        if p.returncode == 71 and (b"sandbox_apply" in p.stderr or b"caduceus-confine" in p.stderr):  # confinement could not be applied (for example a nested sandbox)
             return "Unavailable"
         if p.returncode != check["expect_exit"]:
             return "Fail"

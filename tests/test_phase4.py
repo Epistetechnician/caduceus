@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from tests._seatbelt import needs_seatbelt
+from tests._seatbelt import needs_confinement, needs_seatbelt
 
 from caduceus.autoapply import eligibility
 from caduceus.diagnostics import diagnostics
@@ -50,7 +50,7 @@ class DiagnosticsAndDrillTest(unittest.TestCase):
         self.assertEqual(statuses["ledger_integrity"], "NotRun")
         self.assertEqual(d["auto_apply"]["status"], "Blocked")
 
-    @needs_seatbelt
+    @needs_confinement
     def test_drills_pass_on_a_sandbox_skill(self):
         with tempfile.TemporaryDirectory() as t:
             make_home(t)

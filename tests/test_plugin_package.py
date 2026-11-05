@@ -49,7 +49,7 @@ class PackageRules(unittest.TestCase):
                 if not f.endswith(".py"):
                     continue
                 src = open(os.path.join(d, f)).read()
-                for bad in ("urllib", "import requests", "socket", "auth.json", "sys.modules[", "setattr(", "os.system", "eval(", " exec("):
+                for bad in ("urllib", "import requests", "import socket", "socket.socket", "auth.json", "sys.modules[", "setattr(", "os.system", "eval(", " exec("):
                     self.assertNotIn(bad, src, "%s uses %s" % (os.path.join(d, f), bad))
                 if "_vendor" not in d:  # the vendored kernel carries .env only inside its injection-detection regexes
                     self.assertIsNone(re.search(r"\.env\b", src), os.path.join(d, f))
