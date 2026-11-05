@@ -63,6 +63,8 @@ def budget_lane(ledger: Ledger, commitment: str, budget_bits: Optional[int]) -> 
     """None when no budget is preregistered (the holdout lane is unchanged). Otherwise Failed once the released bits exceed the budget."""
     if budget_bits is None:
         return None
+    if isinstance(budget_bits, bool) or not isinstance(budget_bits, int) or budget_bits < 0:
+        return {"status": "Failed", "detail": "holdout_budget_bits must be a non-negative integer"}
     acct = account(ledger, commitment)
     if acct["bits"] > budget_bits:
         return {"status": "Failed", "detail": ("holdout information budget exceeded: %d > %d bits over %d queries" % (acct["bits"], budget_bits, acct["queries"]))[:200]}

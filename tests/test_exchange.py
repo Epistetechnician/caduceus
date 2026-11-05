@@ -93,6 +93,41 @@ class ExchangeTest(unittest.TestCase):
             self.assertEqual(out["verdict"].decision, "reject")
             self.assertEqual(out["evidence"]["retention"]["status"], "Failed")
 
+    def test_holdout_information_budget_gates_the_holdout_lane(self):  # R15, through the real Exchange
+        from dataclasses import replace
+
+        from caduceus import leakage
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cand, _, cf, pre, lpath, _ = self._setup(tmp, "better")
+            commitment = cand.preregistration["holdout_commitment"]
+            budgeted = replace(cand, preregistration=dict(cand.preregistration, holdout_budget_bits=5))
+            digest = "a" * 64
+            self.assertEqual(exchange.assemble(budgeted, cf, pre, lpath, REPO)["evidence"]["holdout"]["status"], "Checked")  # nothing released yet
+            leakage.release(Ledger(lpath), commitment, 3, digest, 40)
+            ok = exchange.assemble(budgeted, cf, pre, lpath, REPO, instrument_report={"agree": 10, "total": 10})
+            self.assertEqual(ok["evidence"]["holdout"]["status"], "Checked")
+            self.assertIn("within budget", ok["evidence"]["holdout"]["detail"])
+            self.assertEqual(ok["verdict"].decision, "accept", ok["evidence"])
+            leakage.release(Ledger(lpath), commitment, 3, digest, 40)  # 6 bits > the preregistered 5
+            over = exchange.assemble(budgeted, cf, pre, lpath, REPO, instrument_report={"agree": 10, "total": 10})
+            self.assertEqual(over["evidence"]["holdout"]["status"], "Failed")
+            self.assertEqual(over["verdict"].decision, "reject")
+            # no preregistered budget: the lane is unchanged whatever was released
+            self.assertEqual(exchange.assemble(cand, cf, pre, lpath, REPO)["evidence"]["holdout"]["status"], "Checked")
+
+    def test_invalid_holdout_budget_is_a_preregistration_failure(self):
+        from dataclasses import replace
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cand, _, cf, pre, lpath, _ = self._setup(tmp, "better")
+            for bad in (-1, True, "5"):
+                c = replace(cand, preregistration=dict(cand.preregistration, holdout_budget_bits=bad))
+                self.assertEqual(exchange.assemble(c, cf, pre, lpath, REPO)["evidence"]["preregistration"]["status"], "Failed", bad)
+            c = replace(cand, preregistration=dict(cand.preregistration, holdout_budget_bits=1.5))
+            with self.assertRaises(Exception):  # a float cannot even be digested (no floats in the ledger), so it fails closed before any lane
+                exchange.assemble(c, cf, pre, lpath, REPO)
+
     def test_evidence_from_another_experiment_cannot_be_attached(self):
         with tempfile.TemporaryDirectory() as tmp:
             cand, _, cf, pre, lpath, _ = self._setup(tmp, "better")

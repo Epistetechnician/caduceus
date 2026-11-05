@@ -67,5 +67,28 @@ class LeakageTests(unittest.TestCase):
             Ledger(self.path)
 
 
+HOLDOUT_LEDGER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "holdout-ledger")
+
+
+@unittest.skipUnless(os.path.isdir(os.path.join(HOLDOUT_LEDGER, "hl")), "sibling holdout-ledger checkout not present")
+class CrossCheckAgainstHoldoutLedger(unittest.TestCase):
+    """The radius here must equal the sibling repo's Hoeffding radius (which has its own preregistered experiments), up to our conservative round-up to a ppm."""
+
+    def test_radius_matches_hl_bounds(self):
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("hl_bounds", os.path.join(HOLDOUT_LEDGER, "hl", "bounds.py"))
+        hb = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(hb)
+        for bits in (0, 1, 3, 100, 1024):
+            for n in (500, 20000, 100000):
+                for delta_ppm in (10000, 50000, 100000):
+                    for routes in (1, 2, 4):
+                        theirs = hb.radius(bits, n, delta_ppm / 1e6, routes)
+                        ours = leakage.radius_ppm(bits, n, delta_ppm, routes)
+                        self.assertGreaterEqual(ours, int(theirs * 1e6), (bits, n, delta_ppm, routes))
+                        self.assertLessEqual(ours - theirs * 1e6, 1.0000001, (bits, n, delta_ppm, routes))  # rounded up by under one ppm
+
+
 if __name__ == "__main__":
     unittest.main()
