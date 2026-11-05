@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from caduceus import control
+from tests._seatbelt import needs_seatbelt
 from caduceus.ledger import Ledger
 from caduceus.transition import Kernel, Policy, TransitionError, diff, manifest, tree_digest
 
@@ -184,7 +185,7 @@ class ChecksTests(unittest.TestCase):
             with self.assertRaises(self.checks.CheckError):
                 self.checks.validate(bad)
 
-    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    @needs_seatbelt
     def test_semantic_regression_caught_only_by_an_operator_check(self):
         chk = {"id": "runs", "argv": ["python3", "scripts/tool.py"], "expect_stdout_sha256": __import__("hashlib").sha256(b"ok\n").hexdigest()}
         try:
@@ -198,7 +199,7 @@ class ChecksTests(unittest.TestCase):
         write(self.root, "dev/t/scripts/tool.py", "import sys\nprint('ok')\nsys.exit(0)\n# harmless edit\n")
         self.assertEqual(self.k.reconcile()["status"], "accepted")
 
-    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    @needs_seatbelt
     def test_a_check_that_fails_on_head_cannot_be_registered_and_checks_cannot_be_weakened_by_a_mutation(self):
         with self.assertRaises(TransitionError):
             self.k.register_check("dev/t", {"id": "bad", "argv": ["python3", "-c", "import sys; sys.exit(3)"]}, "op")
@@ -220,7 +221,7 @@ class ChecksTests(unittest.TestCase):
         finally:
             self.checks.confinement_available = orig
 
-    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    @needs_seatbelt
     def test_checks_run_confined_no_network_no_writes_outside_the_copy(self):
         outside = os.path.join(self.tmp.name, "outside.txt")
         probe = ("import socket,sys\ntry:\n    socket.create_connection(('1.1.1.1',53),timeout=2)\n    sys.exit(0)\nexcept OSError:\n    sys.exit(7)\n")
@@ -229,7 +230,7 @@ class ChecksTests(unittest.TestCase):
         self.assertEqual(self.checks.run_check(os.path.join(self.root, "dev", "t"), {"id": "w", "argv": ["python3", "-c", w], "timeout_s": 10, "expect_exit": 0}), "Fail")
         self.assertFalse(os.path.exists(outside))
 
-    @unittest.skipUnless(sys.platform == "darwin" and os.path.exists("/usr/bin/sandbox-exec"), "needs Seatbelt")
+    @needs_seatbelt
     def test_removing_a_checked_file_runs_the_skill_check(self):
         self.k.register_check("dev/t", {"id": "runs", "argv": ["python3", "scripts/tool.py"]}, "op")
         os.remove(os.path.join(self.root, "dev", "t", "scripts", "tool.py"))

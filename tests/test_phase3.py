@@ -5,6 +5,8 @@ import tempfile
 import time
 import unittest
 
+from tests._seatbelt import needs_seatbelt
+
 from caduceus import control, signing
 from caduceus.admission import AdmissionPolicy, evaluate
 from caduceus.broker import apply_via_broker
@@ -48,6 +50,7 @@ class _Fixture:
         return req
 
 
+@needs_seatbelt
 class BrokerTest(unittest.TestCase):
     def setUp(self):
         self.f = _Fixture()
@@ -122,6 +125,7 @@ class BrokerTest(unittest.TestCase):
         self.assertFalse(apply_via_broker(self.f.request())["ok"])
 
 
+@needs_seatbelt
 class CodePatchBrokerTest(unittest.TestCase):
     def setUp(self):
         from caduceus.candidate import writes_digest
@@ -299,7 +303,7 @@ if __name__ == "__main__":
     unittest.main()
 
 
-@unittest.skipUnless(os.path.exists("/usr/bin/sandbox-exec"), "macOS sandbox-exec only")
+@needs_seatbelt
 class BrokerSandboxTest(unittest.TestCase):
     def test_profile_blocks_outside_writes_and_network(self):
         import subprocess

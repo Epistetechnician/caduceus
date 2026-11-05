@@ -24,6 +24,24 @@ MAX_CHECKS, MAX_ARGV, MAX_TIMEOUT = 20, 16, 30
 SENSITIVE = (".ssh", ".aws", ".gnupg", ".hermes", ".claude", ".config", "Library/Keychains")
 
 
+_CONFINED: Optional[bool] = None
+
+
+def confinement_available() -> bool:
+    """True only if a trivial command actually runs under Seatbelt here (sandbox-exec can exist yet be unusable, e.g. nested inside another sandbox)."""
+    global _CONFINED
+    if _CONFINED is None:
+        _CONFINED = False
+        if sys.platform == "darwin" and os.path.exists(SANDBOX_EXEC):
+            try:
+                with tempfile.TemporaryDirectory() as d:  # the same profile real checks use, so "available" means that profile applies here
+                    r = subprocess.run([SANDBOX_EXEC, "-p", _profile(d), "/usr/bin/true"], cwd=d, capture_output=True, timeout=10)
+                _CONFINED = r.returncode == 0
+            except (OSError, subprocess.SubprocessError):
+                _CONFINED = False
+    return _CONFINED
+
+
 class CheckError(Exception):
     pass
 
@@ -73,10 +91,6 @@ def _profile(workdir: str) -> str:
     denies = " ".join('(subpath "%s")' % os.path.join(home, s) for s in SENSITIVE)
     return ('(version 1)(allow default)(deny network*)(deny file-write*)(deny file-read* %s)'
             '(allow file-write* (subpath "%s") (literal "/dev/null"))' % (denies, os.path.realpath(workdir)))
-
-
-def confinement_available() -> bool:
-    return sys.platform == "darwin" and os.path.exists(SANDBOX_EXEC)
 
 
 def run_check(skill_dir: str, check: Dict[str, Any]) -> str:
