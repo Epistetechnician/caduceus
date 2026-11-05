@@ -49,6 +49,7 @@ behind `exchange` spends model calls and was not run here).
 * Hermes' own untrusted-content classification is `agent/tool_dispatch_helpers.py`: `_UNTRUSTED_TOOL_NAMES = {web_extract, web_search}`, `_UNTRUSTED_TOOL_PREFIXES = (browser_, mcp_)`; results of at least 32 chars are wrapped in `<untrusted_tool_result source=...>`.
   The Caduceus default `taint_tools` mirrors that list exactly (`web_search`, `web_extract`, `browser_*`, `mcp_*`); re-diff it on every Hermes bump.
 * Catalog installs of a plugin with `subdir` are a blobless, sparse checkout of that subdirectory only (`hermes_cli/plugins_cmd_git.py`), so the plugin ships a vendored kernel (`scripts/vendor_plugin.py`).
+* The background-review fork shares the parent agent's `session_id` in every hook it triggers (`scripts/probe_fork_session.py`, Hermes `67d47601bc`, stub model).
 * `plugin.yaml` declares hooks under `provides_hooks:`; `hermes plugins validate` fails a manifest that uses `hooks:`.
 
 ## Not yet verified

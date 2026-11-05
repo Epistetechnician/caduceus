@@ -85,7 +85,12 @@ What this repository does establish (by tests in `tests/`):
 * a read-only Desktop pane and status-bar chip (`desktop/plugin.js`, `dashboard/plugin_api.py`): `hermes plugins validate` passes including the desktop-surface lint, the API has no mutating route and the pane no release control,
   and the status and review routes are tested over a real kernel. The pane has not been rendered in Hermes Desktop;
 * `scripts/demo_hackathon.py` runs the demo story end to end on a real kernel (tested to exit 0 with the key lines); the video itself is not recorded;
-* an OpenShell policy emitter (`openshell-policy`) exists but its `filesystem_policy` key names are UNVERIFIED (NVIDIA's pages confirm `version: 1` and the section names only); not run against OpenShell;
+* an OpenShell policy emitter (`openshell-policy`) that follows NVIDIA's documented Policy Schema Reference (verified 2026-11-04: `include_workdir`, `read_only`, `read_write`, `landlock.compatibility`; unlisted paths are inaccessible;
+  `best_effort` silently drops the rules, so `hard_requirement` is emitted); the file has never been run in a real OpenShell sandbox, so nothing is claimed about its effect at the OS;
+* the holdout lane through the real Exchange (budget Checked, then Failed and reject when exceeded) and the radius cross-checked against holdout-ledger's own Hoeffding bound over 135 parameter combinations (tests);
+* signed baseline attestation (`attest_keyring`): an unsigned, untrusted-signer or other-tree attestation does not count (tests);
+* operator-path cost on a synthetic 900-file tree, one machine (`baselines/operator-cost-2026-11-04.json`): status p99 0.19 ms, clean reconcile p99 26 ms, reconcile after one change p99 98 ms, taint observation p99 0.73 ms;
+* the background-review fork shares the parent's `session_id` in `pre_tool_call`, `post_tool_call`, `transform_tool_result` and `on_skill_lifecycle` (`scripts/probe_fork_session.py`, stub model), so a parent's taint applies to the fork's skill writes;
 * measured, one machine, 300-skill tree: taint observation p99 0.90 ms, taint scope read p99 0.12 ms, clean reconcile p99 12 ms (descriptive);
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,

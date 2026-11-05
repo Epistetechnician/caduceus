@@ -1,6 +1,6 @@
 # Caduceus for Hermes: product requirements
 
-Status: draft v1, 2026-11-04. State slice: `caduceus-phase1-substrate-v1`. Claim ceiling: `LocalDevelopmentEvidenceOnly`. Nothing here is a claim; every
+Status: v2, 2026-11-04 (built to the extent each requirement's status line says; unbuilt items are named, not hidden). State slice: `caduceus-phase1-substrate-v1`. Claim ceiling: `LocalDevelopmentEvidenceOnly`. Nothing here is a claim; every
 "shall" is a requirement with an acceptance test, and `docs/CLAIMS.md` changes first when evidence does. Supersedes nothing: `docs/PRD.md` remains the
 research PRD for the admission substrate; this document specifies the Hermes plugin product built on it.
 
@@ -53,7 +53,7 @@ OpenShell details come from NVIDIA's overview page and third-party write-ups and
 
 ```
  Hermes agent loop ──hooks──▶  OBSERVE  ──▶  JUDGE  ──▶  RELEASE  ──▶ governed state
- (pre/post_tool_call,           taint        kernel       broker         (skills; later
+ (pre/post_tool_call,           taint        kernel       broker         (skills, memory,
   transform_tool_result,        events       lanes        canary          memory/config)
   on_skill_lifecycle,           digests      + checks     rollback            │
   on_session_*)                                │              │               ▼
@@ -68,7 +68,7 @@ OpenShell details come from NVIDIA's overview page and third-party write-ups and
 * **Evidence** (`exchange.py`, `experiment.py`): the 13-lane exchange for candidates that claim an improvement; sealed holdout; controls; second instrument.
 * **Release** (`broker.py`, `release.py`): single-writer, capability-bound apply; canary window; breakers; rollback.
 * **Ledger/Witness**: digest-chained JSONL, RFC 9162 proofs, independent readback, external consistency witness.
-* **Operator surface**: CLI first; Hermes Desktop view later, SDK slots only.
+* **Operator surface**: CLI first (`status`, `review-effect`, `release-effect`, `policy-set`, `attest-baseline`, `control`); a read-only Hermes Desktop pane through SDK slots; releasing is CLI-only by design.
 
 ## 7. Requirements
 
@@ -93,21 +93,21 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 ### 7.3 Boundary hardening (P0/P1)
 
-* R11. *(emitter built; key names under `filesystem_policy` unverified; never run against OpenShell)* (P1) **Single writer by construction.** `caduceus openshell-policy` emits an OpenShell filesystem policy where the skills tree is read-only to the agent sandbox and writable only by the broker; the governed-tree mutation window and out-of-band writers disappear rather than being detected. AC: with the policy, a shell redirect into the skills tree fails at the OS; without it, boundary mode still reverts it. Verify OpenShell's policy schema from source first.
-* R12. *(done: Landlock + seccomp via ctypes, checks and broker, 11 tests in a Linux container; x86_64 untested)* (P1) **Linux confinement for checks** via Landlock (reuse the approach in `formasec/kernel`, re-implemented stdlib-only via ctypes or delegated to OpenShell). Until then Linux returns `Unavailable` and quarantines (fail-closed, documented). AC: confinement probe on Linux: no network, no writes outside the copy; else `Unavailable`.
-* R13. *(request drafted in `docs/HOOK_REQUEST.md`; not filed)* (P1) Close the prompt-index window: Hermes builds the skill index before any hook fires. Request or use a pre-index seam via the catalog's "Asking for a hook" route; until then document the window. AC: issue filed with a concrete consumer; window measured.
-* R14. *(done; signature is operator identity in the ledger, not cryptographic)* (P1) Trust-on-first-use baseline replaced by operator attestation: `caduceus attest-baseline` shows the tree and records an operator signature before HEAD is trusted. AC: enforce/boundary refuse an unattested baseline unless `tofu: true`.
+* R11. *(done to the documented schema, verified 2026-11-04 against NVIDIA's Policy Schema Reference: `include_workdir`, `read_only`, `read_write`, `landlock.compatibility: hard_requirement`; the emitted file has never been run in a real OpenShell sandbox, so the AC's OS-level shell-redirect test is NOT done)* (P1) **Single writer by construction.** `caduceus openshell-policy` emits an OpenShell filesystem policy where the skills tree is read-only to the agent sandbox and writable only by the broker; the governed-tree mutation window and out-of-band writers disappear rather than being detected. AC: with the policy, a shell redirect into the skills tree fails at the OS; without it, boundary mode still reverts it. Schema verified; the sandbox acceptance test needs an OpenShell install.
+* R12. *(done: Landlock + seccomp via ctypes, checks and broker, 11 tests in a Linux container plus the whole suite on Linux; x86_64 and older kernels untested)* (P1) **Linux confinement for checks** via Landlock, stdlib-only via ctypes. Where it cannot be applied a check is `Unavailable` and the change is held (fail-closed, documented). AC: confinement probe on Linux: no network, no writes outside the copy; else `Unavailable`.
+* R13. *(request drafted in `docs/HOOK_REQUEST.md`; NOT filed: filing is outward-facing and `gh` is not authenticated; the window itself is documented but not measured in milliseconds)* (P1) Close the prompt-index window: Hermes builds the skill index before any hook fires. Request or use a pre-index seam via the catalog's "Asking for a hook" route; until then document the window. AC: issue filed with a concrete consumer; window measured.
+* R14. *(done; with `attest_keyring` the attestation is an Ed25519 signature by a trusted signer, otherwise an operator name in the ledger)* (P1) Trust-on-first-use baseline replaced by operator attestation: `caduceus attest-baseline` shows the tree and records an operator signature before HEAD is trusted. AC: enforce/boundary refuse an unattested baseline unless `tofu: true`.
 
 ### 7.4 Evidence and self-improvement (P1)
 
-* R15. *(built and unit-tested; folded into the existing `holdout` lane instead of adding a 14th required lane; no experiment run through it yet)* **Holdout leakage account.** Every verdict bit released to a proposer from a sealed holdout is charged in a hash-chained account; a candidate's certified gain is the lower of the information route and the description-length route (`holdout-ledger`). AC: lane `holdout_budget` Checked; a proposer that exhausts its budget gets `Quarantine`; replay equals the ledger.
+* R15. *(done: folded into the existing `holdout` lane instead of adding a 14th required lane; exercised through the real Exchange (budget Checked, then Failed and reject once exceeded) and its radius cross-checked against `holdout-ledger`'s own bounds; no live self-improvement experiment has been run through it)* **Holdout leakage account.** Every verdict bit released to a proposer from a sealed holdout is charged in a hash-chained account; a candidate's certified gain is the lower of the information route and the description-length route (`holdout-ledger`). AC: lane `holdout_budget` Checked; a proposer that exhausts its budget gets `Quarantine`; replay equals the ledger.
 * R16. *(done for in-skill evaluator paths via `protected_globs`; judge rubrics and contracts are outside the governed tree by construction)* **Oracle outside the tree**: already true for checks; extend to evaluators and judge rubrics (custody, owner-only). AC: a mutation touching an evaluator path is rejected by `scope`/`pinned`, tested with a DGM-style "delete the logging the checker reads" scenario.
-* R17. Candidate pipeline stays as built (Exchange, 13 lanes, controls, preregistration, second instrument). Phase 4 auto-apply remains Blocked until a replicated candidate beats the random control. No change to that gate.
-* R18. Distillation-with-verification lane (adapter updates) stays research-scoped: Pass on Qwen-lineage 7B trainees only, no self-improvement or compounding claim.
+* R17. *(unchanged by design)* Candidate pipeline stays as built (Exchange, 13 lanes, controls, preregistration, second instrument). Phase 4 auto-apply remains Blocked until a replicated candidate beats the random control. No change to that gate.
+* R18. *(unchanged by design)* Distillation-with-verification lane (adapter updates) stays research-scoped: Pass on Qwen-lineage 7B trainees only, no self-improvement or compounding claim.
 
 ### 7.5 State coverage (P1)
 
-* R19. *(memory done, 13 scenarios; config.yaml done with unit and plugin tests)* Extend the kernel from skills to **memory** (reuse freshness checks and receipt admission) and **plugin/config surfaces the agent can write**. Same lanes, per-surface policy. AC: containment eval per surface with fresh scenarios.
+* R19. *(done: memory (13-scenario eval) and `config.yaml` (unit and plugin tests); no live Hermes memory-tool or config run, and other config files are out of scope)* Extend the kernel from skills to **memory** (reuse freshness checks and receipt admission) and **plugin/config surfaces the agent can write**. Same lanes, per-surface policy. AC: containment eval per surface with fresh scenarios.
 * R20. *(done, opt-in)* `on_skill_lifecycle` consumed as a second observation channel for skill facts, reconciled against the tree diff (disagreement is a quarantine reason).
 
 ### 7.6 Release and rollback (P1)
@@ -117,16 +117,16 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 ### 7.7 Operator experience (P0 CLI, P2 Desktop)
 
-* R23. *(done: `status`)* One-screen `caduceus status`: mode, HEAD, last verdicts, held effects, taint scope, frozen flag, ledger health. AC: under 100 ms on a 900-file tree.
-* R24. Every refusal tells the model and the operator exactly what happened and what to do (existing notes in tool results). AC: scripted e2e asserts the message text class.
+* R23. *(done: `status`; p99 0.19 ms on a 900-file tree, `baselines/operator-cost-2026-11-04.json`)* One-screen `caduceus status`: HEAD, last verdicts, held effects, taint scope, frozen flag, ledger size. AC: under 100 ms on a 900-file tree.
+* R24. *(done: the e2e scripts assert what happened, the reason code, that the tree was restored, "Do not retry" and the operator command)* Every refusal tells the model and the operator exactly what happened and what to do (existing notes in tool results). AC: scripted e2e asserts the message text class.
 * R25. *(built and validator-clean; not rendered in Hermes Desktop)* (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8). Risky for the hackathon window; skip unless time remains.
 
 ### 7.8 Non-functional
 
-* N1. *(measured: taint observation p99 0.90 ms)* Hot path: +0.11 ms p99 non-gated, +0.29 ms p99 gated; taint observe adds at most 1 ms p99 (measure; the `taint.json` rewrite is O(200)). AC: `scripts/plugin_overhead.py` baseline pinned.
-* N2. Determinism: same writes + policy + taint ⇒ same verdict digests and ledger.
-* N3. Hermetic tests: stdlib only; macOS-sandbox-dependent tests skip with a reason where confinement is unavailable instead of failing.
-* N4. Compatibility: tested on the pinned Hermes commit and re-verified per Hermes release; interfaces in `docs/HERMES_INTERFACES.md`.
+* N1. *(done: taint observation p99 0.73 ms, scope read 0.11 ms, `baselines/operator-cost-2026-11-04.json`)* Hot path: +0.11 ms p99 non-gated, +0.29 ms p99 gated (earlier baseline); taint observe adds at most 1 ms p99. AC: baseline pinned.
+* N2. *(done: tests)* Determinism: same writes + policy + taint ⇒ same verdict digests and ledger.
+* N3. *(done)* Hermetic tests: stdlib only; macOS-sandbox-dependent tests skip with a reason where confinement is unavailable instead of failing.
+* N4. *(partly: one Hermes commit, `67d47601bc`; re-verify on every Hermes bump)* Compatibility: tested on the pinned Hermes commit and re-verified per Hermes release; interfaces in `docs/HERMES_INTERFACES.md`.
 
 ## 8. Threat model
 
@@ -140,40 +140,43 @@ Not defended: malice with no untrusted input (a user-instructed or purely model-
 |---|---|---|
 | Fresh hostile effects contained, tainted | all in a preregistered, independently authored set | `scripts/eval_provenance.py` successor |
 | Benign effects held by taint (friction) | below the pre-R8 4/4, no containment loss | R8 eval |
-| Out-of-band writers contained | 100% with R11 policy, detected-and-reverted without | containment eval |
-| Governed-tree reconcile cost | ≤ 30 ms at 900 files | baselines |
-| Verdict replay | 100% byte-identical | ledger replay |
-| Catalog admission | validate green; reviewer disclosure accepted | R1-R5 |
+| Out-of-band writers contained | detected-and-reverted without the OpenShell policy (measured, containment eval); prevented at the OS with it (NOT measured: needs an OpenShell sandbox) | containment eval |
+| Governed-tree reconcile cost | ≤ 30 ms at 900 files | met: clean p99 26 ms, one change p99 98 ms (`baselines/operator-cost-2026-11-04.json`) |
+| Verdict replay | 100% byte-identical | met in tests (same writes, policy and taint give the same verdict digest) |
+| Catalog admission | validate green (met); reviewer disclosure accepted (PR not opened) | R1-R5 |
 | Honest nulls published | every closed candidate in `docs/CLAIMS.md` | existing practice |
 
-## 10. Hackathon cut (today 2026-11-04, due 2026-11-11 5PM EST)
+## 10. Hackathon cut and what is left (today 2026-11-04, due 2026-11-11 5PM EST)
 
-* D1-2: R1-R5 verified on a clean Hermes; push; open the catalog PR early (CI starts only when a maintainer runs it; reviews every few days); submit the form as soon as the PR is open.
-* D2-4: R8 (taint discharge) and R9 (review pack), preregistered scenarios first.
-* D5: R12 behaviour on Linux (real or documented `Unavailable`); N3 skip-with-reason.
-* D6: demo (under 90 s): poisoned web page, agent drafts a skill, hold with a readable reason, `release-effect` for a benign twin, rollback, `verify-ledger`. Open on the failure, close on "preregistered, and when it failed we closed the door".
-* D7: buffer. Post the video on X tagging @NousResearch; submit both links.
-* Out of the cut: R11, R14, R15, R19, R22, R25 (specified, not built).
+Built and verified: R1-R10, R12, R14-R16, R19-R25, N1-N3 (statuses above). Demo: `scripts/demo_hackathon.py` and `docs/DEMO.md` (the video is not recorded).
+Not done, and why:
+* Open the catalog PR and submit the form: blocked on making the repository public and on a valid `gh` login (operator actions).
+* Record and post the demo video (an operator action).
+* R13: file the hook request (outward-facing; needs `gh`).
+* R11 acceptance: run the emitted policy in a real OpenShell sandbox.
+* Biscuit-style attenuable grants (R22, P2) and any independent scenario author (the research-grade claim gate).
+Day plan: D1-2 push and open the PR early; D2-5 only fixes for reviewer findings; D6 record the demo; D7 post and submit both links.
 
 ## 11. Risks
 
 | Risk | Mitigation |
 |---|---|
 | Friction: legitimate web-sourced learning is held | R8 discharge, R9 review pack, per-tool and per-window policy, `provenance: off` |
-| Tool list is a guess at Hermes' untrusted surface | list is policy; add a Hermes-tool census test; default errs toward holding |
+| Tool list drifts from Hermes' untrusted surface | the default equals Hermes' own list today (`docs/HERMES_INTERFACES.md`); re-diff on every Hermes bump; list is policy |
 | Validator or scan flags subprocess/Seatbelt use | currently scan = safe; disclose under rule 13; keep checks optional |
 | Judges read it as "just a scanner" | lead with effect-addressing, provenance across sessions, ledger, release; show the contrast with `security-guidance` |
 | Claims drift above evidence | `docs/CLAIMS.md` first; ceiling stays `LocalDevelopmentEvidenceOnly` |
 | Author-written eval sets | label descriptive; recruit an independent scenario author before any claim |
-| OpenShell/third-party facts wrong | re-verify from source before R11; keep integration optional |
+| OpenShell behaviour differs from its documentation | schema verified against the docs; never run in a real sandbox here; integration is optional |
 
 ## 12. Open questions
 
-1. `post_tool_call` and `transform_tool_result` carry `session_id` in the live loop (e2e). Still open: forked background-review agents.
-2. *Resolved for the tool list*: Hermes' own classification is `web_extract`, `web_search`, `browser_*`, `mcp_*` (`docs/HERMES_INTERFACES.md`). Still open: gateway messages, file reads of downloaded files, connectors.
-3. Can taint discharge (R8) be made sound for scripts without becoming a content scanner again? Needs a threat-model note before code.
-4. Is a pre-index hook acceptable to Hermes maintainers (R13)?
-5. Who is the independent scenario author?
+1. *Resolved*: the background-review fork shares the parent's `session_id` in every hook it triggers (`scripts/probe_fork_session.py`), so taint observed in the parent applies to the fork's skill writes.
+2. *Tool list resolved*: Hermes' own classification is `web_extract`, `web_search`, `browser_*`, `mcp_*` (`docs/HERMES_INTERFACES.md`). Still open: gateway messages, file reads of downloaded files, connectors.
+3. Can taint discharge (R8) be made sound for scripts without becoming a content scanner again? Not shown; the preregistered D11 miss stands. Needs a threat-model note before any claim.
+4. Is a pre-index hook acceptable to Hermes maintainers (R13)? Not asked yet.
+5. Who is the independent scenario author? Unassigned; every eval here is author-written.
+6. Does the emitted OpenShell policy actually leave Hermes runnable? Needs a real sandbox.
 
 ## 13. References
 
