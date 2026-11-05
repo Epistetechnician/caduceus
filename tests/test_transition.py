@@ -513,3 +513,42 @@ class AttestationTests(unittest.TestCase):
     def test_default_policy_still_trusts_on_first_use(self):
         k = Kernel(self.root, os.path.join(self.tmp.name, "c2"), Policy(), clock=lambda: 1000)
         self.assertEqual(k.reconcile()["status"], "baseline")
+
+
+class LifecycleTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "skills")
+        write(self.root, "dev/a/SKILL.md", SKILL % ("a", "a"))
+        write(self.root, "dev/b/SKILL.md", SKILL % ("b", "b"))
+        self.now = [1000]
+        self.k = Kernel(self.root, os.path.join(self.tmp.name, "c"), Policy(lifecycle="quarantine"), clock=lambda: self.now[0])
+        self.k.reconcile()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_announced_skill_is_admitted(self):
+        self.k.observe_lifecycle("a", "patched")
+        write(self.root, "dev/a/references/n.md", "note\n")
+        self.assertEqual(self.k.reconcile(announced=self.k.lifecycle_scope())["status"], "accepted")
+
+    def test_unannounced_skill_alongside_an_announced_one_is_held(self):
+        self.k.observe_lifecycle("a", "patched")
+        write(self.root, "dev/a/references/n.md", "note\n")
+        write(self.root, "dev/b/references/sneak.md", "shell wrote this\n")
+        out = self.k.reconcile(announced=self.k.lifecycle_scope())
+        self.assertIn("lifecycle:Quarantine", out["verdict"]["reason_codes"])
+
+    def test_no_facts_means_the_lane_cannot_judge(self):
+        write(self.root, "dev/b/references/n.md", "x\n")
+        self.assertEqual(self.k.reconcile(announced=self.k.lifecycle_scope())["status"], "accepted")
+
+    def test_off_by_default_and_records_nothing(self):
+        k = Kernel(self.root, os.path.join(self.tmp.name, "c2"), Policy(), clock=lambda: 1000)
+        self.assertFalse(k.observe_lifecycle("a", "patched"))
+
+    def test_old_facts_expire(self):
+        self.k.observe_lifecycle("a", "patched")
+        self.now[0] += self.k.policy.taint_window_s + 1
+        self.assertEqual(self.k.lifecycle_scope(), [])

@@ -165,7 +165,7 @@ class PluginTests(unittest.TestCase):
                 hooks.append(name)
 
         self.plugin.register(Ctx())
-        self.assertEqual(hooks, ["pre_tool_call", "transform_tool_result", "post_tool_call"])
+        self.assertEqual(hooks, ["pre_tool_call", "transform_tool_result", "post_tool_call", "on_skill_lifecycle"])
 
     def test_observe_never_blocks_and_records(self):
         args = {"operations": [{"name": "x", "action": "patch", "old_string": "a", "new_string": "b"}]}

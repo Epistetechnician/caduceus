@@ -156,7 +156,7 @@ def _reconcile(base: str, session_id: str = ""):
     if not control.load(base).enabled("admission"):
         return None
     k = _kernel(base)
-    return k.reconcile(taint=k.taint_scope(session_id) if k.policy.provenance != "off" else [])
+    return k.reconcile(taint=k.taint_scope(session_id) if k.policy.provenance != "off" else [], announced=k.lifecycle_scope() if k.policy.lifecycle != "off" else [])
 
 
 def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str = "", **kwargs: Any) -> None:
@@ -171,6 +171,21 @@ def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str 
             _kernel(base).observe_taint(session_id or "", tool_name, result)
     except Exception as exc:  # noqa: BLE001 - observer; a missed observation only weakens the lane, and the next reconcile still judges the effect
         logger.warning("caduceus taint observe error: %s", type(exc).__name__)
+    return None
+
+
+def _on_skill_lifecycle(action: str = "", skill_name: str = "", **kwargs: Any) -> None:
+    """Second observation channel: remember which skills Hermes itself says changed. Name and action only."""
+    base = os.path.join(_home(), "caduceus")
+    if _mode(base) != "boundary":
+        return None
+    try:
+        from caduceus import control
+
+        if control.load(base).enabled("admission"):
+            _kernel(base).observe_lifecycle(str(skill_name), str(action))
+    except Exception as exc:  # noqa: BLE001 - observer
+        logger.warning("caduceus lifecycle observe error: %s", type(exc).__name__)
     return None
 
 
@@ -216,3 +231,4 @@ def register(ctx) -> None:
     ctx.register_hook("pre_tool_call", _on_pre_tool_call)
     ctx.register_hook("transform_tool_result", _on_transform_tool_result)
     ctx.register_hook("post_tool_call", _on_post_tool_call)
+    ctx.register_hook("on_skill_lifecycle", _on_skill_lifecycle)
