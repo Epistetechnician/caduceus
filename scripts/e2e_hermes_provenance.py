@@ -53,7 +53,7 @@ def session(governed, web):
         verdicts = [(e["body"]["decision"], e["body"]["reason_codes"], e["body"].get("taint_tools")) for e in Ledger(ledger).find("transition_verdict")]
     taint_file = os.path.exists(os.path.join(home, "caduceus", "taint.json"))
     out = {"governed": governed, "web_called": web, "skill_live": live, "verdicts": verdicts, "taint_recorded": taint_file,
-           "model_saw": {k: (v or "")[:200] for k, v in sorted(seen.items())}}
+           "model_saw": {k: (v or "")[:600] for k, v in sorted(seen.items())}}
     server.shutdown()
     shutil.rmtree(tmp, ignore_errors=True)
     return out
@@ -70,7 +70,9 @@ def main():
     res = {"ungoverned": session(False, True), "governed_web": session(True, True), "governed_clean": session(True, False)}
     print(json.dumps(res, indent=1))
     u, w, c = res["ungoverned"], res["governed_web"], res["governed_clean"]
-    ok = u["skill_live"] and not w["skill_live"] and w["taint_recorded"] and any("provenance:Quarantine" in v[1] for v in w["verdicts"]) and c["skill_live"] and not c["taint_recorded"]
+    msg = json.dumps(w["model_saw"])
+    informative = all(x in msg for x in ("Caduceus did not admit", "provenance:Quarantine", "restored to its last admitted state", "Do not retry", "caduceus status"))  # R24: what happened, why, and what to do
+    ok = informative and u["skill_live"] and not w["skill_live"] and w["taint_recorded"] and any("provenance:Quarantine" in v[1] for v in w["verdicts"]) and c["skill_live"] and not c["taint_recorded"]
     print("E2E-PROVENANCE", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

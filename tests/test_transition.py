@@ -643,3 +643,56 @@ class ConfigSurfaceTests(unittest.TestCase):
         write(self.home, "config.yaml", self.CFG + "yolo: true\n")
         self.k.reconcile()
         self.assertTrue(os.path.isdir(os.path.join(self.home, "empty-dir")))
+
+
+class SignedAttestationTests(unittest.TestCase):
+    def setUp(self):
+        from caduceus import signing
+
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "skills")
+        write(self.root, "dev/a/SKILL.md", SKILL % ("a", "a"))
+        self.ring = os.path.join(self.tmp.name, "ring.json")
+        signing.add_signer(self.ring, "alice", "operator", "ed25519")
+        signing.add_signer(self.ring, "mallory", "operator", "ed25519")
+        self.pub = os.path.join(self.tmp.name, "pub.json")
+        signing.export_public(self.ring, self.pub)
+        # the verifier trusts alice only
+        import json as _json
+        d = _json.load(open(self.pub))
+        d.pop("mallory")
+        _json.dump(d, open(self.pub, "w"))
+        os.chmod(self.pub, 0o600)
+        self.k = Kernel(self.root, os.path.join(self.tmp.name, "c"), Policy(tofu=False, attest_keyring=self.pub), clock=lambda: 1000)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_signed_attestation_by_a_trusted_signer_is_accepted(self):
+        pv = self.k.baseline_preview()
+        self.assertTrue(self.k.attest_baseline(pv["tree"], "alice", self.ring, "alice")["signed"])
+        self.assertEqual(self.k.reconcile()["status"], "baseline")
+
+    def test_unsigned_or_untrusted_attestation_is_refused(self):
+        pv = self.k.baseline_preview()
+        with self.assertRaises(TransitionError):
+            self.k.attest_baseline(pv["tree"], "alice")  # the policy requires a signature
+        self.k.attest_baseline(pv["tree"], "mallory", self.ring, "mallory")  # valid signature, but mallory is not in the verifier's keyring
+        self.assertEqual(self.k.reconcile()["status"], "unattested")
+
+    def test_a_signature_for_another_tree_does_not_attest_this_one(self):
+        pv = self.k.baseline_preview()
+        self.k.attest_baseline(pv["tree"], "alice", self.ring, "alice")
+        write(self.root, "dev/a/references/sneak.md", "x\n")
+        self.assertEqual(self.k.reconcile()["status"], "unattested")
+
+    def test_forged_signature_bytes_are_refused(self):
+        pv = self.k.baseline_preview()
+        self.k.attest_baseline(pv["tree"], "alice", self.ring, "alice")
+        import json as _json
+        lines = open(self.k.ledger_path).read().splitlines()
+        # rewrite the ledger entry with a flipped signature is impossible without breaking the chain; instead verify the check directly
+        body = _json.loads(lines[-1])["body"]
+        body["sig"] = ("0" if body["sig"][0] != "0" else "1") + body["sig"][1:]
+        self.assertFalse(self.k._attestation_ok(body, pv["tree"]))
+        self.assertFalse(self.k._attestation_ok({**body, "sig": "zz"}, pv["tree"]))

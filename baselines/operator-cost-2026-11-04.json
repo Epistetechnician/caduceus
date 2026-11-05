@@ -1,0 +1,38 @@
+{
+ "files": 900,
+ "machine": {
+  "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.5"
+ },
+ "note": "descriptive, one machine, synthetic tree; targets: status < 100 ms, clean reconcile <= 30 ms, taint observation <= 1 ms p99 (PRD R23, success metrics, N1)",
+ "observe_taint": {
+  "n": 300,
+  "p50_ms": 0.57,
+  "p99_ms": 0.73
+ },
+ "reconcile_clean": {
+  "n": 40,
+  "p50_ms": 25.19,
+  "p99_ms": 26.33
+ },
+ "reconcile_one_change": {
+  "n": 20,
+  "p50_ms": 34.54,
+  "p99_ms": 97.57
+ },
+ "status": {
+  "n": 40,
+  "p50_ms": 0.17,
+  "p99_ms": 0.19
+ },
+ "taint_scope": {
+  "n": 300,
+  "p50_ms": 0.09,
+  "p99_ms": 0.11
+ },
+ "targets_met": {
+  "observe_taint_le_1ms": true,
+  "reconcile_clean_le_30ms": true,
+  "status_lt_100ms": true
+ }
+}

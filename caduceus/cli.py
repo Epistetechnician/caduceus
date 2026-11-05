@@ -118,6 +118,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ab.add_argument("--base", required=True)
     ab.add_argument("--tree", help="the tree digest you inspected (from the preview)")
     ab.add_argument("--operator")
+    ab.add_argument("--keyring", help="owner-only keyring holding the ed25519 signer's private key (required when the policy sets attest_keyring)")
+    ab.add_argument("--signer")
     ab.add_argument("--allow-live", action="store_true")
     op = sub.add_parser("openshell-policy", help="print an NVIDIA OpenShell policy (documented schema, not accepted by a real sandbox here) making the broker the only writer of the skills tree")
     op.add_argument("--skills-root", required=True)
@@ -328,7 +330,7 @@ def _ops(args) -> int:
             if not args.operator:
                 print("refused: --operator is required to attest", file=sys.stderr)
                 return 3
-            _print(k.attest_baseline(args.tree, args.operator))
+            _print(k.attest_baseline(args.tree, args.operator, args.keyring, args.signer))
         except TransitionError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3

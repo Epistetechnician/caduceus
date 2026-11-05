@@ -98,7 +98,7 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
             "audit_note",
             {"event": "skill_mutation_blocked", "args_digest": digest, "actions": _actions(args), "frozen": True},
         )
-        return {"action": "block", "message": "Caduceus: evolution is frozen by the operator"}
+        return {"action": "block", "message": "Caduceus: evolution is frozen by the operator; no skill change can be made until the operator unfreezes it (caduceus control unfreeze)."}
     if mode == "observe":
         append_fast(
             path,
@@ -126,7 +126,7 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
     )
     return {
         "action": "block",
-        "message": "Caduceus: skill mutation has no admitted capability (args_digest=%s)" % digest[:16],
+        "message": "Caduceus: skill mutation has no admitted capability (args_digest=%s). Do not retry; ask the operator to review and admit this exact change (caduceus admit-call)." % digest[:16],
     }
 
 
@@ -217,7 +217,7 @@ def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any
             return None
         if out and out.get("status") == "restored":
             v = out["verdict"]
-            return json.dumps({"success": False, "error": "Caduceus did not admit this memory change (%s: %s). Memory was restored to its last admitted state."
+            return json.dumps({"success": False, "error": "Caduceus did not admit this memory change (%s: %s). Memory was restored to its last admitted state. Do not retry the same write; the operator can review it with `caduceus status`."
                                % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
         return None
     config_note = ""
@@ -247,7 +247,7 @@ def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any
         return with_note("[Caduceus reverted a change to the skills directory made by this command (%s: %s).]" % (v["decision"], ", ".join(v["reason_codes"]) or "policy"))
     if out and out.get("status") == "restored":
         v = out["verdict"]
-        return json.dumps({"success": False, "error": "Caduceus did not admit this skill change (%s: %s). The skills directory was restored to its last admitted state."
+        return json.dumps({"success": False, "error": "Caduceus did not admit this skill change (%s: %s). The skills directory was restored to its last admitted state. Do not retry the same write; the operator can review it with `caduceus status`."
                            % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
     return with_note("") if config_note else None
 

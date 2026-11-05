@@ -97,7 +97,7 @@ def main():
 
     # A: a direct skill_manage write is blocked in enforce mode; the skill is unchanged
     shown["A"] = loop(home, list(direct), ns.hermes_src)
-    res["A_direct_write_blocked"] = "step zero" not in open(os.path.join(skills, REL, "SKILL.md")).read() and "no admitted capability" in json.dumps(shown["A"])
+    res["A_direct_write_blocked"] = "step zero" not in open(os.path.join(skills, REL, "SKILL.md")).read() and all(x in json.dumps(shown["A"]) for x in ("no admitted capability", "Do not retry", "admit-call"))
 
     # B: supervised release: capability -> broker apply -> canary -> promote; the next real Hermes loop reads the promoted skill
     cand, req = candidate("promote")
@@ -136,7 +136,7 @@ def main():
     _, req3 = candidate("frozen")
     reply3 = apply_via_broker(req3)
     shown["D"] = loop(home, list(direct), ns.hermes_src)
-    res["D_frozen_refuses_broker_and_hermes"] = reply3.get("ok") is False and "frozen" in reply3.get("error", "") and "frozen" in json.dumps(shown["D"])
+    res["D_frozen_refuses_broker_and_hermes"] = reply3.get("ok") is False and "frozen" in reply3.get("error", "") and all(x in json.dumps(shown["D"]) for x in ("frozen by the operator", "unfreezes"))
 
     from caduceus.readback import verify_file
 

@@ -106,6 +106,8 @@ class Policy:
     protected_globs: Tuple[str, ...] = ()
     # Trust on first use is the default for compatibility. With tofu=False the first HEAD must be attested by an operator who has seen its digest (`attest-baseline`).
     tofu: bool = True
+    # With tofu=False: a keyring path (ed25519 signers). When set, the attestation must carry a valid signature by a signer in it, not just an operator name.
+    attest_keyring: str = ""
     # Second observation channel (Hermes' on_skill_lifecycle facts). 'quarantine': when lifecycle facts exist in the window, a write touching a skill that no fact announced is held.
     # Off by default: it is only as good as the hook's coverage of every Hermes writer.
     lifecycle: str = "off"
@@ -115,7 +117,7 @@ class Policy:
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "lifecycle": self.lifecycle, "surface": self.surface}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "lifecycle": self.lifecycle, "surface": self.surface}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -309,6 +311,10 @@ def _bounded(paths: List[str]) -> List[str]:
 POLICY_FILE = "policy.json"
 
 
+def _attestation_message(tree: str) -> bytes:
+    return domain_digest("caduceus.baseline_attestation.v1", {"tree": tree}).encode("ascii")
+
+
 def policy_set(base: str, policy: Dict[str, Any], operator: str) -> Dict[str, Any]:
     """Operator installs a policy. The file lives outside the governed tree and its digest is ledgered, so a silent edit is detected at load."""
     pol = Policy.from_dict(policy)
@@ -499,7 +505,7 @@ class Kernel:
         head = self.head()
         if head is None and not self.policy.tofu:
             d = tree_digest(cur)
-            if not any(e["body"].get("event") == "baseline_attested" and e["body"].get("tree") == d for e in led.find("audit_note")):
+            if not any(e["body"].get("event") == "baseline_attested" and e["body"].get("tree") == d and self._attestation_ok(e["body"], d) for e in led.find("audit_note")):
                 return {"status": "unattested", "tree": d, "files": len(cur)}  # nothing is judged or restored until an operator attests exactly this tree
         if head is None:  # trust on first use (or an attested tree): the tree present now becomes the admitted baseline
             self._retain(cur)
@@ -554,12 +560,27 @@ class Kernel:
         led.append("transition_restored", {"effect_digest": ed, "to_tree": head, "decision": verdict["decision"]})
         return {"status": "restored", "verdict": verdict, "tree": head}
 
+    def _attestation_ok(self, body: Dict[str, Any], tree: str) -> bool:
+        """Without attest_keyring any attestation of this exact tree counts. With it, the attestation must be an ed25519 signature by a keyring signer over this tree."""
+        if not self.policy.attest_keyring:
+            return True
+        try:
+            from . import ed25519, signing
+
+            ring = signing.load_keyring(self.policy.attest_keyring)
+            entry = ring.get(body.get("signer", ""))
+            return bool(entry and entry.get("scheme") == "ed25519" and body.get("scheme") == "ed25519" and body.get("pub") == entry["pub_hex"]
+                        and isinstance(body.get("sig"), str) and len(body["sig"]) == 128
+                        and ed25519.verify(bytes.fromhex(entry["pub_hex"]), _attestation_message(tree), bytes.fromhex(body["sig"])))
+        except Exception:  # noqa: BLE001 - an unreadable keyring or malformed signature is never an attestation
+            return False
+
     def baseline_preview(self) -> Dict[str, Any]:
         """What attest-baseline would attest: the tree digest, file count and a bounded path list. Reads only."""
         cur = manifest(self.root, self.only)
         return {"tree": tree_digest(cur), "files": len(cur), "paths": sorted(cur)[:50], "head": self.head()}
 
-    def attest_baseline(self, tree: str, operator: str) -> Dict[str, Any]:
+    def attest_baseline(self, tree: str, operator: str, keyring: Optional[str] = None, signer: Optional[str] = None) -> Dict[str, Any]:
         """The operator states the digest of the tree they inspected. Refused if the tree on disk is not exactly that tree, or HEAD already exists."""
         with open(os.path.join(self.base, ".lock"), "w") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
@@ -568,8 +589,20 @@ class Kernel:
             cur = tree_digest(manifest(self.root, self.only))
             if cur != tree:
                 raise TransitionError("the skills tree changed since it was inspected (now %s)" % cur[:16])
-            self.ledger().append("audit_note", {"event": "baseline_attested", "tree": tree, "operator": operator[:64]})
-        return {"attested": tree}
+            body: Dict[str, Any] = {"event": "baseline_attested", "tree": tree, "operator": operator[:64]}
+            if keyring or signer:
+                from . import ed25519, signing
+
+                if not (keyring and signer):
+                    raise TransitionError("--keyring and --signer go together")
+                entry = signing.load_keyring(keyring).get(signer)
+                if not entry or entry.get("scheme") != "ed25519" or "seed_hex" not in entry:
+                    raise TransitionError("signer must be an ed25519 signer with a private key in that keyring")
+                body.update(signer=signer[:64], scheme="ed25519", pub=entry["pub_hex"], sig=ed25519.sign(bytes.fromhex(entry["seed_hex"]), _attestation_message(tree)).hex())
+            elif self.policy.attest_keyring:
+                raise TransitionError("this policy requires a signed attestation (--keyring and --signer)")
+            self.ledger().append("audit_note", body)
+        return {"attested": tree, "signed": bool(keyring)}
 
     def held(self) -> List[str]:
         led = self.ledger()
