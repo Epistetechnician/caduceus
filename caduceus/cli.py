@@ -165,6 +165,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     kr.add_argument("--keyring", required=True)
     kr.add_argument("--signer", required=True)
     kr.add_argument("--role", required=True)
+    kr.add_argument("--scheme", choices=("hmac", "ed25519"), default="hmac", help="ed25519 lets verifier hosts hold only public keys (see export-public)")
+    xp = sub.add_parser("export-public", help="write a public-only keyring of the ed25519 signers, for a host that verifies but must not sign")
+    xp.add_argument("--keyring", required=True)
+    xp.add_argument("--out", required=True)
 
     sg = sub.add_parser("sign", help="record a review signature for a candidate digest")
     sg.add_argument("candidate_digest")
@@ -194,7 +198,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "export-public", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -260,8 +264,13 @@ def _ops(args) -> int:
     if args.cmd == "add-signer":
         from . import signing
 
-        signing.add_signer(args.keyring, args.signer, args.role)
-        _print({"added": args.signer, "role": args.role})
+        signing.add_signer(args.keyring, args.signer, args.role, args.scheme)
+        _print({"added": args.signer, "role": args.role, "scheme": args.scheme})
+        return 0
+    if args.cmd == "export-public":
+        from . import signing
+
+        _print({"exported": signing.export_public(args.keyring, args.out)})
         return 0
     if args.cmd == "sign":
         from . import signing
