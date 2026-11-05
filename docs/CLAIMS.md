@@ -71,6 +71,20 @@ What this repository does establish (by tests in `tests/`):
 * holdout leakage account (`leakage.py`, `holdout-release`, `holdout-certify`): verdict bits released from a sealed holdout are ledgered (hash-chained; dropping an entry breaks the chain), certified gain is the union-bound lower bound
   over the cheaper of the information and description routes, integers in parts per million; a preregistered `holdout_budget_bits` makes the `holdout` lane Fail once exceeded. Hand-checked radius (n=20,000, 100 bits, delta 5%: about 0.086).
   Unit-tested only: no experiment has yet been run through it, the Exchange wiring is covered by the lane function, and the bound is the classical Hoeffding union bound, not a new result;
+* Ed25519 review signatures in pure standard-library Python (`ed25519.py`, `signing.py`): RFC 8032 test vectors 1 and 2 pass, 5 random cases match an independent implementation in development, a
+  public-only keyring verifies but cannot sign, a replayed or swapped signature is an incident. Not constant-time and unreviewed; signing is an offline operator action;
+* Linux confinement (`linux_confine.py`, checks and broker): in a Linux container (kernel 7.0.14, aarch64, Landlock ABI 8) 11 tests show a confined process writes only in its workdir, cannot create, remove,
+  rename or truncate elsewhere, cannot read outside the allowed roots, cannot exec a planted binary, cannot connect to a local TCP listener, cannot open an INET/INET6/UDP socket, can use UNIX sockets, and a failure to confine
+  exits 71 before running anything; the full test suite (260 tests) passes on Linux with the repository on the container's own filesystem. On a bind-mounted macOS volume the broker could not read its own source (Landlock rules
+  did not cover that mount) and failed closed. x86_64, older kernels and other mounts are untested; reads inside the allowed system roots are not restricted;
+* config surface (`surfaces: [..., "config"]`, `config.yaml` only): a change to an approval, plugin, endpoint, credential or MCP setting is held and restored, a deleted config is restored, a tainted edit is held, the rest of
+  the Hermes home is never touched or pruned, and a terminal edit that disables the governor is reverted and the model told (unit and plugin tests; no live Hermes config run);
+* supervised release through a real Hermes loop (`scripts/e2e_hermes_release.py`, enforce mode, throw-away home, scripted model, synthetic lane evidence): a direct write is blocked; a capability, broker apply, canary and promote
+  makes the promoted skill visible to Hermes; replay is refused; a canary abort restores the pre-apply skill in Hermes; a freeze makes both the broker and the Hermes hook refuse. The operator ledger must live outside the Hermes home
+  because the broker restores everything under its root;
+* a read-only Desktop pane and status-bar chip (`desktop/plugin.js`, `dashboard/plugin_api.py`): `hermes plugins validate` passes including the desktop-surface lint, the API has no mutating route and the pane no release control,
+  and the status and review routes are tested over a real kernel. The pane has not been rendered in Hermes Desktop;
+* `scripts/demo_hackathon.py` runs the demo story end to end on a real kernel (tested to exit 0 with the key lines); the video itself is not recorded;
 * an OpenShell policy emitter (`openshell-policy`) exists but its `filesystem_policy` key names are UNVERIFIED (NVIDIA's pages confirm `version: 1` and the section names only); not run against OpenShell;
 * measured, one machine, 300-skill tree: taint observation p99 0.90 ms, taint scope read p99 0.12 ms, clean reconcile p99 12 ms (descriptive);
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;

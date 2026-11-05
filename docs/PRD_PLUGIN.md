@@ -94,7 +94,7 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 ### 7.3 Boundary hardening (P0/P1)
 
 * R11. *(emitter built; key names under `filesystem_policy` unverified; never run against OpenShell)* (P1) **Single writer by construction.** `caduceus openshell-policy` emits an OpenShell filesystem policy where the skills tree is read-only to the agent sandbox and writable only by the broker; the governed-tree mutation window and out-of-band writers disappear rather than being detected. AC: with the policy, a shell redirect into the skills tree fails at the OS; without it, boundary mode still reverts it. Verify OpenShell's policy schema from source first.
-* R12. *(not built: ctypes Landlock needs a Linux host to test; Linux stays `Unavailable` and fail-closed, documented in the README)* (P1) **Linux confinement for checks** via Landlock (reuse the approach in `formasec/kernel`, re-implemented stdlib-only via ctypes or delegated to OpenShell). Until then Linux returns `Unavailable` and quarantines (fail-closed, documented). AC: confinement probe on Linux: no network, no writes outside the copy; else `Unavailable`.
+* R12. *(done: Landlock + seccomp via ctypes, checks and broker, 11 tests in a Linux container; x86_64 untested)* (P1) **Linux confinement for checks** via Landlock (reuse the approach in `formasec/kernel`, re-implemented stdlib-only via ctypes or delegated to OpenShell). Until then Linux returns `Unavailable` and quarantines (fail-closed, documented). AC: confinement probe on Linux: no network, no writes outside the copy; else `Unavailable`.
 * R13. *(request drafted in `docs/HOOK_REQUEST.md`; not filed)* (P1) Close the prompt-index window: Hermes builds the skill index before any hook fires. Request or use a pre-index seam via the catalog's "Asking for a hook" route; until then document the window. AC: issue filed with a concrete consumer; window measured.
 * R14. *(done; signature is operator identity in the ledger, not cryptographic)* (P1) Trust-on-first-use baseline replaced by operator attestation: `caduceus attest-baseline` shows the tree and records an operator signature before HEAD is trusted. AC: enforce/boundary refuse an unattested baseline unless `tofu: true`.
 
@@ -107,19 +107,19 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 ### 7.5 State coverage (P1)
 
-* R19. *(memory done, 13 scenarios; config surfaces not built)* Extend the kernel from skills to **memory** (reuse freshness checks and receipt admission) and **plugin/config surfaces the agent can write**. Same lanes, per-surface policy. AC: containment eval per surface with fresh scenarios.
+* R19. *(memory done, 13 scenarios; config.yaml done with unit and plugin tests)* Extend the kernel from skills to **memory** (reuse freshness checks and receipt admission) and **plugin/config surfaces the agent can write**. Same lanes, per-surface policy. AC: containment eval per surface with fresh scenarios.
 * R20. *(done, opt-in)* `on_skill_lifecycle` consumed as a second observation channel for skill facts, reconciled against the tree diff (disagreement is a quarantine reason).
 
 ### 7.6 Release and rollback (P1)
 
-* R21. Staged release for promoted candidates: canary window, breakers, budgets, freeze/kill switch, rollback drills. *(implemented on a sandbox; live install in enforce mode pending)*
-* R22. *(not built: the standard library has no Ed25519 and the plugin may add no dependency)* Asymmetric review signatures (Ed25519) replace HMAC; Biscuit-style attenuable grants evaluated against `playbox`'s model (P2).
+* R21. Staged release for promoted candidates: canary window, breakers, budgets, freeze/kill switch, rollback drills. *(done through a real Hermes loop in a throw-away home, `scripts/e2e_hermes_release.py`; a real user home is deliberately never touched)*
+* R22. *(done: pure-stdlib Ed25519, RFC 8032 vectors, public-only verifier keyrings; Biscuit-style grants not built)* Asymmetric review signatures (Ed25519) replace HMAC; Biscuit-style attenuable grants evaluated against `playbox`'s model (P2).
 
 ### 7.7 Operator experience (P0 CLI, P2 Desktop)
 
 * R23. *(done: `status`)* One-screen `caduceus status`: mode, HEAD, last verdicts, held effects, taint scope, frozen flag, ledger health. AC: under 100 ms on a 900-file tree.
 * R24. Every refusal tells the model and the operator exactly what happened and what to do (existing notes in tool results). AC: scripted e2e asserts the message text class.
-* R25. (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8). Risky for the hackathon window; skip unless time remains.
+* R25. *(built and validator-clean; not rendered in Hermes Desktop)* (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8). Risky for the hackathon window; skip unless time remains.
 
 ### 7.8 Non-functional
 

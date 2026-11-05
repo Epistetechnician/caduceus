@@ -69,12 +69,12 @@ Modes (`mode.json`; the default is `observe`, anything stronger is an explicit o
 * `boundary` governs the *effect*: after each skill write, and before each skill read, the skills tree is compared with its last admitted state; anything not admitted is restored and the model is told.
   A skill write made after untrusted content entered the session (`web_extract`, `web_search`, `browser_*`, `mcp_*`: Hermes' own untrusted-tool list) is held for you; code or data whose
   skill has your registered passing checks is admitted. Review with `caduceus status` and `caduceus review-effect <digest>`; release with `caduceus release-effect`.
-* `"surfaces": ["skills", "memory"]` in `mode.json` also governs `MEMORY.md` / `USER.md` (default: skills only). `caduceus policy-set` installs a ledgered policy; `caduceus attest-baseline` replaces trust-on-first-use.
+* `"surfaces": ["skills", "memory", "config"]` in `mode.json` also governs `MEMORY.md` / `USER.md` (default: skills only). `caduceus policy-set` installs a ledgered policy; `caduceus attest-baseline` replaces trust-on-first-use. `"config"` adds `config.yaml` (sensitive-setting changes are held). The Desktop pane (`desktop/plugin.js` + read-only `dashboard/plugin_api.py`) shows state and held changes; releasing stays CLI-only.
 * `enforce` blocks `skill_manage` mutations that lack an admitted single-use capability and fails closed.
 
 Disclosure: reads and writes only under `$HERMES_HOME/skills` (boundary mode restores it) and `$HERMES_HOME/caduceus` (ledger, blobs, taint metadata: tool names and digest prefixes, never content).
 Operator-registered check commands (`caduceus check-add`; off unless you add one) run in a copy of the skill under macOS Seatbelt: no network, no writes outside the copy.
-**On Linux and anywhere Seatbelt is unusable a check returns `Unavailable` and the change is held, never passed**, so boundary mode there holds more than on macOS until Linux confinement is built.
+On Linux the same checks run under Landlock plus a seccomp socket filter (`caduceus/linux_confine.py`, kernel 5.13+ with Landlock; TCP is blocked from Landlock ABI 4, all non-UNIX sockets by seccomp). **Anywhere confinement cannot be applied a check returns `Unavailable` and the change is held, never passed.** The Linux path is tested on one kernel and architecture (aarch64, Landlock ABI 8); x86_64 is untested.
 
 Freeze or switch it off without uninstalling: `python3 -m caduceus control freeze --caduceus-dir ~/.hermes/caduceus` / `control disable admission ...`.
 Check the ledger with `python3 -m caduceus diagnostics --ledger ~/.hermes/caduceus/ledger.jsonl --caduceus-dir ~/.hermes/caduceus`. Read `docs/CLAIMS.md` before leaving observe.

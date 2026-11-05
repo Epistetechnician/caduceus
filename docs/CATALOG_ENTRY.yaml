@@ -9,6 +9,6 @@ tier: community
 maintainer: Epistetechnician
 version: "0.1.0"
 capabilities:
-  hooks: [pre_tool_call, transform_tool_result, post_tool_call]
+  provides_hooks: [pre_tool_call, transform_tool_result, post_tool_call, on_skill_lifecycle]
 # Disclosure (rule 13): reads and writes only under $HERMES_HOME/skills and $HERMES_HOME/caduceus; no network, no model calls; optional operator-registered check commands run
 # under macOS Seatbelt (no network, no writes outside a copy) and are Unavailable (quarantined, never passed) elsewhere; boundary mode can restore the skills directory to its last admitted state.
