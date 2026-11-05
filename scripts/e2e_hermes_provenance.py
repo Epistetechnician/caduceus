@@ -18,7 +18,23 @@ WRITE = ("skill_manage", {"operations": [{"action": "create", "name": "vendor-no
 WEB = ("web_extract", {"urls": ["https://vendor.invalid/setup"]})
 
 
-def session(governed, web):
+class _OnlyVendored:
+    """Meta-path finder for --plugin-dir: the Hermes venv here has the repository pip-installed (editable), which would silently satisfy `import caduceus` and hide a broken install.
+    This finder refuses `caduceus` until the plugin has put its own `_vendor` on sys.path, then resolves it from there and nowhere else."""
+
+    @classmethod
+    def find_spec(cls, name, path=None, target=None):
+        if name != "caduceus" and not name.startswith("caduceus."):
+            return None
+        import importlib.machinery
+
+        vendors = [p for p in sys.path if p.endswith("_vendor") and os.path.isdir(os.path.join(p, "caduceus"))]
+        if not vendors:
+            raise ImportError("caduceus is not importable here (the install must bring its own copy)")
+        return importlib.machinery.PathFinder.find_spec(name, path if path else vendors)
+
+
+def session(governed, web, plugin_dir=None):
     from e2e_hermes_boundary import respond_factory
     from stub_openai import serve
 
@@ -30,7 +46,7 @@ def session(governed, web):
     for var in ("OPENAI_API_KEY", "OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "HERMES_PROFILE"):
         os.environ.pop(var, None)
     if governed:
-        shutil.copytree(os.path.join(REPO, "plugin", "caduceus_governance"), os.path.join(home, "plugins", "caduceus_governance"), ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(plugin_dir or os.path.join(REPO, "plugin", "caduceus_governance"), os.path.join(home, "plugins", "caduceus_governance"), ignore=shutil.ignore_patterns("__pycache__"))
         os.makedirs(os.path.join(home, "caduceus"))
         json.dump({"mode": "boundary"}, open(os.path.join(home, "caduceus", "mode.json"), "w"))
         open(os.path.join(home, "config.yaml"), "w").write("plugins:\n  enabled:\n    - caduceus-governance\n")
@@ -49,10 +65,11 @@ def session(governed, web):
     verdicts, tools = [], sorted({t.get("function", {}).get("name") for c in calls for t in (c.get("tools") or [])}) if calls and isinstance(calls[0], dict) else []
     ledger = os.path.join(home, "caduceus", "transitions.jsonl")
     if os.path.exists(ledger):
-        from caduceus.ledger import Ledger
-        verdicts = [(e["body"]["decision"], e["body"]["reason_codes"], e["body"].get("taint_tools")) for e in Ledger(ledger).find("transition_verdict")]
+        rows = [json.loads(x) for x in open(ledger)]  # plain JSON: do not import caduceus here, so the plugin's own (vendored) copy is what gets exercised
+        verdicts = [(e["body"]["decision"], e["body"]["reason_codes"], e["body"].get("taint_tools")) for e in rows if e["kind"] == "transition_verdict"]
     taint_file = os.path.exists(os.path.join(home, "caduceus", "taint.json"))
-    out = {"governed": governed, "web_called": web, "skill_live": live, "verdicts": verdicts, "taint_recorded": taint_file,
+    mod = sys.modules.get("caduceus")
+    out = {"caduceus_module_file": getattr(mod, "__file__", None), "governed": governed, "web_called": web, "skill_live": live, "verdicts": verdicts, "taint_recorded": taint_file,
            "model_saw": {k: (v or "")[:600] for k, v in sorted(seen.items())}}
     server.shutdown()
     shutil.rmtree(tmp, ignore_errors=True)
@@ -62,17 +79,26 @@ def session(governed, web):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hermes-src", required=True)
+    ap.add_argument("--plugin-dir", help="run the plugin from this installed copy instead of the repository (proves the install is self-contained)")
     ns = ap.parse_args()
     sys.dont_write_bytecode = True
     os.environ["HERMES_DISABLE_LAZY_INSTALLS"] = "1"
     sys.path.insert(0, os.path.abspath(os.path.expanduser(ns.hermes_src)))
-    sys.path.insert(0, REPO)
-    res = {"ungoverned": session(False, True), "governed_web": session(True, True), "governed_clean": session(True, False)}
+    if ns.plugin_dir:
+        for m in [k for k in sys.modules if k == "caduceus" or k.startswith("caduceus.")]:
+            del sys.modules[m]
+        sys.meta_path.insert(0, _OnlyVendored)
+    if not ns.plugin_dir:
+        sys.path.insert(0, REPO)  # with --plugin-dir the repository is deliberately NOT importable: only the installed copy's vendored kernel can run
+    res = {"ungoverned": session(False, True, ns.plugin_dir), "governed_web": session(True, True, ns.plugin_dir), "governed_clean": session(True, False, ns.plugin_dir)}
     print(json.dumps(res, indent=1))
     u, w, c = res["ungoverned"], res["governed_web"], res["governed_clean"]
     msg = json.dumps(w["model_saw"])
     informative = all(x in msg for x in ("Caduceus did not admit", "provenance:Quarantine", "restored to its last admitted state", "Do not retry", "caduceus status"))  # R24: what happened, why, and what to do
     ok = informative and u["skill_live"] and not w["skill_live"] and w["taint_recorded"] and any("provenance:Quarantine" in v[1] for v in w["verdicts"]) and c["skill_live"] and not c["taint_recorded"]
+    if ns.plugin_dir:
+        ok = ok and all((r["caduceus_module_file"] or "").startswith(os.path.realpath(os.path.expanduser(ns.plugin_dir)) if False else "") for r in (w, c))
+        ok = ok and "_vendor" in (w["caduceus_module_file"] or "") and REPO not in (w["caduceus_module_file"] or "")
     print("E2E-PROVENANCE", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

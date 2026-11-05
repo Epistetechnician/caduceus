@@ -1,26 +1,19 @@
 name: ci
-on:
-  push:
-  pull_request:
-permissions:
-  contents: read
+on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.13"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: Compile
-        run: python -m compileall -q caduceus plugin tests
-      - name: Unit tests (stdlib only, hermetic, no network)
-        run: python -m unittest discover -s tests -t . -v
-      - name: Synthetic end-to-end demo + independent ledger readback
-        run: |
-          python -m caduceus demo --out "$RUNNER_TEMP/caduceus-demo" > "$RUNNER_TEMP/demo.json"
-          python -m caduceus verify-ledger "$RUNNER_TEMP/caduceus-demo/ledger.jsonl"
+      - run: python3 -m compileall -q caduceus plugin tests
+      - run: python3 scripts/vendor_plugin.py --check
+      - run: python3 -m unittest discover -s tests -t . -v
+      - run: python3 -m caduceus demo --out "$RUNNER_TEMP/demo" && python3 -m caduceus verify-ledger "$RUNNER_TEMP/demo/ledger.jsonl"
+      - run: python3 scripts/demo_hackathon.py
