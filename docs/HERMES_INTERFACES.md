@@ -52,6 +52,13 @@ behind `exchange` spends model calls and was not run here).
 * The background-review fork shares the parent agent's `session_id` in every hook it triggers (`scripts/probe_fork_session.py`, Hermes `67d47601bc`, stub model).
 * `plugin.yaml` declares hooks under `provides_hooks:`; `hermes plugins validate` fails a manifest that uses `hooks:`.
 
+## Dashboard and Desktop UI surfaces (verified against HEAD `67d47601bc`, and by running `hermes dashboard`)
+* Dashboard plugins: `<plugin>/dashboard/manifest.json` with `name`, `label`, `icon` (a Lucide name from the mapped list, `Shield` is), `tab.path`/`tab.position`, `entry`, `css`, `api`; discovered by `hermes_cli/web_server_dashboard.py::_discover_dashboard_plugins`.
+  The bundle is a plain IIFE that calls `window.__HERMES_PLUGINS__.register(name, Component)` and uses `window.__HERMES_PLUGIN_SDK__` (React, `fetchJSON`). The API router is mounted at `/api/plugins/<name>/`.
+* Auth: in loopback mode every `/api/` route needs the SPA's session token (`X-Hermes-Session-Token`), which `SDK.fetchJSON` attaches; a plain browser navigation to `/api/plugins/<name>/ui` gets 401. Gated (non-loopback) mode uses cookies, so the standalone page works there.
+  `fetchJSON` throws an `ApiError` with `.status` and `.body` on a non-2xx response.
+* Desktop plugins: one ESM file importing only `@hermes/plugin-sdk`, `react`, `react/jsx-runtime`; `ctx.rest(path, {method, body})`, `ctx.storage.get/set`, `ctx.os.writeClipboard`, `ctx.os.notify`, `ctx.setInterval` (returns a disposer). The desktop-surface lint (`hermes_cli/plugin_validate_desktop.py`) forbids eval, dynamic and remote imports, script injection, querying the app's `data-slot` markup and webviews.
+
 ## Not yet verified
 * The exact plugin settings API (for moving `mode.json` into `config.yaml`).
 * How `approve` surfaces in the gateway vs. CLI for human signatures.

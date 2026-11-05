@@ -97,6 +97,13 @@ What this repository does establish (by tests in `tests/`):
 * red-team of the provenance lane (author attacking own lane, not independent): four bypasses found and closed (subagent laundering, one-hour expiry, event-list eviction, unknown-origin attribution); with them the provenance eval holds
   12/12 hostile writes after untrusted content (was 10/10) and still admits 4/4 benign writes without it and 3/3 hostile writes without untrusted input (`ledgers/provenance-eval.result.json`);
 * the test suite also passes on Python 3.9.6 and 3.14.9 (macOS); `.github/workflows/ci.yml` runs it on Ubuntu and macOS, untested until the repository is pushed to a host that runs it;
+* device-signed approvals (`caduceus/approvals.py`, `docs/UI.md`): a held change is released or declined only with an Ed25519 signature from an operator-enrolled device when `approval_required` is set; the signature binds action, surface,
+  effect, the HEAD it was held against, a nonce and a 10-minute expiry. Unit tests cover forged, wrong-action, wrong-surface, wrong-effect, expired, replayed, stale-HEAD, unknown-device and silently-edited-registry cases; a regex bug that let a
+  trailing newline into a signed field was found and fixed. A WebCrypto key generated under node signs and the real kernel releases, with byte-identical messages and equal fingerprints in JS and Python (`tests/test_ui_signing.py`);
+* the operator UI (dashboard tab, Desktop pane, standalone page; one source, `scripts/build_ui.py`): inside a real `hermes dashboard` (loopback mode, session-token auth) the tab is discovered and the whole flow works in Chromium: create a device key,
+  enrol with the CLI (fingerprints equal), hold to release, change live, ledger shows `device:laptop`; unsigned POST 400, POST without the dashboard token 401. Same flow on the standalone page under a strict nonce CSP with zero violations. Agent-supplied text,
+  including `<img onerror>`, `<script>` and a `javascript:` link, renders as text (source rule tested, behaviour seen). Layout follows container width (phone layout in a dashboard column). NOT verified: Hermes Desktop rendering, Safari and Firefox,
+  a physical phone (emulated 375x812 and synthetic touch pointer events), keyboard and screen-reader paths by hand, the standalone page behind the real cookie gate, HTTPS from a phone. Signing needs a secure page and Ed25519 WebCrypto (Chrome 137+, Safari 17+, Firefox 129+);
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,
   Haiku 5.5), **failed** its preregistered rule: +0.08 [0, +0.24] vs the

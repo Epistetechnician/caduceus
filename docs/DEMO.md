@@ -15,6 +15,8 @@ Screen-record with macOS `Cmd-Shift-5`, crop to the terminal, and keep the text 
 | 1:12 | beat 6: verify-ledger | "Every decision is on a tamper-evident ledger." |
 | 1:20 | "What this does NOT catch" | "It does not catch malice with no untrusted input. Preregistered, and when a gate failed we closed the door." |
 
+B-roll of the UI (the phone layout is the most photogenic): `~/.hermes/hermes-agent/venv/bin/python scripts/ui_dev_server.py`, open it at 375 px wide in a browser's device mode, hold to release. Details in `docs/UI.md`.
+
 Post text for X (tag @NousResearch): "Caduceus: the staff for Hermes. Self-improving agents write skills that outlive the session; a poisoned page can become a permanent instruction. Caduceus judges
 what a run LEAVES BEHIND: deterministic, model-free, ledgered, with operator review and rollback. Plugin for the Hermes Agent hackathon. [video] [PR link]"
 

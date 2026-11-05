@@ -10,5 +10,5 @@ maintainer: Epistetechnician
 version: "0.1.0"
 capabilities:
   provides_hooks: [pre_tool_call, transform_tool_result, post_tool_call, on_skill_lifecycle]
-# Disclosure (rule 13): reads and writes only under $HERMES_HOME/skills and $HERMES_HOME/caduceus; no network, no model calls; optional operator-registered check commands run
+# Disclosure (rule 13): reads and writes only under $HERMES_HOME/skills, memories, config.yaml and $HERMES_HOME/caduceus; the dashboard API's one state-changing route (POST /approve) acts only on a valid signature from an operator-enrolled device; no network, no model calls; optional operator-registered check commands run
 # under macOS Seatbelt (no network, no writes outside a copy) and are Unavailable (quarantined, never passed) elsewhere; boundary mode can restore the skills directory to its last admitted state.

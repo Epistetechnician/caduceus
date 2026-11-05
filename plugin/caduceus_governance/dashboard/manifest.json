@@ -1,1 +1,11 @@
-{"name": "caduceus-governance", "api": "plugin_api.py"}
+{
+  "name": "caduceus-governance",
+  "label": "Caduceus",
+  "description": "Review and release what your Hermes agent wants to change about itself.",
+  "icon": "Shield",
+  "version": "0.2.0",
+  "tab": { "path": "/caduceus", "position": "after:skills" },
+  "entry": "dist/index.js",
+  "css": "dist/style.css",
+  "api": "plugin_api.py"
+}

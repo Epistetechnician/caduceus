@@ -6,3 +6,5 @@ dist/
 .venv/
 out/
 .DS_Store
+.claude/launch.json
+!plugin/caduceus_governance/dashboard/dist/

@@ -109,6 +109,8 @@ class Policy:
     tofu: bool = True
     # With tofu=False: a keyring path (ed25519 signers). When set, the attestation must carry a valid signature by a signer in it, not just an operator name.
     attest_keyring: str = ""
+    # With approval_required, releasing or discarding a held change needs an Ed25519 signature from an enrolled device (caduceus/approvals.py); a bare operator name is refused.
+    approval_required: bool = False
     # Second observation channel (Hermes' on_skill_lifecycle facts). 'quarantine': when lifecycle facts exist in the window, a write touching a skill that no fact announced is held.
     # Off by default: it is only as good as the hook's coverage of every Hermes writer.
     lifecycle: str = "off"
@@ -118,7 +120,7 @@ class Policy:
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_session_ttl_s": self.taint_session_ttl_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "lifecycle": self.lifecycle, "surface": self.surface}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_session_ttl_s": self.taint_session_ttl_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "approval_required": self.approval_required, "lifecycle": self.lifecycle, "surface": self.surface}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -348,13 +350,15 @@ def load_policy(base: str) -> Optional[Policy]:
 
 
 class Kernel:
-    def __init__(self, skills_root: str, base: str, policy: Optional[Policy] = None, clock: Callable[[], int] = lambda: int(time.time()), allow_live: bool = False):
+    def __init__(self, skills_root: str, base: str, policy: Optional[Policy] = None, clock: Callable[[], int] = lambda: int(time.time()), allow_live: bool = False,
+                 devices_dir: Optional[str] = None):
         real = os.path.realpath(os.path.expanduser(skills_root))
         live = os.path.realpath(os.path.expanduser("~/.hermes"))
         if (real == live or real.startswith(live + os.sep)) and not allow_live:
             raise TransitionError("refusing to govern a real Hermes home without allow_live")
         self.root, self.base, self.policy, self.clock = real, os.path.realpath(base), policy or Policy(), clock
         self.only = CONFIG_FILES if self.policy.surface == "config" else None
+        self.devices_dir = os.path.realpath(devices_dir) if devices_dir else self.base  # where the enrolled-device registry lives (the plugin's top state dir)
         for d in ("blobs", "manifests", "effects"):
             os.makedirs(os.path.join(self.base, d), exist_ok=True)
         self.ledger_path = os.path.join(self.base, "transitions.jsonl")
@@ -570,7 +574,7 @@ class Kernel:
         if head is None:  # trust on first use (or an attested tree): the tree present now becomes the admitted baseline
             self._retain(cur)
             d = self._save_manifest(cur)
-            led.append("transition_baseline", {"tree": d, "files": len(cur), "policy_digest": self.policy.digest()})
+            led.append("transition_baseline", {"tree": d, "files": len(cur), "policy_digest": self.policy.digest(), "at": self.clock()})
             led.append("transition_head", {"tree": d, "reason": "baseline"})
             return {"status": "baseline", "tree": d}
         hm = self._load_manifest(head)
@@ -666,13 +670,28 @@ class Kernel:
 
     def held(self) -> List[str]:
         led = self.ledger()
-        released = {e["body"].get("effect_digest") for e in led.find("transition_released")}
+        gone = {e["body"].get("effect_digest") for e in led.find("transition_released")}
+        gone |= {e["body"].get("effect_digest") for e in led.find("audit_note") if e["body"].get("event") == "effect_discarded"}
         out = []
         for e in led.find("transition_quarantined"):
             d = e["body"]["effect_digest"]
-            if d not in released and d not in out:
+            if d not in gone and d not in out:
                 out.append(d)
         return out
+
+    def held_detail(self) -> List[Dict[str, Any]]:
+        """Held effects with what a list view needs: reasons, taint tools, size, time, and whether HEAD has moved since (a stale effect can only be discarded)."""
+        verdicts = {e["body"]["effect_digest"]: e["body"] for e in self.ledger().find("transition_verdict")}
+        head = self.head()
+        out = []
+        for d in self.held():
+            v = verdicts.get(d, {})
+            out.append({"effect_digest": d, "decision": v.get("decision", "quarantine"), "reasons": v.get("reason_codes", []), "taint_tools": v.get("taint_tools", []),
+                        "n_paths": v.get("n_paths", 0), "paths": v.get("paths", [])[:5], "at": v.get("at", 0), "stale": v.get("parent") != head})
+        return out
+
+    def surface_name(self) -> str:
+        return self.policy.surface
 
     def status(self) -> Dict[str, Any]:
         """One-screen operator view. Reads only; never reconciles."""
@@ -680,9 +699,36 @@ class Kernel:
 
         led = self.ledger()
         verdicts = [e["body"] for e in led.find("transition_verdict")]
+        counts = {"accept": 0, "reject": 0, "quarantine": 0}
+        for v in verdicts:
+            counts[v["decision"]] = counts.get(v["decision"], 0) + 1
         return {"head": self.head(), "frozen": control.load(self.base).frozen, "provenance": self.policy.provenance, "taint_in_scope": len(self.taint_scope("")),
-                "held_effects": self.held(), "last_verdicts": [{"decision": v["decision"], "reasons": v["reason_codes"], "effect_digest": v["effect_digest"], "n_paths": v["n_paths"],
-                                                              "taint_tools": v.get("taint_tools", [])} for v in verdicts[-5:]], "ledger_entries": len(led._entries)}
+                "held_effects": self.held(), "held": self.held_detail(), "approval_required": self.policy.approval_required, "policy_digest": self.policy.digest(), "counts": counts,
+                "last_verdicts": [{"decision": v["decision"], "reasons": v["reason_codes"], "effect_digest": v["effect_digest"], "n_paths": v["n_paths"],
+                                   "taint_tools": v.get("taint_tools", []), "at": v.get("at", 0)} for v in verdicts[-5:]], "ledger_entries": len(led._entries)}
+
+    def timeline(self, limit: int = 60) -> List[Dict[str, Any]]:
+        """Newest-first history for a human: verdicts and the operator actions around them. Bounded metadata only (the ledger holds nothing else)."""
+        out: List[Dict[str, Any]] = []
+        for e in reversed(self.ledger()._entries):
+            k, b, item = e["kind"], e["body"], None
+            if k == "transition_verdict":
+                item = {"type": "verdict", "decision": b["decision"], "reasons": b["reason_codes"], "n_paths": b["n_paths"], "paths": b.get("paths", [])[:5],
+                        "taint_tools": b.get("taint_tools", []), "effect_digest": b["effect_digest"], "at": b.get("at", 0)}
+            elif k == "transition_baseline":
+                item = {"type": "baseline", "files": b.get("files", 0), "at": b.get("at", 0)}
+            elif k == "transition_released":
+                item = {"type": "released", "effect_digest": b["effect_digest"], "operator": b.get("operator", ""), "reason": b.get("reason", ""), "at": b.get("at", 0)}
+            elif k == "audit_note":
+                ev = b.get("event")
+                if ev in ("effect_discarded", "policy_set", "device_added", "device_removed", "approval_used", "baseline_attested", "check_registered"):
+                    item = {"type": ev, **{f: b[f] for f in ("effect_digest", "operator", "reason", "device", "name", "action", "skill", "check_id", "policy_digest", "at") if f in b}}
+            if item is not None:
+                item["seq"] = e["seq"]
+                out.append(item)
+                if len(out) >= limit:
+                    break
+        return out
 
     def review(self, effect_digest_hex: str, max_lines: int = 60, max_files: int = 20) -> Dict[str, Any]:
         """What a quarantined effect would change, as bounded unified diffs for a human. The diff is returned, never ledgered."""
@@ -709,11 +755,28 @@ class Kernel:
             d = list(difflib.unified_diff(blob(head, rel), blob(child, rel), "HEAD/" + rel, "held/" + rel, lineterm="", n=1))
             files.append({"path": rel, "status": "added" if rel in effect["added"] else "changed", "diff": [ln[:200] for ln in d[:max_lines]], "truncated": len(d) > max_lines})
         verdict = next((e["body"] for e in self.ledger().find("transition_verdict") if e["body"]["effect_digest"] == effect_digest_hex), {})
-        return {"effect_digest": effect_digest_hex, "reasons": verdict.get("reason_codes", []), "taint_tools": verdict.get("taint_tools", []),
-                "removed": effect["removed"][:MAX_PATHS_IN_LEDGER], "files": files,
+        return {"effect_digest": effect_digest_hex, "surface": self.surface_name(), "parent": effect["parent"], "stale": effect["parent"] != self.head(),
+                "reasons": verdict.get("reason_codes", []), "taint_tools": verdict.get("taint_tools", []), "at": verdict.get("at", 0),
+                "removed": effect["removed"][:MAX_PATHS_IN_LEDGER], "files": files, "approval_required": self.policy.approval_required,
                 "release": "caduceus release-effect %s --operator NAME --reason TEXT --skills-root ... --base ..." % effect_digest_hex}
 
-    def release(self, effect_digest_hex: str, operator: str, reason: str) -> Dict[str, Any]:
+    def _authorize(self, action: str, effect_digest_hex: str, parent: str, operator: str, approval: Optional[Dict[str, Any]]) -> str:
+        """Who is acting. A valid device approval makes the actor 'device:<name>'; with approval_required a bare operator name is refused."""
+        from . import approvals
+
+        led = self.ledger()
+        if approval is not None:
+            try:
+                dev = approvals.verify(self.devices_dir, led, approval, action, self.surface_name(), effect_digest_hex, parent, self.clock())
+            except approvals.ApprovalError as exc:
+                raise TransitionError("approval refused: %s" % exc)
+            approvals.record_use(led, dev, action, effect_digest_hex, approval["nonce"])
+            return "device:" + dev
+        if self.policy.approval_required:
+            raise TransitionError("this policy requires a device-signed approval (an enrolled device must sign this exact change)")
+        return operator
+
+    def release(self, effect_digest_hex: str, operator: str, reason: str, approval: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Operator-approved release of a quarantined effect. Fails if HEAD moved, the effect is unknown, or evolution is frozen."""
         from . import control
 
@@ -724,8 +787,8 @@ class Kernel:
             led = self.ledger()
             if not any(e["body"].get("effect_digest") == effect_digest_hex for e in led.find("transition_quarantined")):
                 raise TransitionError("no such quarantined effect")
-            if any(e["body"].get("effect_digest") == effect_digest_hex for e in led.find("transition_released")):
-                raise TransitionError("effect already released")
+            if effect_digest_hex not in self.held():
+                raise TransitionError("effect already released or discarded")
             path = os.path.join(self.base, "effects", effect_digest_hex + ".json")
             with open(path) as fh:
                 stored = json.load(fh)
@@ -733,6 +796,8 @@ class Kernel:
                 raise TransitionError("stored effect does not match its digest")
             if stored["effect"]["parent"] != self.head():
                 raise TransitionError("HEAD moved since quarantine; re-propose the change")
+            actor = self._authorize("release", effect_digest_hex, stored["effect"]["parent"], operator, approval)
+            led = self.ledger()
             child = stored["child_manifest"]
             if tree_digest(child) != stored["effect"]["child"]:
                 raise TransitionError("stored child manifest does not match the effect")
@@ -742,9 +807,24 @@ class Kernel:
                 raise TransitionError("release did not reproduce the quarantined tree")
             self._retain(child)
             d = self._save_manifest(child)
-            led.append("transition_released", {"effect_digest": effect_digest_hex, "operator": operator[:64], "reason": reason[:200]})
+            led.append("transition_released", {"effect_digest": effect_digest_hex, "operator": actor[:64], "reason": reason[:200], "at": self.clock()})
             led.append("transition_head", {"tree": d, "effect_digest": effect_digest_hex, "reason": "released"})
-            return {"status": "released", "tree": d}
+            return {"status": "released", "tree": d, "actor": actor}
+
+    def discard(self, effect_digest_hex: str, operator: str, reason: str, approval: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Operator declines a held effect. The tree is untouched (it already equals HEAD); the effect leaves the held list for good. Allowed while frozen (declining is the safe direction)."""
+        with open(os.path.join(self.base, ".lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if effect_digest_hex not in self.held():
+                raise TransitionError("no held effect with that digest")
+            path = os.path.join(self.base, "effects", effect_digest_hex + ".json")
+            with open(path) as fh:
+                stored = json.load(fh)
+            if effect_digest(stored["effect"]) != effect_digest_hex:
+                raise TransitionError("stored effect does not match its digest")
+            actor = self._authorize("discard", effect_digest_hex, stored["effect"]["parent"], operator, approval)
+            self.ledger().append("audit_note", {"event": "effect_discarded", "effect_digest": effect_digest_hex, "operator": actor[:64], "reason": reason[:200], "at": self.clock()})
+            return {"status": "discarded", "actor": actor}
 
     def register_check(self, skill: str, check: Dict[str, Any], operator: str) -> Dict[str, Any]:
         """Operator adds an executable check for one skill. It must PASS on the admitted HEAD copy of that skill first."""

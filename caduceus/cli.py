@@ -94,6 +94,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     rc.add_argument("--skills-root", required=True)
     rc.add_argument("--base", required=True, help="state directory (the plugin's <HERMES_HOME>/caduceus)")
     rc.add_argument("--allow-live", action="store_true", help="permit governing a real Hermes home")
+    rc.add_argument("--surface", choices=("skills", "memory", "config"), default="skills", help="which governed surface --skills-root and --base refer to (memory: the memories dir and <state>/memory; config: the Hermes home and <state>/config)")
     for name, hlp in (("status", "one-screen operator view of state governance (reads only)"), ("review-effect", "bounded diff of a held effect, for a human deciding whether to release it")):
         sp = sub.add_parser(name, help=hlp)
         if name == "review-effect":
@@ -101,6 +102,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         sp.add_argument("--skills-root", required=True)
         sp.add_argument("--base", required=True)
         sp.add_argument("--allow-live", action="store_true")
+        sp.add_argument("--surface", choices=("skills", "memory", "config"), default="skills")
     hr = sub.add_parser("holdout-release", help="charge bits of verdict released from a sealed holdout to a proposer (record BEFORE the proposer sees it)")
     hr.add_argument("--ledger", required=True)
     hr.add_argument("--commitment", required=True)
@@ -138,6 +140,31 @@ def main(argv: Optional[List[str]] = None) -> int:
     rl.add_argument("--operator", required=True)
     rl.add_argument("--reason", required=True)
     rl.add_argument("--allow-live", action="store_true")
+    rl.add_argument("--surface", choices=("skills", "memory", "config"), default="skills")
+    rl.add_argument("--keyring", help="ed25519 keyring whose signer signs this release (needed when the policy sets approval_required and you approve from this machine)")
+    rl.add_argument("--signer")
+    dc = sub.add_parser("discard-effect", help="operator declines a held effect for good (HEAD is untouched)")
+    dc.add_argument("effect_digest")
+    dc.add_argument("--skills-root", required=True)
+    dc.add_argument("--base", required=True)
+    dc.add_argument("--operator", required=True)
+    dc.add_argument("--reason", required=True)
+    dc.add_argument("--allow-live", action="store_true")
+    dc.add_argument("--surface", choices=("skills", "memory", "config"), default="skills")
+    dc.add_argument("--keyring")
+    dc.add_argument("--signer")
+    da = sub.add_parser("device-add", help="enrol a device (a phone or laptop browser) whose key may sign releases; the host stores only the public key")
+    da.add_argument("--base", required=True, help="the plugin's top state directory (<HERMES_HOME>/caduceus)")
+    da.add_argument("--name", required=True)
+    da.add_argument("--pub", required=True, help="the device's Ed25519 public key, 64 hex characters (shown by the Caduceus UI under Devices)")
+    da.add_argument("--label", default="")
+    da.add_argument("--operator", required=True)
+    dl = sub.add_parser("device-list", help="list enrolled devices and their fingerprints")
+    dl.add_argument("--base", required=True)
+    dr = sub.add_parser("device-remove", help="remove an enrolled device")
+    dr.add_argument("--base", required=True)
+    dr.add_argument("--name", required=True)
+    dr.add_argument("--operator", required=True)
 
     ck = sub.add_parser("check-add", help="register an executable check for a skill (must pass on the admitted HEAD); argv follows --")
     ck.add_argument("--skills-root", required=True)
@@ -201,7 +228,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "export-public", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "export-public", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "discard-effect", "device-add", "device-list", "device-remove", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -230,6 +257,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         _print(run_demo(args.out))
         return 0
     return 1
+
+
+def _kernel_for(args):
+    import dataclasses
+
+    from .transition import Kernel, Policy, load_policy
+
+    surface = getattr(args, "surface", "skills")
+    top = args.base if surface == "skills" else os.path.dirname(os.path.abspath(args.base))  # policy.json and devices.json live in the plugin's top state dir
+    pol = load_policy(top) or Policy()
+    if surface != "skills":
+        pol = dataclasses.replace(pol, surface=surface)
+    return Kernel(args.skills_root, args.base, pol, allow_live=args.allow_live, devices_dir=top)
 
 
 def _ops(args) -> int:
@@ -372,26 +412,49 @@ def _ops(args) -> int:
         from .transition import Kernel, TransitionError
 
         try:
-            k = Kernel(args.skills_root, args.base, allow_live=args.allow_live)
+            k = _kernel_for(args)
             _print(k.status() if args.cmd == "status" else k.review(args.effect_digest))
         except TransitionError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0
-    if args.cmd in ("reconcile", "release-effect"):
-        from .transition import Kernel, TransitionError
+    if args.cmd in ("reconcile", "release-effect", "discard-effect"):
+        from . import approvals
+        from .transition import TransitionError
 
         try:
-            from .transition import load_policy
-
-            k = Kernel(args.skills_root, args.base, load_policy(args.base), allow_live=args.allow_live)
-            out = k.reconcile() if args.cmd == "reconcile" else k.release(args.effect_digest, args.operator, args.reason)
-        except TransitionError as exc:
+            k = _kernel_for(args)
+            if args.cmd == "reconcile":
+                out = k.reconcile()
+            else:
+                approval = None
+                if getattr(args, "keyring", None) or getattr(args, "signer", None):
+                    if not (args.keyring and args.signer):
+                        raise TransitionError("--keyring and --signer go together")
+                    action = "release" if args.cmd == "release-effect" else "discard"
+                    parent = k.review(args.effect_digest)["parent"]
+                    approval = approvals.sign_with_keyring(args.keyring, args.signer, action, k.surface_name(), args.effect_digest, parent)
+                out = (k.release if args.cmd == "release-effect" else k.discard)(args.effect_digest, args.operator, args.reason, approval)
+        except (TransitionError, approvals.ApprovalError) as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         v = out.get("verdict") or {}
-        _print({"status": out["status"], "tree": out["tree"], "decision": v.get("decision"), "reason_codes": v.get("reason_codes"), "effect_digest": v.get("effect_digest")})
-        return 0 if out["status"] in ("clean", "baseline", "accepted", "released") else 3
+        _print({"status": out["status"], "tree": out.get("tree"), "decision": v.get("decision"), "reason_codes": v.get("reason_codes"), "effect_digest": v.get("effect_digest") or getattr(args, "effect_digest", None), "actor": out.get("actor")})
+        return 0 if out["status"] in ("clean", "baseline", "accepted", "released", "discarded") else 3
+    if args.cmd in ("device-add", "device-list", "device-remove"):
+        from . import approvals
+
+        try:
+            if args.cmd == "device-add":
+                _print(approvals.add_device(args.base, args.name, args.pub, args.operator, args.label))
+            elif args.cmd == "device-remove":
+                _print(approvals.remove_device(args.base, args.name, args.operator))
+            else:
+                _print(approvals.list_devices(args.base))
+        except approvals.ApprovalError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
     if args.cmd == "admit-source":
         from .candidate import parse_json_strict
         from .source_admission import admit

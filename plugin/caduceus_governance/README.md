@@ -9,6 +9,7 @@ A self-improving agent writes skills, memory and config that outlive the session
 * **Judges the effect, not the request.** After a skill write (or any tool that can write the skills tree) and before a skill read, the tree is compared with its last admitted state. Anything not admitted is restored and the model is told why.
 * **Provenance across sessions.** If untrusted content entered the session (`web_extract`, `web_search`, `browser_*`, `mcp_*`: Hermes' own untrusted-tool list), a skill write is held for you whatever it says. This catches paraphrased, encoded and non-English instructions that no text pattern can. Code or data in a skill whose operator-registered check still passes is admitted; prose never is.
 * **Operator control.** `caduceus status`, `review-effect <digest>` (a bounded diff), `release-effect`, `policy-set`, `attest-baseline`, `control freeze`. Releasing is CLI-only; the Desktop pane is read-only.
+* **A UI on desktop and phone.** A Hermes dashboard tab, a Desktop review pane and a phone-ready page: see what is held, read the diff, and release or decline with a device signature (an Ed25519 key that never leaves your phone). `caduceus device-add` enrols a device.
 * **Also governs** `MEMORY.md` / `USER.md` and `config.yaml` (opt-in via `mode.json` `surfaces`).
 
 ## Install
@@ -20,6 +21,7 @@ Default mode is `observe` (records one ledger line per `skill_manage` call and n
 
 ## Disclosure
 
+The dashboard API adds one state-changing route, `POST /approve`, which applies a held change only on a valid signature from a device you enrolled; everything else it serves is read-only. The page is served with a strict nonce CSP and loads nothing external.
 Reads and writes only under `$HERMES_HOME/skills`, `$HERMES_HOME/memories`, `$HERMES_HOME/config.yaml` (restoring them in boundary mode) and `$HERMES_HOME/caduceus`. No network, no model calls, no telemetry, no credential reads, no self-update, no background process.
 Operator-registered check commands (none unless you add one) run in a copy of the skill under macOS Seatbelt or Linux Landlock plus seccomp (no network, no writes outside the copy); where confinement cannot be applied a check is `Unavailable` and the change is held, never passed.
 The package ships a vendored copy of its kernel in `_vendor/` because the catalog installs only this directory.

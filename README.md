@@ -79,6 +79,12 @@ On Linux the same checks run under Landlock plus a seccomp socket filter (`caduc
 Freeze or switch it off without uninstalling: `python3 -m caduceus control freeze --caduceus-dir ~/.hermes/caduceus` / `control disable admission ...`.
 Check the ledger with `python3 -m caduceus diagnostics --ledger ~/.hermes/caduceus/ledger.jsonl --caduceus-dir ~/.hermes/caduceus`. Read `docs/CLAIMS.md` before leaving observe.
 
+## The operator UI
+
+A dashboard tab, a Desktop pane and a phone-ready page share one app: review what is waiting at the gate (diffs always rendered as text), see the ledger, and **release or decline with a signature from your phone**.
+Enrol a device with `caduceus device-add`; require signatures with `caduceus policy-set` (`approval_required: true`). Details, the approval model, what is and is not verified: `docs/UI.md`.
+Try it with a seeded throw-away home: `~/.hermes/hermes-agent/venv/bin/python scripts/ui_dev_server.py`.
+
 ## Read next
 
 * `docs/PRD.md` - design baseline (v2.1) with research and code references

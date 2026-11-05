@@ -14,6 +14,8 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python3 -m compileall -q caduceus plugin tests
       - run: python3 scripts/vendor_plugin.py --check
+      - run: python3 scripts/build_ui.py --check
+      - run: python3 -m pip install fastapi httpx  # only for the dashboard API tests; the plugin itself has no dependencies
       - run: python3 -m unittest discover -s tests -t . -v
       - run: python3 -m caduceus demo --out "$RUNNER_TEMP/demo" && python3 -m caduceus verify-ledger "$RUNNER_TEMP/demo/ledger.jsonl"
       - run: python3 scripts/demo_hackathon.py

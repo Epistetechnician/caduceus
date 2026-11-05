@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#071a19" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6efdd" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caduceus">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Caduceus</title>
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style nonce="{{NONCE}}">
+html, body { margin: 0; min-height: 100%; background: #061817; }
+@media (prefers-color-scheme: light) { html, body { background: #f6efdd; } }
+#app { min-height: 100vh; min-height: 100dvh; }
+{{CSS}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>Caduceus needs JavaScript.</noscript>
+<script nonce="{{NONCE}}">
+{{JS}}
+(function () {
+  "use strict";
+  var base = location.pathname.replace(/\/ui\/?$/, "");
+  function call(method, path, body) {
+    var init = { method: method, credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" } };
+    if (body !== undefined) { init.headers["Content-Type"] = "application/json"; init.body = JSON.stringify(body); }
+    return fetch(base + path, init).then(function (r) {
+      return r.text().then(function (t) {
+        if (r.ok) return t ? JSON.parse(t) : {};
+        var e = new Error("HTTP " + r.status); e.status = r.status; e.body = t; throw e;
+      });
+    });
+  }
+  CaduceusApp(document.getElementById("app"), { env: "standalone", api: call });
+})();
+</script>
+</body>
+</html>

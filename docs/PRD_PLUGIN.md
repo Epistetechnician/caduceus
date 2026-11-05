@@ -68,7 +68,7 @@ OpenShell details come from NVIDIA's overview page and third-party write-ups and
 * **Evidence** (`exchange.py`, `experiment.py`): the 13-lane exchange for candidates that claim an improvement; sealed holdout; controls; second instrument.
 * **Release** (`broker.py`, `release.py`): single-writer, capability-bound apply; canary window; breakers; rollback.
 * **Ledger/Witness**: digest-chained JSONL, RFC 9162 proofs, independent readback, external consistency witness.
-* **Operator surface**: CLI first (`status`, `review-effect`, `release-effect`, `policy-set`, `attest-baseline`, `control`); a read-only Hermes Desktop pane through SDK slots; releasing is CLI-only by design.
+* **Operator surface**: CLI (`status`, `review-effect`, `release-effect`, `discard-effect`, `policy-set`, `attest-baseline`, `device-add`, `control`) and one UI (`docs/UI.md`) as a Hermes dashboard tab, a Desktop review pane and a phone-ready page; releasing from the UI needs a device signature (R26), enrolment and policy stay CLI-only.
 
 ## 7. Requirements
 
@@ -119,7 +119,9 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 * R23. *(done: `status`; p99 0.19 ms on a 900-file tree, `baselines/operator-cost-2026-11-04.json`)* One-screen `caduceus status`: HEAD, last verdicts, held effects, taint scope, frozen flag, ledger size. AC: under 100 ms on a 900-file tree.
 * R24. *(done: the e2e scripts assert what happened, the reason code, that the tree was restored, "Do not retry" and the operator command)* Every refusal tells the model and the operator exactly what happened and what to do (existing notes in tool results). AC: scripted e2e asserts the message text class.
-* R25. *(built and validator-clean; not rendered in Hermes Desktop)* (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8). Risky for the hackathon window; skip unless time remains.
+* R25. *(done: Desktop review pane and chip, validator-clean; not rendered in Hermes Desktop; it cannot sign)* (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8).
+* R26. *(done; `caduceus/approvals.py`)* **Device-signed approvals.** Release and discard can require an Ed25519 signature from an enrolled device (`policy approval_required`); the signature binds action, surface, effect, HEAD, nonce, expiry; enrolment is CLI-only; the registry is verified against the ledger. AC: forged, replayed, retargeted, expired, stale and registry-edit cases refused (tests); a browser WebCrypto signature verifies in Python with byte-identical messages (node test).
+* R27. *(done; verified inside a real `hermes dashboard`; Desktop pane unrendered; no physical phone)* **Operator UI** as a dashboard tab, Desktop pane and standalone phone page from one source, phone-first, container-responsive, strict CSP, agent text never HTML, hold-to-release. AC: `docs/UI.md` verification list; `tests/test_ui_build.py`, `tests/test_plugin_api.py`.
 
 ### 7.8 Non-functional
 
@@ -148,7 +150,7 @@ Not defended: malice with no untrusted input (a user-instructed or purely model-
 
 ## 10. Hackathon cut and what is left (today 2026-11-04, due 2026-11-11 5PM EST)
 
-Built and verified: R1-R10, R12, R14-R16, R19-R25, N1-N3 (statuses above). Demo: `scripts/demo_hackathon.py` and `docs/DEMO.md` (the video is not recorded).
+Built and verified: R1-R10, R12, R14-R16, R19-R27, N1-N3 (statuses above). Demo: `scripts/demo_hackathon.py` and `docs/DEMO.md` (the video is not recorded).
 Not done, and why:
 * Open the catalog PR and submit the form: blocked on making the repository public and on a valid `gh` login (operator actions).
 * Record and post the demo video (an operator action).
