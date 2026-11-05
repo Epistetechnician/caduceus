@@ -119,9 +119,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     ab.add_argument("--tree", help="the tree digest you inspected (from the preview)")
     ab.add_argument("--operator")
     ab.add_argument("--allow-live", action="store_true")
-    op = sub.add_parser("openshell-policy", help="print an UNVERIFIED NVIDIA OpenShell policy making the broker the only writer of the skills tree")
+    op = sub.add_parser("openshell-policy", help="print an NVIDIA OpenShell policy (documented schema, not accepted by a real sandbox here) making the broker the only writer of the skills tree")
     op.add_argument("--skills-root", required=True)
     op.add_argument("--caduceus-dir", required=True)
+    op.add_argument("--hermes-home", help="list this home's existing entries (except skills) as read-write, so Hermes can still run in the sandbox")
     ps = sub.add_parser("policy-set", help="operator installs the state-governance policy (ledgered; a silent edit of policy.json is refused at load)")
     ps.add_argument("--base", required=True)
     ps.add_argument("--file", required=True, help="JSON object of Policy fields")
@@ -310,7 +311,8 @@ def _ops(args) -> int:
         from .openshell import render
 
         try:
-            sys.stdout.write(render(os.path.abspath(os.path.expanduser(args.skills_root)), os.path.abspath(os.path.expanduser(args.caduceus_dir))))
+            sys.stdout.write(render(os.path.abspath(os.path.expanduser(args.skills_root)), os.path.abspath(os.path.expanduser(args.caduceus_dir)),
+                                  os.path.abspath(os.path.expanduser(args.hermes_home)) if args.hermes_home else None))
         except ValueError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
