@@ -94,6 +94,12 @@ Reading: it contains every evasion the content lanes miss, provided the session 
 is a real usability cost (legitimate skills distilled from web research are held). It does nothing for malice with no untrusted input (a user-instructed or model-originated write) and cannot tell which
 observation influenced which line. The scenario author is the kernel author; the tool list is a policy guess, not measured coverage of Hermes' tool surface. Not run under a real model.
 
+### Taint discharge (R8) and the operator view
+A tainted write is admitted when every written file is code or data (`.py`, `.json`) AND every touched skill has operator-registered checks that all Pass; prose is never discharged because a check cannot validate what a
+sentence asks the model to do. Rule and 11 expectations were committed before the code (`prereg/r8-taint-discharge.json`); result 11/11 including one preregistered miss: a check-preserving script edit carrying a
+paraphrased hostile comment is admitted (no check or pattern can see intent). `caduceus status` / `caduceus review-effect <digest>` show state and a bounded diff of a held effect; the diff is never ledgered.
+Hermes' own untrusted-tool list equals the default `taint_tools` (`docs/HERMES_INTERFACES.md`).
+
 ## Limits and open work
 * Checks exist only where an operator registers them; there is no automatic generation. The macOS Seatbelt runner is the only confinement implemented (Linux: Unavailable, so quarantine).
 * Tier 2 (paired model experiment, human signature) is not wired to this kernel.

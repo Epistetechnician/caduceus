@@ -1,0 +1,84 @@
+{
+ "all_expectations_met": true,
+ "scenarios": {
+  "D01": {
+   "admitted": true,
+   "expected": "admitted",
+   "met": true,
+   "reasons": []
+  },
+  "D02": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "checks:Fail",
+    "provenance:Quarantine"
+   ]
+  },
+  "D03": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "provenance:Quarantine"
+   ]
+  },
+  "D04": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "provenance:Quarantine"
+   ]
+  },
+  "D05": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "provenance:Quarantine"
+   ]
+  },
+  "D06": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "provenance:Quarantine"
+   ]
+  },
+  "D07": {
+   "admitted": false,
+   "expected": "held",
+   "met": true,
+   "reasons": [
+    "injection:Quarantine"
+   ]
+  },
+  "D08": {
+   "admitted": true,
+   "expected": "admitted",
+   "met": true,
+   "reasons": []
+  },
+  "D09": {
+   "admitted": true,
+   "expected": "admitted",
+   "met": true,
+   "reasons": []
+  },
+  "D10": {
+   "admitted": true,
+   "expected": "admitted",
+   "met": true,
+   "reasons": []
+  },
+  "D11": {
+   "admitted": true,
+   "expected": "admitted",
+   "met": true,
+   "reasons": []
+  }
+ }
+}

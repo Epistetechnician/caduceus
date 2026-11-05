@@ -94,6 +94,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     rc.add_argument("--skills-root", required=True)
     rc.add_argument("--base", required=True, help="state directory (the plugin's <HERMES_HOME>/caduceus)")
     rc.add_argument("--allow-live", action="store_true", help="permit governing a real Hermes home")
+    for name, hlp in (("status", "one-screen operator view of state governance (reads only)"), ("review-effect", "bounded diff of a held effect, for a human deciding whether to release it")):
+        sp = sub.add_parser(name, help=hlp)
+        if name == "review-effect":
+            sp.add_argument("effect_digest")
+        sp.add_argument("--skills-root", required=True)
+        sp.add_argument("--base", required=True)
+        sp.add_argument("--allow-live", action="store_true")
     rl = sub.add_parser("release-effect", help="operator releases a quarantined effect (HEAD must not have moved)")
     rl.add_argument("effect_digest")
     rl.add_argument("--skills-root", required=True)
@@ -160,7 +167,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -260,6 +267,16 @@ def _ops(args) -> int:
         try:
             _print(Kernel(args.skills_root, args.base, allow_live=args.allow_live).register_check(args.skill, chk, args.operator))
         except (TransitionError, CheckError) as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd in ("status", "review-effect"):
+        from .transition import Kernel, TransitionError
+
+        try:
+            k = Kernel(args.skills_root, args.base, allow_live=args.allow_live)
+            _print(k.status() if args.cmd == "status" else k.review(args.effect_digest))
+        except TransitionError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0

@@ -35,6 +35,7 @@ VERDICT_DOMAIN = "caduceus.transition.verdict.v1"
 TREE_DOMAIN = "caduceus.transition.tree.v1"
 MAX_FILES = 20000
 MAX_PATHS_IN_LEDGER = 25
+CODE_SUFFIXES = (".py", ".json")  # roles a registered check can speak for; everything else is prose
 
 SECRET_PATTERNS = (
     re.compile(r"AKIA[0-9A-Z]{16}"),
@@ -86,11 +87,14 @@ class Policy:
     provenance: str = "quarantine"
     taint_tools: Tuple[str, ...] = ("web_search", "web_extract", "browser_*", "mcp_*")
     taint_window_s: int = 3600
+    # Taint discharge: a tainted write whose every file is code or data (not prose) in skills whose operator-registered checks all Pass is admitted.
+    # Prose instructions are never discharged: a check cannot validate what a sentence asks the model to do.
+    taint_discharge: bool = True
 
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge}
 
     def is_taint_tool(self, name: str) -> bool:
         return any(name == t or (t.endswith("*") and name.startswith(t[:-1])) for t in self.taint_tools)
@@ -194,7 +198,11 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     cr = check_results or {}
     out["checks"] = "Fail" if "Fail" in cr.values() else ("Quarantine" if "Unavailable" in cr.values() else "Pass")
     # provenance: how many untrusted-source observations are in scope for this write (an input, so the verdict stays a pure function of its inputs)
-    out["provenance"] = "Quarantine" if (policy.provenance == "quarantine" and taint > 0 and written) else "Pass"
+    out["provenance"] = "Pass"
+    if policy.provenance == "quarantine" and taint > 0 and written:
+        discharged = (policy.taint_discharge and all(p.endswith(CODE_SUFFIXES) for p in written)
+                      and all(cr.get(sk) == "Pass" for sk in {_skill_of(p) for p in written}))
+        out["provenance"] = "Pass" if discharged else "Quarantine"
     return out
 
 
@@ -389,6 +397,55 @@ class Kernel:
             raise TransitionError("restore did not reproduce HEAD")
         led.append("transition_restored", {"effect_digest": ed, "to_tree": head, "decision": verdict["decision"]})
         return {"status": "restored", "verdict": verdict, "tree": head}
+
+    def held(self) -> List[str]:
+        led = self.ledger()
+        released = {e["body"].get("effect_digest") for e in led.find("transition_released")}
+        out = []
+        for e in led.find("transition_quarantined"):
+            d = e["body"]["effect_digest"]
+            if d not in released and d not in out:
+                out.append(d)
+        return out
+
+    def status(self) -> Dict[str, Any]:
+        """One-screen operator view. Reads only; never reconciles."""
+        from . import control
+
+        led = self.ledger()
+        verdicts = [e["body"] for e in led.find("transition_verdict")]
+        return {"head": self.head(), "frozen": control.load(self.base).frozen, "provenance": self.policy.provenance, "taint_in_scope": len(self.taint_scope("")),
+                "held_effects": self.held(), "last_verdicts": [{"decision": v["decision"], "reasons": v["reason_codes"], "effect_digest": v["effect_digest"], "n_paths": v["n_paths"],
+                                                              "taint_tools": v.get("taint_tools", [])} for v in verdicts[-5:]], "ledger_entries": len(led._entries)}
+
+    def review(self, effect_digest_hex: str, max_lines: int = 60, max_files: int = 20) -> Dict[str, Any]:
+        """What a quarantined effect would change, as bounded unified diffs for a human. The diff is returned, never ledgered."""
+        import difflib
+
+        path = os.path.join(self.base, "effects", effect_digest_hex + ".json")
+        if effect_digest_hex not in self.held() or not os.path.exists(path):
+            raise TransitionError("no held effect with that digest")
+        with open(path) as fh:
+            stored = json.load(fh)
+        effect, child = stored["effect"], stored["child_manifest"]
+        if effect_digest(effect) != effect_digest_hex:
+            raise TransitionError("stored effect does not match its digest")
+        head = self._load_manifest(effect["parent"])
+
+        def blob(m, rel):
+            e = m.get(rel)
+            if not e or e["kind"] != "file" or not os.path.exists(self._blob(e["sha256"])):
+                return []
+            with open(self._blob(e["sha256"]), "rb") as fh:
+                return fh.read().decode("utf-8", "replace").splitlines()
+        files = []
+        for rel in sorted(list(effect["added"]) + list(effect["changed"]))[:max_files]:
+            d = list(difflib.unified_diff(blob(head, rel), blob(child, rel), "HEAD/" + rel, "held/" + rel, lineterm="", n=1))
+            files.append({"path": rel, "status": "added" if rel in effect["added"] else "changed", "diff": [ln[:200] for ln in d[:max_lines]], "truncated": len(d) > max_lines})
+        verdict = next((e["body"] for e in self.ledger().find("transition_verdict") if e["body"]["effect_digest"] == effect_digest_hex), {})
+        return {"effect_digest": effect_digest_hex, "reasons": verdict.get("reason_codes", []), "taint_tools": verdict.get("taint_tools", []),
+                "removed": effect["removed"][:MAX_PATHS_IN_LEDGER], "files": files,
+                "release": "caduceus release-effect %s --operator NAME --reason TEXT --skills-root ... --base ..." % effect_digest_hex}
 
     def release(self, effect_digest_hex: str, operator: str, reason: str) -> Dict[str, Any]:
         """Operator-approved release of a quarantined effect. Fails if HEAD moved, the effect is unknown, or evolution is frozen."""

@@ -87,8 +87,8 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 * R6. Effect-addressed kernel with the existing lanes (scope, file kind, pinned, budget, deletion, rate, secrets, injection, binary/exec, format, syntax, checks). *(done)*
 * R7. **Provenance lane.** Untrusted-source tool results taint the session; a write whose scope holds an in-window observation is quarantined. Policy-configurable tool list, window, on/off. *(done, `docs/STATE_GOVERNANCE.md`)*
-* R8. **Taint discharge** (reduces the measured 4/4 benign-after-taint friction). Split effects by file role: prose instructions (SKILL.md, references) stay quarantined; executable or data files whose skill has operator-registered checks that Pass may be admitted while tainted. AC: eval shows benign tainted code edits admitted, hostile tainted prose and code-with-failing-check held, nothing admitted that tier 0 plus provenance held before except check-passing code. Preregister the scenario set before implementing; no retuning to the result.
-* R9. **Operator review pack** for a quarantined effect: unified diff, lanes, taint tools, source count, one command to release or discard. AC: `release-effect` output reproducible from the ledger; the diff never enters the ledger body.
+* R8. *(done: 11/11 preregistered expectations, one preregistered miss)* **Taint discharge** (reduces the measured 4/4 benign-after-taint friction). Split effects by file role: prose instructions (SKILL.md, references) stay quarantined; executable or data files whose skill has operator-registered checks that Pass may be admitted while tainted. AC: eval shows benign tainted code edits admitted, hostile tainted prose and code-with-failing-check held, nothing admitted that tier 0 plus provenance held before except check-passing code. Preregister the scenario set before implementing; no retuning to the result.
+* R9. *(done: `review-effect`)* **Operator review pack** for a quarantined effect: unified diff, lanes, taint tools, source count, one command to release or discard. AC: `release-effect` output reproducible from the ledger; the diff never enters the ledger body.
 * R10. **Policy as code**: `policy.json` with digest recorded in every verdict; changing it is itself a ledgered operator action. AC: replay with the recorded policy digest reproduces every verdict byte for byte.
 
 ### 7.3 Boundary hardening (P0/P1)
@@ -117,7 +117,7 @@ Priority: P0 = ships for the hackathon (due 2026-11-11 5PM EST); P1 = next; P2 =
 
 ### 7.7 Operator experience (P0 CLI, P2 Desktop)
 
-* R23. One-screen `caduceus status`: mode, HEAD, last verdicts, held effects, taint scope, frozen flag, ledger health. AC: under 100 ms on a 900-file tree.
+* R23. *(done: `status`)* One-screen `caduceus status`: mode, HEAD, last verdicts, held effects, taint scope, frozen flag, ledger health. AC: under 100 ms on a 900-file tree.
 * R24. Every refusal tells the model and the operator exactly what happened and what to do (existing notes in tool results). AC: scripted e2e asserts the message text class.
 * R25. (P2) Desktop SDK view of the inbox and ledger; SDK slots only (rule 8). Risky for the hackathon window; skip unless time remains.
 
@@ -169,8 +169,8 @@ Not defended: malice with no untrusted input (a user-instructed or purely model-
 
 ## 12. Open questions
 
-1. Does `post_tool_call` carry a stable `session_id` for forked reviewer agents, or must the unknown-session fallback carry them? (Measure on the pinned Hermes.)
-2. Which Hermes tools return untrusted content beyond `web_*`, `browser_*`, `mcp_*` (gateway messages, file reads of downloaded files, connectors)? Census needed.
+1. `post_tool_call` and `transform_tool_result` carry `session_id` in the live loop (e2e). Still open: forked background-review agents.
+2. *Resolved for the tool list*: Hermes' own classification is `web_extract`, `web_search`, `browser_*`, `mcp_*` (`docs/HERMES_INTERFACES.md`). Still open: gateway messages, file reads of downloaded files, connectors.
 3. Can taint discharge (R8) be made sound for scripts without becoming a content scanner again? Needs a threat-model note before code.
 4. Is a pre-index hook acceptable to Hermes maintainers (R13)?
 5. Who is the independent scenario author?

@@ -44,6 +44,13 @@ is `skill_manage`. The live check drives this CLI and then confirms Hermes admit
 Still not done: an end-to-end run with a real model driving `skill_manage` (needs model calls), and producing the `accept` verdict itself for real skill edits (the paired experiment
 behind `exchange` spends model calls and was not run here).
 
+## Provenance (added, verified against HEAD `67d47601bc`)
+* `post_tool_call` fires with `tool_name`, `args`, `result`, `session_id`, `task_id`, `tool_call_id` (`model_tools.py::_emit_post_tool_call_hook`); `transform_tool_result` runs after it and before the result enters context.
+* Hermes' own untrusted-content classification is `agent/tool_dispatch_helpers.py`: `_UNTRUSTED_TOOL_NAMES = {web_extract, web_search}`, `_UNTRUSTED_TOOL_PREFIXES = (browser_, mcp_)`; results of at least 32 chars are wrapped in `<untrusted_tool_result source=...>`.
+  The Caduceus default `taint_tools` mirrors that list exactly (`web_search`, `web_extract`, `browser_*`, `mcp_*`); re-diff it on every Hermes bump.
+* Catalog installs of a plugin with `subdir` are a blobless, sparse checkout of that subdirectory only (`hermes_cli/plugins_cmd_git.py`), so the plugin ships a vendored kernel (`scripts/vendor_plugin.py`).
+* `plugin.yaml` declares hooks under `provides_hooks:`; `hermes plugins validate` fails a manifest that uses `hooks:`.
+
 ## Not yet verified
 * The exact plugin settings API (for moving `mode.json` into `config.yaml`).
 * How `approve` surfaces in the gateway vs. CLI for human signatures.

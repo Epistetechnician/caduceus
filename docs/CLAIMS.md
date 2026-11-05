@@ -56,6 +56,11 @@ What this repository does establish (by tests in `tests/`):
   content;
 * the provenance lane (`docs/STATE_GOVERNANCE.md`): in 23 author-written scenarios it holds 10/10 hostile writes made after untrusted content and 4/4 benign ones made after it, and
   admits all writes made without it (so it does not stop untrusted-input-free malice); descriptive, no model, not an independent benchmark;
+* taint discharge (R8, `prereg/r8-taint-discharge.json` committed before the implementation, `scripts/eval_discharge.py`, `ledgers/discharge-eval.result.json`): all 11 preregistered expectations met,
+  including the preregistered miss (D11): a tainted script edit that keeps its checked output but carries a paraphrased hostile comment is admitted. Prose is never discharged. Descriptive, author-written, needs Seatbelt;
+* live through Hermes' real hook dispatch (`scripts/e2e_hermes_provenance.py`, scripted model, throw-away home): the same hostile-but-unrecognisable skill write goes live ungoverned, is held after a `web_extract` call
+  (the model is told, the ledger records `provenance:Quarantine` with `web_extract`), and is admitted with no untrusted tool use; not a real-model run;
+* `caduceus status` and `caduceus review-effect` give an operator a one-screen state and a bounded diff of a held effect without putting content in the ledger;
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,
   Haiku 5.5), **failed** its preregistered rule: +0.08 [0, +0.24] vs the

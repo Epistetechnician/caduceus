@@ -311,3 +311,77 @@ class ProvenanceTests(unittest.TestCase):
         self.edit()
         b = self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["verdict_digest"]
         self.assertEqual(a, b)
+
+
+class DischargeTests(unittest.TestCase):
+    """Pure-lane tests of the R8 rule (no confinement needed: check results are inputs)."""
+
+    def lane(self, written, check_results, taint=1, **pol):
+        from caduceus.transition import lanes
+
+        effect = {"added": {}, "changed": {p: ["a", "b", 10] for p in written}, "removed": [], "parent": "p", "child": "c"}
+        cur = {p: {"kind": "file", "sha256": "b", "size": 10, "exec": False} for p in written}
+        return lanes(effect, cur, lambda p: b"plain\n", Policy(**pol), 0, 0, check_results, taint)["provenance"]
+
+    def test_code_with_passing_checks_is_discharged(self):
+        self.assertEqual(self.lane(["dev/t/scripts/x.py"], {"dev/t": "Pass"}), "Pass")
+
+    def test_json_with_passing_checks_is_discharged(self):
+        self.assertEqual(self.lane(["dev/t/d.json"], {"dev/t": "Pass"}), "Pass")
+
+    def test_prose_is_never_discharged(self):
+        self.assertEqual(self.lane(["dev/t/SKILL.md"], {"dev/t": "Pass"}), "Quarantine")
+        self.assertEqual(self.lane(["dev/t/scripts/x.py", "dev/t/references/n.md"], {"dev/t": "Pass"}), "Quarantine")
+
+    def test_no_checks_or_failing_checks_never_discharge(self):
+        self.assertEqual(self.lane(["dev/t/scripts/x.py"], {}), "Quarantine")
+        self.assertEqual(self.lane(["dev/t/scripts/x.py"], {"dev/t": "Unavailable"}), "Quarantine")
+        self.assertEqual(self.lane(["dev/t/scripts/x.py"], {"dev/t": "Fail"}), "Quarantine")
+
+    def test_every_touched_skill_needs_passing_checks(self):
+        self.assertEqual(self.lane(["dev/t/a.py", "dev/u/b.py"], {"dev/t": "Pass"}), "Quarantine")
+
+    def test_discharge_can_be_switched_off(self):
+        self.assertEqual(self.lane(["dev/t/scripts/x.py"], {"dev/t": "Pass"}, taint_discharge=False), "Quarantine")
+
+
+class OperatorViewTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "skills")
+        self.base = os.path.join(self.tmp.name, "caduceus")
+        write(self.root, "dev/a/SKILL.md", SKILL % ("a", "a"))
+        self.k = Kernel(self.root, self.base, Policy(), clock=lambda: 1000)
+        self.k.reconcile()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def hold(self):
+        self.k.observe_taint("s", "web_extract", "page")
+        write(self.root, "dev/a/SKILL.md", SKILL % ("a", "a") + "new step from the web\n")
+        return self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["effect_digest"]
+
+    def test_status_lists_held_effects_and_last_verdict(self):
+        ed = self.hold()
+        st = self.k.status()
+        self.assertEqual(st["held_effects"], [ed])
+        self.assertEqual(st["last_verdicts"][-1]["decision"], "quarantine")
+        self.assertEqual(st["last_verdicts"][-1]["taint_tools"], ["web_extract"])
+
+    def test_review_shows_the_diff_and_the_reason_but_ledger_holds_no_content(self):
+        ed = self.hold()
+        r = self.k.review(ed)
+        self.assertIn("provenance:Quarantine", r["reasons"])
+        self.assertTrue(any("+new step from the web" in ln for ln in r["files"][0]["diff"]))
+        with open(self.k.ledger_path) as fh:
+            self.assertNotIn("new step from the web", fh.read())
+
+    def test_released_effect_leaves_the_held_list_and_unknown_digest_is_refused(self):
+        ed = self.hold()
+        self.k.release(ed, "op", "reviewed")
+        self.assertEqual(self.k.status()["held_effects"], [])
+        with self.assertRaises(TransitionError):
+            self.k.review(ed)
+        with self.assertRaises(TransitionError):
+            self.k.review("0" * 64)
