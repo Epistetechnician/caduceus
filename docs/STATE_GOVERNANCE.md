@@ -100,6 +100,16 @@ sentence asks the model to do. Rule and 11 expectations were committed before th
 paraphrased hostile comment is admitted (no check or pattern can see intent). `caduceus status` / `caduceus review-effect <digest>` show state and a bounded diff of a held effect; the diff is never ledgered.
 Hermes' own untrusted-tool list equals the default `taint_tools` (`docs/HERMES_INTERFACES.md`).
 
+### Operator policy, attestation, evaluator protection, lifecycle, memory (added)
+* `policy-set` installs a strict `policy.json` outside the governed tree and ledgers its digest; `load_policy` refuses a file that does not match the last ledgered `policy_set`.
+* `protected_globs` rejects any change to evaluator-like paths inside a skill; the checks themselves already live outside the tree.
+* `tofu: false` plus `attest-baseline` replaces trust-on-first-use: nothing is judged or restored until an operator attests the exact first tree digest.
+* `lifecycle: quarantine` cross-checks the tree diff against Hermes' own `on_skill_lifecycle` facts (name and action only); off by default.
+* `surfaces: ["skills","memory"]` in `mode.json` adds a second kernel over `$HERMES_HOME/memories` (MEMORY.md, USER.md; lock files ignored; own state dir `caduceus/memory/`), same operator policy with `surface="memory"`:
+  only those two files are in scope, an emptied or deleted memory file is held, a tainted memory write is always held (prose is never discharged). Hermes freezes memory into the prompt at session start, so a
+  write reverted before the next session never reaches a prompt.
+* `holdout-release` / `holdout-certify` price sealed-holdout leakage (see `docs/CLAIMS.md`); `openshell-policy` prints an unverified OpenShell policy that makes the broker the only writer of the skills tree.
+
 ## Limits and open work
 * Checks exist only where an operator registers them; there is no automatic generation. The macOS Seatbelt runner is the only confinement implemented (Linux: Unavailable, so quarantine).
 * Tier 2 (paired model experiment, human signature) is not wired to this kernel.

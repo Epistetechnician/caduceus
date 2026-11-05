@@ -61,6 +61,18 @@ What this repository does establish (by tests in `tests/`):
 * live through Hermes' real hook dispatch (`scripts/e2e_hermes_provenance.py`, scripted model, throw-away home): the same hostile-but-unrecognisable skill write goes live ungoverned, is held after a `web_extract` call
   (the model is told, the ledger records `provenance:Quarantine` with `web_extract`), and is admitted with no untrusted tool use; not a real-model run;
 * `caduceus status` and `caduceus review-effect` give an operator a one-screen state and a bounded diff of a held effect without putting content in the ledger;
+* policy as code (`policy-set`, `policy-show`): the operator's policy is a strict, ledgered `policy.json`; a silent edit is refused at load; replay with the recorded policy digest is byte-identical (tests);
+* evaluator-path protection (`protected_globs`): an add, change or removal of a protected path is rejected and restored; the DGM-style "edit the file the checker reads" scenario is rejected (tests);
+* baseline attestation (`tofu=false`, `attest-baseline`): an unattested first tree is neither trusted nor touched, an attestation binds the exact tree digest and does not cover a later tree (tests); default stays trust-on-first-use;
+* lifecycle channel (`lifecycle=quarantine`, off by default): when Hermes' `on_skill_lifecycle` facts exist in the window, a write touching an unannounced skill is held (tests; hook coverage of all Hermes writers is not verified);
+* memory surface (`surfaces: ["skills","memory"]`, MEMORY.md and USER.md, prose only, nothing discharges taint): 13 author-written scenarios (`scripts/eval_memory.py`, `ledgers/memory-eval.result.json`): hostile writes without
+  untrusted input held 6/6 and 0/6 live; hostile after untrusted content 0/3 live with provenance vs 3/3 without; benign 2/2 live; one benign-after-untrusted held (the cost); a paraphrased override with no untrusted input is admitted 1/1
+  (the lane cannot help). The eval found one real miss, emptying MEMORY.md was admitted; fixed (an emptied memory file is held) and re-run. Wiping a memory file to a few bytes is still not caught. Not run through a live Hermes memory tool;
+* holdout leakage account (`leakage.py`, `holdout-release`, `holdout-certify`): verdict bits released from a sealed holdout are ledgered (hash-chained; dropping an entry breaks the chain), certified gain is the union-bound lower bound
+  over the cheaper of the information and description routes, integers in parts per million; a preregistered `holdout_budget_bits` makes the `holdout` lane Fail once exceeded. Hand-checked radius (n=20,000, 100 bits, delta 5%: about 0.086).
+  Unit-tested only: no experiment has yet been run through it, the Exchange wiring is covered by the lane function, and the bound is the classical Hoeffding union bound, not a new result;
+* an OpenShell policy emitter (`openshell-policy`) exists but its `filesystem_policy` key names are UNVERIFIED (NVIDIA's pages confirm `version: 1` and the section names only); not run against OpenShell;
+* measured, one machine, 300-skill tree: taint observation p99 0.90 ms, taint scope read p99 0.12 ms, clean reconcile p99 12 ms (descriptive);
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,
   Haiku 5.5), **failed** its preregistered rule: +0.08 [0, +0.24] vs the

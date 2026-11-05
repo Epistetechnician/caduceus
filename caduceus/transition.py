@@ -36,6 +36,7 @@ VERDICT_DOMAIN = "caduceus.transition.verdict.v1"
 TREE_DOMAIN = "caduceus.transition.tree.v1"
 MAX_FILES = 20000
 MAX_PATHS_IN_LEDGER = 25
+MEMORY_FILES = ("MEMORY.md", "USER.md")
 CODE_SUFFIXES = (".py", ".json")  # roles a registered check can speak for; everything else is prose
 
 SECRET_PATTERNS = (
@@ -99,11 +100,13 @@ class Policy:
     # Second observation channel (Hermes' on_skill_lifecycle facts). 'quarantine': when lifecycle facts exist in the window, a write touching a skill that no fact announced is held.
     # Off by default: it is only as good as the hook's coverage of every Hermes writer.
     lifecycle: str = "off"
+    # Which Hermes state this kernel governs: 'skills' (category/name/... trees) or 'memory' (exactly MEMORY.md and USER.md, prose only, nothing discharges taint).
+    surface: str = "skills"
 
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "lifecycle": self.lifecycle}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "lifecycle": self.lifecycle, "surface": self.surface}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -133,6 +136,8 @@ class Policy:
                 if not isinstance(v, str):
                     raise TransitionError("policy field %s must be a string" % k)
                 kw[k] = v
+        if kw.get("surface", default.surface) not in ("skills", "memory"):
+            raise TransitionError("surface must be 'skills' or 'memory'")
         for fld in ("provenance", "lifecycle"):
             if kw.get(fld, getattr(default, fld)) not in ("quarantine", "off"):
                 raise TransitionError("%s must be 'quarantine' or 'off'" % fld)
@@ -147,7 +152,7 @@ class Policy:
 
 def _skip(rel: str) -> bool:
     # Hermes' own metadata lives in dot-entries at the top of the skills root (.usage.json, .curator_ledger.jsonl, .hub/, ...)
-    return rel.split("/", 1)[0].startswith(".")
+    return rel.split("/", 1)[0].startswith(".") or rel.endswith(".lock")  # Hermes metadata and its lock files
 
 
 def manifest(root: str) -> Dict[str, Dict[str, Any]]:
@@ -208,14 +213,17 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     touched = sorted(list(effect["added"]) + list(effect["changed"]) + list(effect["removed"]))
     written = sorted(list(effect["added"]) + list(effect["changed"]))
     out: Dict[str, str] = {}
-    out["scope"] = "Pass" if all(len(p.split("/")) >= 3 and ".." not in p.split("/") for p in touched) else "Fail"
+    if policy.surface == "memory":
+        out["scope"] = "Pass" if all(p in MEMORY_FILES for p in touched) else "Fail"
+    else:
+        out["scope"] = "Pass" if all(len(p.split("/")) >= 3 and ".." not in p.split("/") for p in touched) else "Fail"
     out["file_kind"] = "Pass" if all(cur[p]["kind"] == "file" for p in written) else "Fail"
     pinned = {s for s in policy.pinned}
     out["pinned"] = "Fail" if any(_skill_of(p) in pinned for p in touched) else "Pass"
     out["protected"] = "Fail" if any(fnmatch.fnmatchcase(p, g) for p in touched for g in policy.protected_globs) else "Pass"
     out["budget"] = "Pass" if (len(touched) <= policy.max_files_changed and sum(effect["added"][p][1] for p in effect["added"]) + sum(effect["changed"][p][2] for p in effect["changed"]) <= policy.max_added_bytes
                                and all(cur[p]["size"] <= policy.max_file_bytes for p in written)) else "Quarantine"
-    deleted_skill = any(p.endswith("/SKILL.md") and len(p.split("/")) == 3 for p in effect["removed"])
+    deleted_skill = any(p.endswith("/SKILL.md") and len(p.split("/")) == 3 for p in effect["removed"]) or (policy.surface == "memory" and (bool(effect["removed"]) or any(v[2] == 0 for v in list(effect["changed"].values()) + list(effect["added"].values()) if len(v) > 2)))
     # cumulative within the rate window, so deleting one file at a time cannot slip under the per-change limit
     out["deletion"] = "Quarantine" if (len(effect["removed"]) + recent_removed > policy.max_deleted_files or deleted_skill) else "Pass"
     out["rate"] = "Quarantine" if recent >= policy.rate_max else "Pass"
@@ -229,7 +237,7 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     bad_fm = False
     for p, t in texts.items():
         parts = p.split("/")
-        if len(parts) == 3 and parts[2] == "SKILL.md":
+        if policy.surface == "skills" and len(parts) == 3 and parts[2] == "SKILL.md":
             fm = parse_frontmatter(t.decode("utf-8", "replace"))
             if not fm.get("name") or not fm.get("description") or fm["name"] != parts[1]:
                 bad_fm = True

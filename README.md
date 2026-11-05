@@ -69,6 +69,7 @@ Modes (`mode.json`; the default is `observe`, anything stronger is an explicit o
 * `boundary` governs the *effect*: after each skill write, and before each skill read, the skills tree is compared with its last admitted state; anything not admitted is restored and the model is told.
   A skill write made after untrusted content entered the session (`web_extract`, `web_search`, `browser_*`, `mcp_*`: Hermes' own untrusted-tool list) is held for you; code or data whose
   skill has your registered passing checks is admitted. Review with `caduceus status` and `caduceus review-effect <digest>`; release with `caduceus release-effect`.
+* `"surfaces": ["skills", "memory"]` in `mode.json` also governs `MEMORY.md` / `USER.md` (default: skills only). `caduceus policy-set` installs a ledgered policy; `caduceus attest-baseline` replaces trust-on-first-use.
 * `enforce` blocks `skill_manage` mutations that lack an admitted single-use capability and fails closed.
 
 Disclosure: reads and writes only under `$HERMES_HOME/skills` (boundary mode restores it) and `$HERMES_HOME/caduceus` (ledger, blobs, taint metadata: tool names and digest prefixes, never content).

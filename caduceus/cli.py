@@ -119,6 +119,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     ab.add_argument("--tree", help="the tree digest you inspected (from the preview)")
     ab.add_argument("--operator")
     ab.add_argument("--allow-live", action="store_true")
+    op = sub.add_parser("openshell-policy", help="print an UNVERIFIED NVIDIA OpenShell policy making the broker the only writer of the skills tree")
+    op.add_argument("--skills-root", required=True)
+    op.add_argument("--caduceus-dir", required=True)
     ps = sub.add_parser("policy-set", help="operator installs the state-governance policy (ledgered; a silent edit of policy.json is refused at load)")
     ps.add_argument("--base", required=True)
     ps.add_argument("--file", required=True, help="JSON object of Policy fields")
@@ -191,7 +194,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -291,6 +294,15 @@ def _ops(args) -> int:
         try:
             _print(Kernel(args.skills_root, args.base, allow_live=args.allow_live).register_check(args.skill, chk, args.operator))
         except (TransitionError, CheckError) as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd == "openshell-policy":
+        from .openshell import render
+
+        try:
+            sys.stdout.write(render(os.path.abspath(os.path.expanduser(args.skills_root)), os.path.abspath(os.path.expanduser(args.caduceus_dir))))
+        except ValueError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0

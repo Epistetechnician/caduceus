@@ -552,3 +552,42 @@ class LifecycleTests(unittest.TestCase):
         self.k.observe_lifecycle("a", "patched")
         self.now[0] += self.k.policy.taint_window_s + 1
         self.assertEqual(self.k.lifecycle_scope(), [])
+
+
+class MemorySurfaceTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self.tmp.name, "memories")
+        write(self.root, "MEMORY.md", "- a fact\n")
+        write(self.root, "USER.md", "name: sam\n")
+        write(self.root, "MEMORY.md.lock", "")
+        self.k = Kernel(self.root, os.path.join(self.tmp.name, "s"), Policy(surface="memory"), clock=lambda: 1000)
+        self.assertEqual(self.k.reconcile()["status"], "baseline")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_lock_files_are_ignored_and_benign_append_is_admitted(self):
+        write(self.root, "MEMORY.md.lock", "held")
+        self.assertEqual(self.k.reconcile()["status"], "clean")
+        write(self.root, "MEMORY.md", "- a fact\n- another\n")
+        self.assertEqual(self.k.reconcile()["status"], "accepted")
+
+    def test_only_the_two_memory_files_are_in_scope(self):
+        write(self.root, "stray.md", "x\n")
+        self.assertIn("scope:Fail", self.k.reconcile()["verdict"]["reason_codes"])
+
+    def test_wiping_or_deleting_memory_is_held(self):
+        write(self.root, "MEMORY.md", "")
+        self.assertIn("deletion:Quarantine", self.k.reconcile()["verdict"]["reason_codes"])
+        os.remove(os.path.join(self.root, "USER.md"))
+        self.assertIn("deletion:Quarantine", self.k.reconcile()["verdict"]["reason_codes"])
+
+    def test_tainted_memory_write_is_held_and_never_discharged(self):
+        self.k.observe_taint("s", "web_extract", "page")
+        write(self.root, "MEMORY.md", "- a fact\n- from the web\n")
+        self.assertIn("provenance:Quarantine", self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["reason_codes"])
+
+    def test_surface_is_validated(self):
+        with self.assertRaises(TransitionError):
+            Policy.from_dict({"surface": "prompts"})

@@ -131,10 +131,23 @@ def decide(tool_name: str, args: Dict[str, Any], base: str) -> Optional[Dict[str
 
 
 SWEEP_TOOLS = frozenset({"skill_view", "skills_list", "skill_manage"})
+MEMORY_TOOL = "memory"
 WRITER_TOOLS = frozenset({"write_file", "patch", "terminal", "execute_code"})  # can write the skills tree without skill_manage
 
 
-def _kernel(base: str):
+def _surfaces(base: str):
+    """Governed surfaces from mode.json {"surfaces": [...]}; default skills only."""
+    try:
+        with open(os.path.join(base, "mode.json"), "r", encoding="utf-8") as fh:
+            s = json.load(fh).get("surfaces", ["skills"])
+        return [x for x in ("skills", "memory") if isinstance(s, list) and x in s] or ["skills"]
+    except (OSError, ValueError, AttributeError):
+        return ["skills"]
+
+
+def _kernel(base: str, surface: str = "skills"):
+    import dataclasses
+
     from caduceus.transition import Kernel, Policy, load_policy
 
     live = False
@@ -147,15 +160,17 @@ def _kernel(base: str):
             pol = Policy(**{k: (tuple(v) if k == "pinned" else v) for k, v in cfg["policy"].items()})
     except (OSError, ValueError, TypeError):
         pass
+    if surface == "memory":  # same operator policy, applied to MEMORY.md / USER.md with its own state directory
+        return Kernel(os.path.join(_home(), "memories"), os.path.join(base, "memory"), dataclasses.replace(pol, surface="memory"), allow_live=live)
     return Kernel(os.path.join(_home(), "skills"), base, pol, allow_live=live)
 
 
-def _reconcile(base: str, session_id: str = ""):
+def _reconcile(base: str, session_id: str = "", surface: str = "skills"):
     from caduceus import control
 
-    if not control.load(base).enabled("admission"):
+    if not control.load(base).enabled("admission") or surface not in _surfaces(base):
         return None
-    k = _kernel(base)
+    k = _kernel(base, surface)
     return k.reconcile(taint=k.taint_scope(session_id) if k.policy.provenance != "off" else [], announced=k.lifecycle_scope() if k.policy.lifecycle != "off" else [])
 
 
@@ -168,7 +183,8 @@ def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str 
         from caduceus import control
 
         if control.load(base).enabled("admission"):
-            _kernel(base).observe_taint(session_id or "", tool_name, result)
+            for surface in _surfaces(base):
+                _kernel(base, surface).observe_taint(session_id or "", tool_name, result)
     except Exception as exc:  # noqa: BLE001 - observer; a missed observation only weakens the lane, and the next reconcile still judges the effect
         logger.warning("caduceus taint observe error: %s", type(exc).__name__)
     return None
@@ -191,6 +207,17 @@ def _on_skill_lifecycle(action: str = "", skill_name: str = "", **kwargs: Any) -
 
 def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any = None, session_id: str = "", **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
+    if tool_name == MEMORY_TOOL and _mode(base) == "boundary" and "memory" in _surfaces(base):
+        try:
+            out = _reconcile(base, session_id, "memory")
+        except Exception as exc:  # noqa: BLE001 - fail-open, as for skills
+            logger.warning("caduceus memory reconcile error: %s", type(exc).__name__)
+            return None
+        if out and out.get("status") == "restored":
+            v = out["verdict"]
+            return json.dumps({"success": False, "error": "Caduceus did not admit this memory change (%s: %s). Memory was restored to its last admitted state."
+                               % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
+        return None
     if (tool_name != GATED_TOOL and tool_name not in WRITER_TOOLS) or _mode(base) != "boundary":
         return None
     try:
@@ -212,6 +239,11 @@ def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any
 def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", session_id: str = "", **kwargs: Any):
     base = os.path.join(_home(), "caduceus")
     if _mode(base) == "boundary":
+        if tool_name == MEMORY_TOOL and "memory" in _surfaces(base):
+            try:
+                _reconcile(base, session_id, "memory")  # revert an out-of-band edit of MEMORY.md / USER.md before the memory tool reads it
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("caduceus memory sweep error: %s", type(exc).__name__)
         if tool_name in SWEEP_TOOLS:
             try:
                 _reconcile(base, session_id)  # catches out-of-band writers (shell, forked review agent) before anything reads the tree
