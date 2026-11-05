@@ -111,6 +111,12 @@ def assemble(
     c = contract_file.contract
     proposer_view = [p.probe_id for p in c.probes if p.kind != "held_out"]
     ev["holdout"] = lanes.lane_holdout(pr.get("holdout_commitment", ""), c.probes_of("held_out"), proposer_view)
+    if ev["holdout"]["status"] == "Checked":  # R15: a preregistered information budget; unchanged when none is declared
+        from . import leakage
+
+        b = leakage.budget_lane(ledger, pr.get("holdout_commitment", ""), pr.get("holdout_budget_bits"))
+        if b is not None:
+            ev["holdout"] = b
 
     verdicts = [e["body"] for e in ledger.find("verdict") if e["body"].get("experiment_id") == eid]
     v = verdicts[0] if len(verdicts) == 1 else None

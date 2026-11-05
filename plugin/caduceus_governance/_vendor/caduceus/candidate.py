@@ -116,6 +116,9 @@ def validate_candidate(c: Candidate, allowed_roots: Tuple[str, ...]) -> List[str
             problems.append("prereg_%s_invalid" % f)
     if not is_hex_digest(pr["holdout_commitment"]):
         problems.append("prereg_holdout_commitment_invalid")
+    hb = pr.get("holdout_budget_bits")  # optional (R15): a preregistered cap on verdict bits released from the sealed holdout
+    if hb is not None and (isinstance(hb, bool) or not isinstance(hb, int) or hb < 0):
+        problems.append("prereg_holdout_budget_bits_invalid")
     if c.content_digest and not is_hex_digest(c.content_digest):
         problems.append("content_digest_invalid")
     if c.kind == "code_patch" and not c.required_signer_roles:

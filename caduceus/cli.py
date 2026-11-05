@@ -101,6 +101,24 @@ def main(argv: Optional[List[str]] = None) -> int:
         sp.add_argument("--skills-root", required=True)
         sp.add_argument("--base", required=True)
         sp.add_argument("--allow-live", action="store_true")
+    hr = sub.add_parser("holdout-release", help="charge bits of verdict released from a sealed holdout to a proposer (record BEFORE the proposer sees it)")
+    hr.add_argument("--ledger", required=True)
+    hr.add_argument("--commitment", required=True)
+    hr.add_argument("--bits", type=int, required=True)
+    hr.add_argument("--verdict-digest", required=True)
+    hr.add_argument("--n", type=int, required=True)
+    hc = sub.add_parser("holdout-certify", help="lower bound on a measured gain after charging the holdout's released bits (integers, parts per million)")
+    hc.add_argument("--ledger", required=True)
+    hc.add_argument("--commitment", required=True)
+    hc.add_argument("--gain-micro", type=int, required=True)
+    hc.add_argument("--delta-ppm", type=int, default=50000)
+    hc.add_argument("--description-bits", type=int)
+    ab = sub.add_parser("attest-baseline", help="operator attests the first skills tree before it becomes HEAD (needed when the policy sets tofu=false); without --tree it only previews")
+    ab.add_argument("--skills-root", required=True)
+    ab.add_argument("--base", required=True)
+    ab.add_argument("--tree", help="the tree digest you inspected (from the preview)")
+    ab.add_argument("--operator")
+    ab.add_argument("--allow-live", action="store_true")
     ps = sub.add_parser("policy-set", help="operator installs the state-governance policy (ledgered; a silent edit of policy.json is refused at load)")
     ps.add_argument("--base", required=True)
     ps.add_argument("--file", required=True, help="JSON object of Policy fields")
@@ -173,7 +191,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -276,6 +294,41 @@ def _ops(args) -> int:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0
+    if args.cmd == "attest-baseline":
+        from .transition import Kernel, TransitionError, load_policy
+
+        try:
+            k = Kernel(args.skills_root, args.base, load_policy(args.base), allow_live=args.allow_live)
+            if not args.tree:
+                _print(k.baseline_preview())
+                return 0
+            if not args.operator:
+                print("refused: --operator is required to attest", file=sys.stderr)
+                return 3
+            _print(k.attest_baseline(args.tree, args.operator))
+        except TransitionError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd in ("holdout-release", "holdout-certify"):
+        from . import leakage
+        from .ledger import Ledger, LedgerError
+
+        try:
+            led = Ledger(args.ledger)
+            if args.cmd == "holdout-release":
+                e = leakage.release(led, args.commitment, args.bits, args.verdict_digest, args.n)
+                _print({"seq": e["seq"], **leakage.account(Ledger(args.ledger), args.commitment)})
+            else:
+                acct = leakage.account(led, args.commitment)
+                if not acct["queries"]:
+                    print("refused: no bits recorded for that commitment; certifying with zero charge would overstate the gain", file=sys.stderr)
+                    return 3
+                _print({"account": acct, **leakage.certify(args.gain_micro, acct["n"], args.delta_ppm, acct["bits"], args.description_bits)})
+        except (leakage.LeakageError, LedgerError) as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
     if args.cmd in ("policy-set", "policy-show"):
         from .transition import Policy, TransitionError, load_policy, policy_set
 
@@ -304,7 +357,9 @@ def _ops(args) -> int:
         from .transition import Kernel, TransitionError
 
         try:
-            k = Kernel(args.skills_root, args.base, allow_live=args.allow_live)
+            from .transition import load_policy
+
+            k = Kernel(args.skills_root, args.base, load_policy(args.base), allow_live=args.allow_live)
             out = k.reconcile() if args.cmd == "reconcile" else k.release(args.effect_digest, args.operator, args.reason)
         except TransitionError as exc:
             print("refused: %s" % exc, file=sys.stderr)

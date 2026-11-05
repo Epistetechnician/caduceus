@@ -17,6 +17,7 @@ replaying the same writes yields the same verdicts and the same ledger. Nothing 
 from __future__ import annotations
 
 import fcntl
+import fnmatch
 import json
 import os
 import re
@@ -90,11 +91,16 @@ class Policy:
     # Taint discharge: a tainted write whose every file is code or data (not prose) in skills whose operator-registered checks all Pass is admitted.
     # Prose instructions are never discharged: a check cannot validate what a sentence asks the model to do.
     taint_discharge: bool = True
+    # Evaluator paths (globs on the path under the skills root, e.g. 'dev/t/scripts/metric_logger.py', '*/evals/*'): any add, change or removal is rejected.
+    # The oracle must live outside what it judges; where an operator keeps evaluator-like files inside a skill, this makes them read-only to the agent.
+    protected_globs: Tuple[str, ...] = ()
+    # Trust on first use is the default for compatibility. With tofu=False the first HEAD must be attested by an operator who has seen its digest (`attest-baseline`).
+    tofu: bool = True
 
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -202,6 +208,7 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     out["file_kind"] = "Pass" if all(cur[p]["kind"] == "file" for p in written) else "Fail"
     pinned = {s for s in policy.pinned}
     out["pinned"] = "Fail" if any(_skill_of(p) in pinned for p in touched) else "Pass"
+    out["protected"] = "Fail" if any(fnmatch.fnmatchcase(p, g) for p in touched for g in policy.protected_globs) else "Pass"
     out["budget"] = "Pass" if (len(touched) <= policy.max_files_changed and sum(effect["added"][p][1] for p in effect["added"]) + sum(effect["changed"][p][2] for p in effect["changed"]) <= policy.max_added_bytes
                                and all(cur[p]["size"] <= policy.max_file_bytes for p in written)) else "Quarantine"
     deleted_skill = any(p.endswith("/SKILL.md") and len(p.split("/")) == 3 for p in effect["removed"])
@@ -414,7 +421,11 @@ class Kernel:
         led = self.ledger()
         cur = manifest(self.root)
         head = self.head()
-        if head is None:  # trust on first use: the tree present now becomes the admitted baseline
+        if head is None and not self.policy.tofu:
+            d = tree_digest(cur)
+            if not any(e["body"].get("event") == "baseline_attested" and e["body"].get("tree") == d for e in led.find("audit_note")):
+                return {"status": "unattested", "tree": d, "files": len(cur)}  # nothing is judged or restored until an operator attests exactly this tree
+        if head is None:  # trust on first use (or an attested tree): the tree present now becomes the admitted baseline
             self._retain(cur)
             d = self._save_manifest(cur)
             led.append("transition_baseline", {"tree": d, "files": len(cur), "policy_digest": self.policy.digest()})
@@ -463,6 +474,23 @@ class Kernel:
             raise TransitionError("restore did not reproduce HEAD")
         led.append("transition_restored", {"effect_digest": ed, "to_tree": head, "decision": verdict["decision"]})
         return {"status": "restored", "verdict": verdict, "tree": head}
+
+    def baseline_preview(self) -> Dict[str, Any]:
+        """What attest-baseline would attest: the tree digest, file count and a bounded path list. Reads only."""
+        cur = manifest(self.root)
+        return {"tree": tree_digest(cur), "files": len(cur), "paths": sorted(cur)[:50], "head": self.head()}
+
+    def attest_baseline(self, tree: str, operator: str) -> Dict[str, Any]:
+        """The operator states the digest of the tree they inspected. Refused if the tree on disk is not exactly that tree, or HEAD already exists."""
+        with open(os.path.join(self.base, ".lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if self.head() is not None:
+                raise TransitionError("a HEAD already exists; attestation applies to the first baseline only")
+            cur = tree_digest(manifest(self.root))
+            if cur != tree:
+                raise TransitionError("the skills tree changed since it was inspected (now %s)" % cur[:16])
+            self.ledger().append("audit_note", {"event": "baseline_attested", "tree": tree, "operator": operator[:64]})
+        return {"attested": tree}
 
     def held(self) -> List[str]:
         led = self.ledger()
