@@ -135,15 +135,15 @@ WRITER_TOOLS = frozenset({"write_file", "patch", "terminal", "execute_code"})  #
 
 
 def _kernel(base: str):
-    from caduceus.transition import Kernel, Policy
+    from caduceus.transition import Kernel, Policy, load_policy
 
     live = False
-    pol = Policy()
+    pol = load_policy(base) or Policy()  # the operator's ledgered policy.json; a tampered or unreadable one raises, so no reconcile runs under a guessed policy
     try:
         with open(os.path.join(base, "mode.json"), "r", encoding="utf-8") as fh:
             cfg = json.load(fh)
         live = cfg.get("live") is True
-        if isinstance(cfg.get("policy"), dict):
+        if isinstance(cfg.get("policy"), dict) and load_policy(base) is None:  # legacy inline policy, used only when no policy.json is installed
             pol = Policy(**{k: (tuple(v) if k == "pinned" else v) for k, v in cfg["policy"].items()})
     except (OSError, ValueError, TypeError):
         pass

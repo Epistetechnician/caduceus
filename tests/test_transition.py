@@ -385,3 +385,55 @@ class OperatorViewTests(unittest.TestCase):
             self.k.review(ed)
         with self.assertRaises(TransitionError):
             self.k.review("0" * 64)
+
+
+class PolicyAsCodeTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.base = os.path.join(self.tmp.name, "caduceus")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_from_dict_is_strict(self):
+        for bad in ({"nope": 1}, {"max_files_changed": "3"}, {"max_files_changed": True}, {"max_files_changed": -1}, {"pinned": "a/b"}, {"provenance": "maybe"}, {"taint_discharge": 1}):
+            with self.assertRaises(TransitionError):
+                Policy.from_dict(bad)
+        self.assertEqual(Policy.from_dict({"pinned": ["a/b"], "rate_max": 3}).rate_max, 3)
+
+    def test_no_policy_file_means_none(self):
+        from caduceus.transition import load_policy
+
+        self.assertIsNone(load_policy(self.base))
+
+    def test_set_then_load_roundtrip_and_ledgered(self):
+        from caduceus.transition import load_policy, policy_set
+
+        r = policy_set(self.base, {"rate_max": 5, "provenance": "off"}, "op")
+        pol = load_policy(self.base)
+        self.assertEqual((pol.rate_max, pol.provenance, pol.digest()), (5, "off", r["policy_digest"]))
+        notes = [e["body"] for e in Ledger(os.path.join(self.base, "transitions.jsonl")).find("audit_note")]
+        self.assertEqual(notes[-1]["event"], "policy_set")
+        self.assertEqual(notes[-1]["policy_digest"], r["policy_digest"])
+
+    def test_silent_edit_of_policy_file_is_refused(self):
+        from caduceus.transition import load_policy, policy_set
+
+        policy_set(self.base, {"rate_max": 5}, "op")
+        p = os.path.join(self.base, "policy.json")
+        d = json.load(open(p))
+        d["provenance"] = "off"
+        json.dump(d, open(p, "w"))
+        with self.assertRaises(TransitionError):
+            load_policy(self.base)
+
+    def test_verdict_replay_with_recorded_policy_is_byte_identical(self):
+        def run(base):
+            root = os.path.join(base, "skills")
+            write(root, "dev/a/SKILL.md", SKILL % ("a", "a"))
+            k = Kernel(root, os.path.join(base, "c"), Policy.from_dict({"rate_max": 7}), clock=lambda: 1000)
+            k.reconcile()
+            write(root, "dev/a/references/n.md", "note\n")
+            return k.reconcile()["verdict"]["verdict_digest"]
+        with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2:
+            self.assertEqual(run(t1), run(t2))

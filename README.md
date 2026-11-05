@@ -45,34 +45,38 @@ visible-overfit rejected; disagreeing instruments quarantined; side-effect on a
 protected skill rejected; stale retention evidence caught at apply time and
 rolled back; self-signed code patch rejected; replayed capability refused).
 
-## Install the plugin (observe mode)
+## Install the plugin
 
-Operator steps; this repository never writes to `~/.hermes` itself.
+The plugin is `plugin/caduceus_governance/`: self-contained (it ships a vendored copy of the kernel in `_vendor/`, kept in sync by `scripts/vendor_plugin.py` and a test),
+hooks only (`pre_tool_call`, `transform_tool_result`, `post_tool_call`), stdlib only, no network, no model calls, no telemetry, no credential reads, no self-update.
+`hermes plugins validate plugin/caduceus_governance` passes. Once listed in the Hermes catalog: `hermes plugins install caduceus-governance`, then enable it.
+From a checkout (operator steps; this repository never writes to `~/.hermes` itself):
 
 ```sh
-~/.hermes/hermes-agent/venv/bin/pip install -e .          # Hermes' interpreter must import caduceus
 ln -s "$PWD/plugin/caduceus_governance" ~/.hermes/plugins/caduceus_governance
 mkdir -p ~/.hermes/caduceus && echo '{"mode": "observe"}' > ~/.hermes/caduceus/mode.json
 ```
 
-Then add the plugin to `plugins.enabled` in `~/.hermes/config.yaml`
-(user plugins are gated by that list):
-
 ```yaml
+# ~/.hermes/config.yaml  (user plugins are gated by this list)
 plugins:
   enabled:
     - caduceus-governance
 ```
 
-Observe mode records one ledger entry (args digest + action names, never
-content) per `skill_manage` call, including the background-review fork's, and
-never blocks. Check it with
-`python3 -m caduceus diagnostics --ledger ~/.hermes/caduceus/ledger.jsonl --caduceus-dir ~/.hermes/caduceus`.
-Freeze or switch it off without uninstalling:
-`python3 -m caduceus control freeze --caduceus-dir ~/.hermes/caduceus` /
-`control disable admission ...`. `enforce` mode blocks mutations that lack an
-admitted single-use capability and fails closed; run observe first and read
-`docs/CLAIMS.md` before switching.
+Modes (`mode.json`; the default is `observe`, anything stronger is an explicit opt-in):
+* `observe` records one ledger entry per `skill_manage` call (args digest and action names, never content) and never blocks.
+* `boundary` governs the *effect*: after each skill write, and before each skill read, the skills tree is compared with its last admitted state; anything not admitted is restored and the model is told.
+  A skill write made after untrusted content entered the session (`web_extract`, `web_search`, `browser_*`, `mcp_*`: Hermes' own untrusted-tool list) is held for you; code or data whose
+  skill has your registered passing checks is admitted. Review with `caduceus status` and `caduceus review-effect <digest>`; release with `caduceus release-effect`.
+* `enforce` blocks `skill_manage` mutations that lack an admitted single-use capability and fails closed.
+
+Disclosure: reads and writes only under `$HERMES_HOME/skills` (boundary mode restores it) and `$HERMES_HOME/caduceus` (ledger, blobs, taint metadata: tool names and digest prefixes, never content).
+Operator-registered check commands (`caduceus check-add`; off unless you add one) run in a copy of the skill under macOS Seatbelt: no network, no writes outside the copy.
+**On Linux and anywhere Seatbelt is unusable a check returns `Unavailable` and the change is held, never passed**, so boundary mode there holds more than on macOS until Linux confinement is built.
+
+Freeze or switch it off without uninstalling: `python3 -m caduceus control freeze --caduceus-dir ~/.hermes/caduceus` / `control disable admission ...`.
+Check the ledger with `python3 -m caduceus diagnostics --ledger ~/.hermes/caduceus/ledger.jsonl --caduceus-dir ~/.hermes/caduceus`. Read `docs/CLAIMS.md` before leaving observe.
 
 ## Read next
 

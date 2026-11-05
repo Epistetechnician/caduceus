@@ -96,6 +96,38 @@ class Policy:
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
                 "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge}
 
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "Policy":
+        """Strict: unknown fields, wrong types and out-of-range values are errors (fail closed)."""
+        if not isinstance(d, dict):
+            raise TransitionError("policy must be an object")
+        fields = {f for f in cls.__dataclass_fields__}
+        if set(d) - fields:
+            raise TransitionError("unknown policy fields: %s" % ", ".join(sorted(set(d) - fields)))
+        default = cls()
+        kw: Dict[str, Any] = {}
+        for k, v in d.items():
+            want = getattr(default, k)
+            if isinstance(want, tuple):
+                if not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+                    raise TransitionError("policy field %s must be a list of strings" % k)
+                kw[k] = tuple(v)
+            elif isinstance(want, bool):
+                if not isinstance(v, bool):
+                    raise TransitionError("policy field %s must be a boolean" % k)
+                kw[k] = v
+            elif isinstance(want, int):
+                if isinstance(v, bool) or not isinstance(v, int) or v < 0:
+                    raise TransitionError("policy field %s must be a non-negative integer" % k)
+                kw[k] = v
+            else:
+                if not isinstance(v, str):
+                    raise TransitionError("policy field %s must be a string" % k)
+                kw[k] = v
+        if kw.get("provenance", default.provenance) not in ("quarantine", "off"):
+            raise TransitionError("provenance must be 'quarantine' or 'off'")
+        return cls(**kw)
+
     def is_taint_tool(self, name: str) -> bool:
         return any(name == t or (t.endswith("*") and name.startswith(t[:-1])) for t in self.taint_tools)
 
@@ -222,6 +254,40 @@ def decide(lane_results: Dict[str, str], effect: Dict[str, Any], policy: Policy)
 
 def _bounded(paths: List[str]) -> List[str]:
     return [p[:200] for p in paths[:MAX_PATHS_IN_LEDGER]]
+
+
+POLICY_FILE = "policy.json"
+
+
+def policy_set(base: str, policy: Dict[str, Any], operator: str) -> Dict[str, Any]:
+    """Operator installs a policy. The file lives outside the governed tree and its digest is ledgered, so a silent edit is detected at load."""
+    pol = Policy.from_dict(policy)
+    os.makedirs(base, exist_ok=True)
+    with open(os.path.join(base, ".lock"), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        tmp = os.path.join(base, POLICY_FILE + ".tmp")
+        with open(tmp, "w") as fh:
+            json.dump(pol.as_dict(), fh, sort_keys=True)
+        os.replace(tmp, os.path.join(base, POLICY_FILE))
+        Ledger(os.path.join(base, "transitions.jsonl")).append("audit_note", {"event": "policy_set", "policy_digest": pol.digest(), "operator": operator[:64]})
+    return {"policy_digest": pol.digest()}
+
+
+def load_policy(base: str) -> Optional[Policy]:
+    """The operator's installed policy, or None if none was set. A policy.json that does not match the last ledgered policy_set is an error, never a silent default."""
+    path = os.path.join(base, POLICY_FILE)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path) as fh:
+            raw = json.load(fh)
+        pol = Policy.from_dict(raw)
+    except (OSError, ValueError) as exc:
+        raise TransitionError("policy.json unreadable: %s" % type(exc).__name__)
+    ledgered = [e["body"]["policy_digest"] for e in Ledger(os.path.join(base, "transitions.jsonl")).find("audit_note") if e["body"].get("event") == "policy_set"]
+    if not ledgered or ledgered[-1] != pol.digest():
+        raise TransitionError("policy.json does not match the last ledgered policy_set; re-install it with `caduceus policy-set`")
+    return pol
 
 
 class Kernel:

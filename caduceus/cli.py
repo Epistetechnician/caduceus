@@ -101,6 +101,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         sp.add_argument("--skills-root", required=True)
         sp.add_argument("--base", required=True)
         sp.add_argument("--allow-live", action="store_true")
+    ps = sub.add_parser("policy-set", help="operator installs the state-governance policy (ledgered; a silent edit of policy.json is refused at load)")
+    ps.add_argument("--base", required=True)
+    ps.add_argument("--file", required=True, help="JSON object of Policy fields")
+    ps.add_argument("--operator", required=True)
+    pw = sub.add_parser("policy-show", help="print the installed policy and its digest")
+    pw.add_argument("--base", required=True)
     rl = sub.add_parser("release-effect", help="operator releases a quarantined effect (HEAD must not have moved)")
     rl.add_argument("effect_digest")
     rl.add_argument("--skills-root", required=True)
@@ -167,7 +173,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "policy-set", "policy-show", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -267,6 +273,20 @@ def _ops(args) -> int:
         try:
             _print(Kernel(args.skills_root, args.base, allow_live=args.allow_live).register_check(args.skill, chk, args.operator))
         except (TransitionError, CheckError) as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd in ("policy-set", "policy-show"):
+        from .transition import Policy, TransitionError, load_policy, policy_set
+
+        try:
+            if args.cmd == "policy-set":
+                with open(args.file, "r", encoding="utf-8") as fh:
+                    _print(policy_set(args.base, json.load(fh), args.operator))
+            else:
+                pol = load_policy(args.base) or Policy()
+                _print({"policy": pol.as_dict(), "policy_digest": pol.digest(), "installed": load_policy(args.base) is not None})
+        except (TransitionError, ValueError, OSError) as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
         return 0
