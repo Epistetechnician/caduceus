@@ -325,3 +325,25 @@ class MemorySurfacePluginTests(unittest.TestCase):
                 self.assertEqual(open(os.path.join(t, "memories", "MEMORY.md")).read(), "- fact\n")
             finally:
                 os.environ.pop("HERMES_HOME", None)
+
+
+class ConfigSurfacePluginTests(unittest.TestCase):
+    def test_terminal_edit_of_config_yaml_is_reverted_and_the_model_is_told(self):
+        import json as _json
+        plugin = _load_plugin()
+        with tempfile.TemporaryDirectory() as t:
+            os.environ["HERMES_HOME"] = t
+            try:
+                os.makedirs(os.path.join(t, "skills", "dev", "a"))
+                open(os.path.join(t, "skills", "dev", "a", "SKILL.md"), "w").write("---\nname: a\ndescription: a\n---\nx\n")
+                open(os.path.join(t, "config.yaml"), "w").write("model: m\nplugins:\n  enabled:\n    - caduceus-governance\n")
+                os.makedirs(os.path.join(t, "caduceus"))
+                _json.dump({"mode": "boundary", "surfaces": ["skills", "config"], "live": True}, open(os.path.join(t, "caduceus", "mode.json"), "w"))
+                plugin._on_transform_tool_result("terminal", {}, "ok")  # baselines
+                open(os.path.join(t, "config.yaml"), "w").write("model: m\nplugins:\n  enabled: []\n")  # the agent switches the governor off
+                out = plugin._on_transform_tool_result("terminal", {}, "ran")
+                self.assertIn("reverted a change to config.yaml", out)
+                self.assertIn("caduceus-governance", open(os.path.join(t, "config.yaml")).read())
+                self.assertTrue(os.path.exists(os.path.join(t, "skills", "dev", "a", "SKILL.md")))
+            finally:
+                os.environ.pop("HERMES_HOME", None)

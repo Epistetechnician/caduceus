@@ -140,7 +140,7 @@ def _surfaces(base: str):
     try:
         with open(os.path.join(base, "mode.json"), "r", encoding="utf-8") as fh:
             s = json.load(fh).get("surfaces", ["skills"])
-        return [x for x in ("skills", "memory") if isinstance(s, list) and x in s] or ["skills"]
+        return [x for x in ("skills", "memory", "config") if isinstance(s, list) and x in s] or ["skills"]
     except (OSError, ValueError, AttributeError):
         return ["skills"]
 
@@ -160,6 +160,8 @@ def _kernel(base: str, surface: str = "skills"):
             pol = Policy(**{k: (tuple(v) if k == "pinned" else v) for k, v in cfg["policy"].items()})
     except (OSError, ValueError, TypeError):
         pass
+    if surface == "config":  # config.yaml only (the root is the Hermes home itself, so the kernel lists exactly that one file)
+        return Kernel(_home(), os.path.join(base, "config"), dataclasses.replace(pol, surface="config"), allow_live=live)
     if surface == "memory":  # same operator policy, applied to MEMORY.md / USER.md with its own state directory
         return Kernel(os.path.join(_home(), "memories"), os.path.join(base, "memory"), dataclasses.replace(pol, surface="memory"), allow_live=live)
     return Kernel(os.path.join(_home(), "skills"), base, pol, allow_live=live)
@@ -218,22 +220,36 @@ def _on_transform_tool_result(tool_name: str = "", args: Any = None, result: Any
             return json.dumps({"success": False, "error": "Caduceus did not admit this memory change (%s: %s). Memory was restored to its last admitted state."
                                % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
         return None
+    config_note = ""
+    if tool_name in WRITER_TOOLS and _mode(base) == "boundary" and "config" in _surfaces(base):
+        try:  # these tools can rewrite config.yaml; revert a non-admitted change and say so
+            cout = _reconcile(base, session_id, "config")
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("caduceus config reconcile error: %s", type(exc).__name__)
+            cout = None
+        if cout and cout.get("status") == "restored":
+            v = cout["verdict"]
+            config_note = "[Caduceus reverted a change to config.yaml (%s: %s).]" % (v["decision"], ", ".join(v["reason_codes"]) or "policy")
+
+    def with_note(note: str):
+        text = "\n".join(x for x in (note, config_note) if x)
+        return (result + "\n" + text) if isinstance(result, str) else text
+
     if (tool_name != GATED_TOOL and tool_name not in WRITER_TOOLS) or _mode(base) != "boundary":
-        return None
+        return with_note("") if config_note else None
     try:
         out = _reconcile(base, session_id)
     except Exception as exc:  # noqa: BLE001 - boundary mode is fail-open; the next reconcile re-checks the whole tree
         logger.warning("caduceus boundary reconcile error: %s", type(exc).__name__)
-        return None
+        return with_note("") if config_note else None
     if out and out.get("status") == "restored" and tool_name != GATED_TOOL:
         v = out["verdict"]
-        note = "[Caduceus reverted a change to the skills directory made by this command (%s: %s).]" % (v["decision"], ", ".join(v["reason_codes"]) or "policy")
-        return (result + "\n" + note) if isinstance(result, str) else note
+        return with_note("[Caduceus reverted a change to the skills directory made by this command (%s: %s).]" % (v["decision"], ", ".join(v["reason_codes"]) or "policy"))
     if out and out.get("status") == "restored":
         v = out["verdict"]
         return json.dumps({"success": False, "error": "Caduceus did not admit this skill change (%s: %s). The skills directory was restored to its last admitted state."
                            % (v["decision"], ", ".join(v["reason_codes"]) or "policy")})
-    return None
+    return with_note("") if config_note else None
 
 
 def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", session_id: str = "", **kwargs: Any):

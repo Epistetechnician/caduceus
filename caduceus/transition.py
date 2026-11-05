@@ -37,6 +37,15 @@ TREE_DOMAIN = "caduceus.transition.tree.v1"
 MAX_FILES = 20000
 MAX_PATHS_IN_LEDGER = 25
 MEMORY_FILES = ("MEMORY.md", "USER.md")
+CONFIG_FILES = ("config.yaml",)
+# Config lines that change what the agent may do or where it talks. Matched on added and removed lines only; a change touching none of them is an ordinary edit.
+CONFIG_SENSITIVE = (
+    re.compile(r"(?i)\b(yolo|auto[_-]?approve|approvals?|dangerously|skip[_-]?permissions?|sandbox|allowlist|denylist)\b"),
+    re.compile(r"(?i)^\s*(plugins|hooks?|mcp[_-]?servers?|tools?|toolsets|providers?|model|gateway|network|egress|proxy)\s*:"),
+    re.compile(r"(?i)\b(enabled|disabled|caduceus)\b"),
+    re.compile(r"(?i)\b(base_url|api_base|endpoint|webhook|proxy)\b"),
+    re.compile(r"(?i)\b(api[_-]?key|token|secret|password)\b"),
+)
 CODE_SUFFIXES = (".py", ".json")  # roles a registered check can speak for; everything else is prose
 
 SECRET_PATTERNS = (
@@ -100,7 +109,7 @@ class Policy:
     # Second observation channel (Hermes' on_skill_lifecycle facts). 'quarantine': when lifecycle facts exist in the window, a write touching a skill that no fact announced is held.
     # Off by default: it is only as good as the hook's coverage of every Hermes writer.
     lifecycle: str = "off"
-    # Which Hermes state this kernel governs: 'skills' (category/name/... trees) or 'memory' (exactly MEMORY.md and USER.md, prose only, nothing discharges taint).
+    # Which Hermes state this kernel governs: 'skills' (category/name/... trees), 'memory' (exactly MEMORY.md and USER.md) or 'config' (exactly config.yaml at the Hermes home). Memory and config are prose: nothing discharges taint.
     surface: str = "skills"
 
     def as_dict(self) -> Dict[str, Any]:
@@ -136,8 +145,8 @@ class Policy:
                 if not isinstance(v, str):
                     raise TransitionError("policy field %s must be a string" % k)
                 kw[k] = v
-        if kw.get("surface", default.surface) not in ("skills", "memory"):
-            raise TransitionError("surface must be 'skills' or 'memory'")
+        if kw.get("surface", default.surface) not in ("skills", "memory", "config"):
+            raise TransitionError("surface must be 'skills', 'memory' or 'config'")
         for fld in ("provenance", "lifecycle"):
             if kw.get(fld, getattr(default, fld)) not in ("quarantine", "off"):
                 raise TransitionError("%s must be 'quarantine' or 'off'" % fld)
@@ -155,17 +164,20 @@ def _skip(rel: str) -> bool:
     return rel.split("/", 1)[0].startswith(".") or rel.endswith(".lock")  # Hermes metadata and its lock files
 
 
-def manifest(root: str) -> Dict[str, Dict[str, Any]]:
+def manifest(root: str, only: Optional[Tuple[str, ...]] = None) -> Dict[str, Dict[str, Any]]:
     """rel path -> {sha256,size,exec,kind}. Symlinks and special files are recorded as such, never followed."""
     out: Dict[str, Dict[str, Any]] = {}
     if not os.path.isdir(root):
         return out
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
+        if only is not None and dirpath != root:
+            dirnames[:] = []  # a file-list surface (config) never descends: the root is a whole Hermes home
+            continue
         rel_dir = os.path.relpath(dirpath, root).replace(os.sep, "/")
         dirnames.sort()
         for name in sorted(filenames) + [d for d in dirnames if os.path.islink(os.path.join(dirpath, d))]:
             rel = name if rel_dir == "." else rel_dir + "/" + name
-            if _skip(rel):
+            if _skip(rel) or (only is not None and rel not in only):
                 continue
             full = os.path.join(dirpath, name)
             st = os.lstat(full)
@@ -208,13 +220,16 @@ def _skill_of(rel: str) -> str:
 
 
 def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable[[str], bytes], policy: Policy, recent: int, recent_removed: int = 0,
-          check_results: Optional[Dict[str, str]] = None, taint: int = 0, announced: Optional[List[str]] = None) -> Dict[str, str]:
+          check_results: Optional[Dict[str, str]] = None, taint: int = 0, announced: Optional[List[str]] = None,
+          read_head: Optional[Callable[[str], bytes]] = None) -> Dict[str, str]:
     """Pure lane functions over (effect, content). status: Pass | Fail | Quarantine."""
     touched = sorted(list(effect["added"]) + list(effect["changed"]) + list(effect["removed"]))
     written = sorted(list(effect["added"]) + list(effect["changed"]))
     out: Dict[str, str] = {}
     if policy.surface == "memory":
         out["scope"] = "Pass" if all(p in MEMORY_FILES for p in touched) else "Fail"
+    elif policy.surface == "config":
+        out["scope"] = "Pass" if all(p in CONFIG_FILES for p in touched) else "Fail"
     else:
         out["scope"] = "Pass" if all(len(p.split("/")) >= 3 and ".." not in p.split("/") for p in touched) else "Fail"
     out["file_kind"] = "Pass" if all(cur[p]["kind"] == "file" for p in written) else "Fail"
@@ -223,7 +238,7 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     out["protected"] = "Fail" if any(fnmatch.fnmatchcase(p, g) for p in touched for g in policy.protected_globs) else "Pass"
     out["budget"] = "Pass" if (len(touched) <= policy.max_files_changed and sum(effect["added"][p][1] for p in effect["added"]) + sum(effect["changed"][p][2] for p in effect["changed"]) <= policy.max_added_bytes
                                and all(cur[p]["size"] <= policy.max_file_bytes for p in written)) else "Quarantine"
-    deleted_skill = any(p.endswith("/SKILL.md") and len(p.split("/")) == 3 for p in effect["removed"]) or (policy.surface == "memory" and (bool(effect["removed"]) or any(v[2] == 0 for v in list(effect["changed"].values()) + list(effect["added"].values()) if len(v) > 2)))
+    deleted_skill = any(p.endswith("/SKILL.md") and len(p.split("/")) == 3 for p in effect["removed"]) or (policy.surface in ("memory", "config") and (bool(effect["removed"]) or any(v[2] == 0 for v in list(effect["changed"].values()) + list(effect["added"].values()) if len(v) > 2)))
     # cumulative within the rate window, so deleting one file at a time cannot slip under the per-change limit
     out["deletion"] = "Quarantine" if (len(effect["removed"]) + recent_removed > policy.max_deleted_files or deleted_skill) else "Pass"
     out["rate"] = "Quarantine" if recent >= policy.rate_max else "Pass"
@@ -249,6 +264,16 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
     cr = check_results or {}
     out["checks"] = "Fail" if "Fail" in cr.values() else ("Quarantine" if "Unavailable" in cr.values() else "Pass")
     # provenance: how many untrusted-source observations are in scope for this write (an input, so the verdict stays a pure function of its inputs)
+    # config_keys: a change to a sensitive setting (approvals, plugins, endpoints, credentials) needs a human, whoever wrote it
+    out["config_keys"] = "Pass"
+    if policy.surface == "config" and written:
+        changed_lines = set()
+        for p in written:
+            new = read(p).decode("utf-8", "replace").splitlines() if cur[p]["size"] <= policy.max_file_bytes else ["<oversized>"]
+            old = read_head(p).decode("utf-8", "replace").splitlines() if (read_head and p in effect["changed"]) else []
+            changed_lines |= set(new) ^ set(old)
+        if any(r.search(ln) for ln in changed_lines for r in CONFIG_SENSITIVE):
+            out["config_keys"] = "Quarantine"
     # lifecycle: facts Hermes itself emitted about which skills changed must cover what the tree diff shows
     out["lifecycle"] = "Pass"
     if policy.lifecycle == "quarantine" and announced:
@@ -322,6 +347,7 @@ class Kernel:
         if (real == live or real.startswith(live + os.sep)) and not allow_live:
             raise TransitionError("refusing to govern a real Hermes home without allow_live")
         self.root, self.base, self.policy, self.clock = real, os.path.realpath(base), policy or Policy(), clock
+        self.only = CONFIG_FILES if self.policy.surface == "config" else None
         for d in ("blobs", "manifests", "effects"):
             os.makedirs(os.path.join(self.base, d), exist_ok=True)
         self.ledger_path = os.path.join(self.base, "transitions.jsonl")
@@ -366,7 +392,7 @@ class Kernel:
 
     # -- restore HEAD onto disk
     def _restore(self, target: Dict[str, Dict[str, Any]]) -> None:
-        cur = manifest(self.root)
+        cur = manifest(self.root, self.only)
         for rel in sorted(set(cur) - set(target), reverse=True):
             full = os.path.join(self.root, *rel.split("/"))
             if os.path.islink(full) or os.path.isfile(full):
@@ -389,7 +415,7 @@ class Kernel:
             with open(full, "wb") as fh:
                 fh.write(data)
             os.chmod(full, 0o755 if e["exec"] else 0o644)
-        for dirpath, dirnames, filenames in os.walk(self.root, topdown=False):  # prune directories emptied by the restore
+        for dirpath, dirnames, filenames in (os.walk(self.root, topdown=False) if self.only is None else ()):  # prune directories emptied by the restore
             if dirpath != self.root and not os.listdir(dirpath) and not _skip(os.path.relpath(dirpath, self.root).replace(os.sep, "/")):
                 os.rmdir(dirpath)
 
@@ -469,7 +495,7 @@ class Kernel:
 
     def _reconcile(self, taint: List[str], announced: List[str]) -> Dict[str, Any]:
         led = self.ledger()
-        cur = manifest(self.root)
+        cur = manifest(self.root, self.only)
         head = self.head()
         if head is None and not self.policy.tofu:
             d = tree_digest(cur)
@@ -502,7 +528,10 @@ class Kernel:
             st, sd = chk.run_skill(self.base, self.root, sk)
             if st != "NoChecks":
                 check_results[sk], spec_digests[sk] = st, sd
-        verdict = decide(lanes(effect, cur, read, self.policy, recent, recent_removed, check_results, len(taint), announced), effect, self.policy)
+        def read_head(rel: str) -> bytes:
+            with open(self._blob(hm[rel]["sha256"]), "rb") as fh:
+                return fh.read()
+        verdict = decide(lanes(effect, cur, read, self.policy, recent, recent_removed, check_results, len(taint), announced, read_head), effect, self.policy)
         checks_digest = domain_digest("caduceus.transition.checks.v1", {"results": check_results, "specs": spec_digests})
         touched = list(effect["added"]) + list(effect["changed"]) + list(effect["removed"])
         led.append("transition_verdict", {"effect_digest": ed, "verdict_digest": verdict["verdict_digest"], "decision": verdict["decision"],
@@ -520,14 +549,14 @@ class Kernel:
                 json.dump({"effect": effect, "child_manifest": cur}, fh, sort_keys=True)
             led.append("transition_quarantined", {"effect_digest": ed, "verdict_digest": verdict["verdict_digest"]})
         self._restore(hm)
-        if tree_digest(manifest(self.root)) != head:
+        if tree_digest(manifest(self.root, self.only)) != head:
             raise TransitionError("restore did not reproduce HEAD")
         led.append("transition_restored", {"effect_digest": ed, "to_tree": head, "decision": verdict["decision"]})
         return {"status": "restored", "verdict": verdict, "tree": head}
 
     def baseline_preview(self) -> Dict[str, Any]:
         """What attest-baseline would attest: the tree digest, file count and a bounded path list. Reads only."""
-        cur = manifest(self.root)
+        cur = manifest(self.root, self.only)
         return {"tree": tree_digest(cur), "files": len(cur), "paths": sorted(cur)[:50], "head": self.head()}
 
     def attest_baseline(self, tree: str, operator: str) -> Dict[str, Any]:
@@ -536,7 +565,7 @@ class Kernel:
             fcntl.flock(lock, fcntl.LOCK_EX)
             if self.head() is not None:
                 raise TransitionError("a HEAD already exists; attestation applies to the first baseline only")
-            cur = tree_digest(manifest(self.root))
+            cur = tree_digest(manifest(self.root, self.only))
             if cur != tree:
                 raise TransitionError("the skills tree changed since it was inspected (now %s)" % cur[:16])
             self.ledger().append("audit_note", {"event": "baseline_attested", "tree": tree, "operator": operator[:64]})
@@ -615,7 +644,7 @@ class Kernel:
             if tree_digest(child) != stored["effect"]["child"]:
                 raise TransitionError("stored child manifest does not match the effect")
             self._restore(child)
-            if tree_digest(manifest(self.root)) != stored["effect"]["child"]:
+            if tree_digest(manifest(self.root, self.only)) != stored["effect"]["child"]:
                 self._restore(self._load_manifest(self.head()))
                 raise TransitionError("release did not reproduce the quarantined tree")
             self._retain(child)

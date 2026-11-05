@@ -591,3 +591,55 @@ class MemorySurfaceTests(unittest.TestCase):
     def test_surface_is_validated(self):
         with self.assertRaises(TransitionError):
             Policy.from_dict({"surface": "prompts"})
+
+
+class ConfigSurfaceTests(unittest.TestCase):
+    CFG = "model: anthropic\nui:\n  theme: dark\nplugins:\n  enabled:\n    - caduceus-governance\n"
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.home = os.path.join(self.tmp.name, "home")
+        write(self.home, "config.yaml", self.CFG)
+        write(self.home, "auth.json", "{\"secret\": 1}")  # the rest of a Hermes home must never be touched
+        write(self.home, "skills/dev/a/SKILL.md", "x\n")
+        self.k = Kernel(self.home, os.path.join(self.tmp.name, "s"), Policy(surface="config"), clock=lambda: 1000)
+        self.assertEqual(self.k.reconcile()["status"], "baseline")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_only_config_yaml_is_governed_and_nothing_else_is_touched(self):
+        write(self.home, "skills/dev/a/SKILL.md", "changed\n")
+        write(self.home, "auth.json", "{\"secret\": 2}")
+        self.assertEqual(self.k.reconcile()["status"], "clean")
+        write(self.home, "config.yaml", self.CFG.replace("dark", "light"))
+        self.assertEqual(self.k.reconcile()["status"], "accepted")
+        self.assertEqual(open(os.path.join(self.home, "auth.json")).read(), "{\"secret\": 2}")
+
+    def test_sensitive_setting_changes_are_held_and_restored(self):
+        for bad in (self.CFG + "approvals:\n  mode: off\n", self.CFG.replace("caduceus-governance", "other"), self.CFG + "base_url: http://e.example\n",
+                    self.CFG + "yolo: true\n", self.CFG.replace("model: anthropic", "model: x\nmcp_servers:\n  - evil")):
+            write(self.home, "config.yaml", bad)
+            out = self.k.reconcile()
+            self.assertIn("config_keys:Quarantine", out["verdict"]["reason_codes"], bad)
+            self.assertEqual(open(os.path.join(self.home, "config.yaml")).read(), self.CFG)
+
+    def test_secret_in_config_is_rejected(self):
+        write(self.home, "config.yaml", self.CFG + "note: AKIA" + "ABCDEFGHIJKLMNOP\n")
+        self.assertEqual(self.k.reconcile()["verdict"]["decision"], "reject")
+
+    def test_deleting_config_is_held_and_restored(self):
+        os.remove(os.path.join(self.home, "config.yaml"))
+        self.assertEqual(self.k.reconcile()["verdict"]["decision"], "quarantine")
+        self.assertEqual(open(os.path.join(self.home, "config.yaml")).read(), self.CFG)
+
+    def test_tainted_config_edit_is_held_even_if_harmless(self):
+        self.k.observe_taint("s", "web_extract", "page")
+        write(self.home, "config.yaml", self.CFG.replace("dark", "light"))
+        self.assertIn("provenance:Quarantine", self.k.reconcile(taint=self.k.taint_scope("s"))["verdict"]["reason_codes"])
+
+    def test_restore_prunes_no_directories_in_the_home(self):
+        os.makedirs(os.path.join(self.home, "empty-dir"))
+        write(self.home, "config.yaml", self.CFG + "yolo: true\n")
+        self.k.reconcile()
+        self.assertTrue(os.path.isdir(os.path.join(self.home, "empty-dir")))
