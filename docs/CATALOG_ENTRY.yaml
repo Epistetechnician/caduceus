@@ -1,10 +1,10 @@
-# Draft for a PR to NousResearch/hermes-agent as plugin-catalog/caduceus-governance.yaml. Set `sha` to the pushed commit that contains plugin/caduceus_governance.
+# For a PR to NousResearch/hermes-agent as plugin-catalog/caduceus-governance.yaml. sha pins the commit that contains plugin/caduceus_governance; bump it in a new PR for later commits.
 name: caduceus-governance
 title: Caduceus Governance
 description: "Deterministic, model-free admission control for what Hermes writes into its own skills: content lanes, operator-owned executable checks, a provenance lane for writes made after untrusted web/browser/MCP content, a tamper-evident ledger, and operator release/rollback. Observe by default."
 repo: https://github.com/Epistetechnician/caduceus
 subdir: plugin/caduceus_governance
-sha: "0000000000000000000000000000000000000000"
+sha: "4e2472eb4fc95a9d625379dd34c855e17fe616b2"
 tier: community
 maintainer: Epistetechnician
 version: "0.1.0"
