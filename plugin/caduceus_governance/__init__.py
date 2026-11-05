@@ -167,13 +167,13 @@ def _kernel(base: str, surface: str = "skills"):
     return Kernel(os.path.join(_home(), "skills"), base, pol, allow_live=live)
 
 
-def _reconcile(base: str, session_id: str = "", surface: str = "skills"):
+def _reconcile(base: str, session_id: str = "", surface: str = "skills", cross: bool = False):
     from caduceus import control
 
     if not control.load(base).enabled("admission") or surface not in _surfaces(base):
         return None
     k = _kernel(base, surface)
-    return k.reconcile(taint=k.taint_scope(session_id) if k.policy.provenance != "off" else [], announced=k.lifecycle_scope() if k.policy.lifecycle != "off" else [])
+    return k.reconcile(taint=k.taint_scope(session_id, cross) if k.policy.provenance != "off" else [], announced=k.lifecycle_scope() if k.policy.lifecycle != "off" else [])
 
 
 def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str = "", **kwargs: Any) -> None:
@@ -189,6 +189,22 @@ def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str 
                 _kernel(base, surface).observe_taint(session_id or "", tool_name, result)
     except Exception as exc:  # noqa: BLE001 - observer; a missed observation only weakens the lane, and the next reconcile still judges the effect
         logger.warning("caduceus taint observe error: %s", type(exc).__name__)
+    return None
+
+
+def _on_subagent_start(parent_session_id: str = "", child_session_id: str = "", **kwargs: Any) -> None:
+    """A delegating session and its subagents share taint: the task goes down, the (possibly untrusted-derived) result comes back."""
+    base = os.path.join(_home(), "caduceus")
+    if _mode(base) != "boundary":
+        return None
+    try:
+        from caduceus import control
+
+        if control.load(base).enabled("admission"):
+            for surface in _surfaces(base):
+                _kernel(base, surface).observe_subagent(str(parent_session_id or ""), str(child_session_id or ""))
+    except Exception as exc:  # noqa: BLE001 - observer
+        logger.warning("caduceus subagent observe error: %s", type(exc).__name__)
     return None
 
 
@@ -257,12 +273,12 @@ def _on_pre_tool_call(tool_name: str, args: Dict[str, Any], task_id: str = "", s
     if _mode(base) == "boundary":
         if tool_name == MEMORY_TOOL and "memory" in _surfaces(base):
             try:
-                _reconcile(base, session_id, "memory")  # revert an out-of-band edit of MEMORY.md / USER.md before the memory tool reads it
+                _reconcile(base, session_id, "memory", True)  # revert an out-of-band edit of MEMORY.md / USER.md before the memory tool reads it
             except Exception as exc:  # noqa: BLE001
                 logger.warning("caduceus memory sweep error: %s", type(exc).__name__)
         if tool_name in SWEEP_TOOLS:
             try:
-                _reconcile(base, session_id)  # catches out-of-band writers (shell, forked review agent) before anything reads the tree
+                _reconcile(base, session_id, "skills", True)  # catches out-of-band writers (effects of unknown origin: cross-session taint applies) (shell, forked review agent) before anything reads the tree
             except Exception as exc:  # noqa: BLE001
                 logger.warning("caduceus boundary sweep error: %s", type(exc).__name__)
         return None
@@ -280,3 +296,4 @@ def register(ctx) -> None:
     ctx.register_hook("transform_tool_result", _on_transform_tool_result)
     ctx.register_hook("post_tool_call", _on_post_tool_call)
     ctx.register_hook("on_skill_lifecycle", _on_skill_lifecycle)
+    ctx.register_hook("subagent_start", _on_subagent_start)

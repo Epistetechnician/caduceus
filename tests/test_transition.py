@@ -281,12 +281,49 @@ class ProvenanceTests(unittest.TestCase):
         self.assertTrue(self.k.observe_taint("s", "mcp_anything", "x"))
         self.assertTrue(self.k.observe_taint("s", "browser_click", "x"))
 
-    def test_stale_and_other_session_taint_does_not_apply(self):
+    def test_a_known_session_ignores_unrelated_sessions_and_keeps_its_own_taint_for_the_whole_session(self):
         self.k.observe_taint("other", "web_search", "x")
         self.assertEqual(self.k.taint_scope("s"), [])
         self.k.observe_taint("s", "web_search", "x")
-        self.now[0] += self.k.policy.taint_window_s + 1
+        self.now[0] += 7200  # well past the old one-hour window: the poisoned content is still in that session's context
+        self.assertEqual(self.k.taint_scope("s"), ["web_search"])
+        self.now[0] += self.k.policy.taint_session_ttl_s + 1
         self.assertEqual(self.k.taint_scope("s"), [])
+
+    def test_subagent_family_shares_taint_both_ways(self):
+        self.k.observe_taint("parent", "web_extract", "page")
+        self.k.observe_subagent("parent", "child")
+        self.assertEqual(self.k.taint_scope("child"), ["web_extract"])  # a tainted parent cannot launder a write through a subagent
+        self.k.observe_taint("child2", "browser_navigate", "page")
+        self.k.observe_subagent("parent2", "child2")
+        self.assertEqual(self.k.taint_scope("parent2"), ["browser_navigate"])  # the child's untrusted result comes back to the parent
+        self.assertEqual(self.k.taint_scope("stranger"), [])
+
+    def test_family_taint_reaches_grandchildren_but_not_strangers(self):
+        self.k.observe_taint("a", "web_extract", "x")
+        self.k.observe_subagent("a", "b")
+        self.k.observe_subagent("b", "c")
+        self.assertEqual(self.k.taint_scope("c"), ["web_extract"])
+        self.assertEqual(self.k.taint_scope("d"), [])
+
+    def test_sweep_of_unknown_origin_inherits_other_sessions_taint_since_the_last_judged_effect(self):
+        self.k.observe_taint("other", "web_search", "x")
+        self.assertEqual(self.k.taint_scope("s", cross=True), ["web_search"])
+        self.now[0] += 1  # clock resolution is a second: an observation in the same second as the judged effect still counts (conservative)
+        write(self.root, "dev/a/references/n.md", "x\n")
+        self.k.reconcile()  # an effect is judged; taint older than it no longer taints later unknown-origin effects
+        self.now[0] += 10
+        self.assertEqual(self.k.taint_scope("s", cross=True), [])
+        self.k.observe_taint("other", "web_search", "y")
+        self.assertEqual(self.k.taint_scope("s", cross=True), ["web_search"])
+        self.now[0] += self.k.policy.taint_window_s + 1
+        self.assertEqual(self.k.taint_scope("s", cross=True), [])
+
+    def test_a_noisy_session_cannot_evict_another_sessions_taint(self):
+        self.k.observe_taint("victim", "web_extract", "x")
+        for i in range(700):
+            self.k.observe_taint("noise%d" % i, "web_search", "x")
+        self.assertEqual(self.k.taint_scope("victim"), ["web_extract"])
 
     def test_unknown_session_inherits_all_in_window_taint(self):
         self.k.observe_taint("s", "web_search", "x")

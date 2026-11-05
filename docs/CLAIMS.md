@@ -54,7 +54,7 @@ What this repository does establish (by tests in `tests/`):
   and evidence from another experiment cannot be attached; candidates bind
   their exact contents (`content_digest`) and the broker refuses any other
   content;
-* the provenance lane (`docs/STATE_GOVERNANCE.md`): in 23 author-written scenarios it holds 10/10 hostile writes made after untrusted content and 4/4 benign ones made after it, and
+* the provenance lane (`docs/STATE_GOVERNANCE.md`): in 23 author-written scenarios it holds hostile writes made after untrusted content (10/10 at first, 12/12 after the red-team below) and 4/4 benign ones made after it, and
   admits all writes made without it (so it does not stop untrusted-input-free malice); descriptive, no model, not an independent benchmark;
 * taint discharge (R8, `prereg/r8-taint-discharge.json` committed before the implementation, `scripts/eval_discharge.py`, `ledgers/discharge-eval.result.json`): all 11 preregistered expectations met,
   including the preregistered miss (D11): a tainted script edit that keeps its checked output but carries a paraphrased hostile comment is admitted. Prose is never discharged. Descriptive, author-written, needs Seatbelt;
@@ -92,6 +92,11 @@ What this repository does establish (by tests in `tests/`):
 * operator-path cost on a synthetic 900-file tree, one machine (`baselines/operator-cost-2026-11-04.json`): status p99 0.19 ms, clean reconcile p99 26 ms, reconcile after one change p99 98 ms, taint observation p99 0.73 ms;
 * the background-review fork shares the parent's `session_id` in `pre_tool_call`, `post_tool_call`, `transform_tool_result` and `on_skill_lifecycle` (`scripts/probe_fork_session.py`, stub model), so a parent's taint applies to the fork's skill writes;
 * measured, one machine, 300-skill tree: taint observation p99 0.90 ms, taint scope read p99 0.12 ms, clean reconcile p99 12 ms (descriptive);
+* the real catalog install path works: `scripts/verify_catalog_install.py` runs `hermes plugins install file://<clone>#plugin/caduceus_governance --ref <40-hex sha>` (blobless clone, sparse checkout of that subdirectory only) into a
+  throw-away home, then drives a real Hermes loop with the repository's own `caduceus` made un-importable: the installed copy's vendored kernel runs and the hostile write is held. Local `file://` clone, not GitHub;
+* red-team of the provenance lane (author attacking own lane, not independent): four bypasses found and closed (subagent laundering, one-hour expiry, event-list eviction, unknown-origin attribution); with them the provenance eval holds
+  12/12 hostile writes after untrusted content (was 10/10) and still admits 4/4 benign writes without it and 3/3 hostile writes without untrusted input (`ledgers/provenance-eval.result.json`);
+* the test suite also passes on Python 3.9.6 and 3.14.9 (macOS); `.github/workflows/ci.yml` runs it on Ubuntu and macOS, untested until the repository is pushed to a host that runs it;
 * `hermes plugins validate plugin/caduceus_governance` passes (15/15 checks, security scan safe) against Hermes `67d47601bc`;
 * exp-004, the first real candidate (a refinement of requesting-code-review,
   Haiku 5.5), **failed** its preregistered rule: +0.08 [0, +0.24] vs the

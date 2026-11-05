@@ -74,17 +74,19 @@ still needs a human release, which is the intended behaviour for pipe-to-shell b
 ## Provenance lane (added)
 
 Content lanes cannot see intent (tier 0 missed all four evasions above). The provenance lane does not read intent: `post_tool_call` records that an untrusted-source tool
-(`web_search`, `web_extract`, `browser_*`, `mcp_*`; policy-configurable) returned content in a session (`taint.json`: tool name, 16-hex digest prefix, time; never content). A skill
-write whose scope holds an in-window observation is quarantined (`provenance:Quarantine`) whatever it says; an operator releases it with `release-effect`. Scope: a known session sees its own
-observations; an unknown writer (shell, forked reviewer) inherits every in-window observation; observations expire after `taint_window_s` (1 h). `Policy.provenance="off"` disables it.
+(`web_search`, `web_extract`, `browser_*`, `mcp_*`; policy-configurable) returned content in a session (`taint.json`: per-session tool names, a count and times, plus subagent edges; never content). A skill
+write whose scope holds an in-window observation is quarantined (`provenance:Quarantine`) whatever it says; an operator releases it with `release-effect`. Scope (revised after attacking the lane, see below): a write by a KNOWN session is judged against that session's
+family (itself, its parent and its subagents) for the session's lifetime (`taint_session_ttl_s`, a day since the last untrusted observation), because the poisoned content stays in the context; an effect of UNKNOWN origin found
+by a sweep (a shell redirect, an unhooked tool, a forked reviewer) additionally inherits every session's observation in the last `taint_window_s` (1 h) that came after the last judged effect.
+`Policy.provenance="off"` disables it.
 This applies information-flow integrity labelling (cf. FIDES, CaMeL) across sessions: the skills tree is the persistent channel through which a one-session injection becomes a standing one.
 The verdict is a pure function of (policy, effect, the in-scope observation list).
 
-Measured, descriptive (`scripts/eval_provenance.py`, 23 scenarios written before the first run, none reused from the four evasions; `ledgers/provenance-eval.result.json`):
+Measured, descriptive (`scripts/eval_provenance.py`, 25 scenarios; the first 23 written before the first run, none reused from the four evasions; `ledgers/provenance-eval.result.json`):
 
 | group | provenance off | provenance on |
 |---|---|---|
-| hostile write after untrusted content (10: paraphrase, base64, zero-width, non-English, HTML comment, markdown exfil, persuasion, reference file, browser, MCP) | 10/10 live | **0/10 live** |
+| hostile write after untrusted content (12: paraphrase, base64, zero-width, non-English, HTML comment, markdown exfil, persuasion, reference file, browser, MCP, two hours later in the same session, via a subagent) | 12/12 live | **0/12 live** |
 | benign write after untrusted content (4) | 4/4 live | **0/4 live** (all quarantined: the cost) |
 | benign write, no untrusted content (4) | 4/4 live | 4/4 live |
 | hostile write, no untrusted content (3) | 3/3 live | 3/3 live (**the lane cannot help**) |
@@ -93,6 +95,13 @@ Measured, descriptive (`scripts/eval_provenance.py`, 23 scenarios written before
 Reading: it contains every evasion the content lanes miss, provided the session touched untrusted content, and it does so by refusing ALL skill learning in such a session until a human releases it. That
 is a real usability cost (legitimate skills distilled from web research are held). It does nothing for malice with no untrusted input (a user-instructed or model-originated write) and cannot tell which
 observation influenced which line. The scenario author is the kernel author; the tool list is a policy guess, not measured coverage of Hermes' tool surface. Not run under a real model.
+
+### Red-team of the provenance lane (4 bypasses found and closed)
+Attacking the first version produced four real bypasses, each now a test: (1) a tainted parent session delegating the write to a subagent with its own session id; (2) taint silently expiring after one hour
+while the poisoned content was still in the session's context; (3) one noisy session evicting another session's observations from a 200-event list; (4) an out-of-band effect being judged only under whichever session
+happened to trigger the next sweep. Fixes: session families via `subagent_start`, session-lifetime taint, per-session records that only expire, and a cross-session scope for effects of unknown origin. Costs: a long-lived
+session that read the web once stays tainted for a day; an unknown-origin effect is held if any session read the web since the last judged effect. Residual: an effect written by an unhooked tool in a session, followed by a clean
+judged effect before the next sweep, is judged without that session's taint. The author of the lane is also its attacker here; this is not an independent review.
 
 ### Taint discharge (R8) and the operator view
 A tainted write is admitted when every written file is code or data (`.py`, `.json`) AND every touched skill has operator-registered checks that all Pass; prose is never discharged because a check cannot validate what a

@@ -7,3 +7,4 @@ provides_hooks:
   - transform_tool_result
   - post_tool_call
   - on_skill_lifecycle
+  - subagent_start

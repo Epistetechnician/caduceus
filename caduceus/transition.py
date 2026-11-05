@@ -97,7 +97,8 @@ class Policy:
     # encoding and homoglyph evasions that no text pattern can, because it never reads the text for intent.
     provenance: str = "quarantine"
     taint_tools: Tuple[str, ...] = ("web_search", "web_extract", "browser_*", "mcp_*")
-    taint_window_s: int = 3600
+    taint_window_s: int = 3600  # cross-session window, for effects of unknown origin
+    taint_session_ttl_s: int = 86400  # a known session stays tainted this long after its last untrusted observation
     # Taint discharge: a tainted write whose every file is code or data (not prose) in skills whose operator-registered checks all Pass is admitted.
     # Prose instructions are never discharged: a check cannot validate what a sentence asks the model to do.
     taint_discharge: bool = True
@@ -117,7 +118,7 @@ class Policy:
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "lifecycle": self.lifecycle, "surface": self.surface}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_session_ttl_s": self.taint_session_ttl_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "lifecycle": self.lifecycle, "surface": self.surface}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -436,24 +437,95 @@ class Kernel:
     def _taint_path(self) -> str:
         return os.path.join(self.base, "taint.json")
 
-    def observe_taint(self, session: str, tool: str, content: Any) -> bool:
-        """Record that `tool` returned untrusted content in `session`. No-op unless the policy treats the tool as untrusted."""
-        if self.policy.provenance == "off" or not self.policy.is_taint_tool(tool):
-            return False
-        ev = {"s": sha256_hex((session or "").encode())[:16], "t": tool[:64], "d": sha256_hex(str(content).encode("utf-8", "replace"))[:16], "at": self.clock()}
+    # Taint store (taint.json): per-session records plus subagent edges. Per-session aggregation (not an event list) so a noisy session cannot evict another session's taint.
+    MAX_SESSIONS = 5000
+    MAX_EDGES = 500
+
+    def _taint_update(self, fn) -> None:
         with open(os.path.join(self.base, ".taint.lock"), "w") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
             try:
                 with open(self._taint_path()) as fh:
-                    events = json.load(fh)
+                    st = json.load(fh)
+                if not (isinstance(st, dict) and isinstance(st.get("sessions"), dict) and isinstance(st.get("edges"), list)):
+                    raise ValueError("old or malformed taint store")
             except (OSError, ValueError):
-                events = []
-            events = (events + [ev])[-200:]
+                st = {"sessions": {}, "edges": []}
+            fn(st)
+            floor = self.clock() - self.policy.taint_session_ttl_s
+            st["sessions"] = {k: v for k, v in st["sessions"].items() if v["last"] >= floor}  # only EXPIRED records are ever dropped
+            if len(st["sessions"]) > self.MAX_SESSIONS:  # a hard bound on a pathological store; far above any real number of live tainted sessions
+                st["sessions"] = dict(sorted(st["sessions"].items(), key=lambda kv: kv[1]["last"], reverse=True)[:self.MAX_SESSIONS])
+            st["edges"] = st["edges"][-self.MAX_EDGES:]
             tmp = self._taint_path() + ".tmp"
             with open(tmp, "w") as fh:
-                json.dump(events, fh, sort_keys=True)
+                json.dump(st, fh, sort_keys=True)
             os.replace(tmp, self._taint_path())
+
+    def _sid(self, session: str) -> str:
+        return sha256_hex((session or "").encode())[:16]
+
+    def observe_taint(self, session: str, tool: str, content: Any) -> bool:
+        """Record that `tool` returned untrusted content in `session`. No-op unless the policy treats the tool as untrusted. Stores a tool name, a count and times; never content."""
+        if self.policy.provenance == "off" or not self.policy.is_taint_tool(tool):
+            return False
+        now, sid, t = self.clock(), self._sid(session), tool[:64]
+
+        def upd(st):
+            r = st["sessions"].setdefault(sid, {"first": now, "last": now, "n": 0, "tools": []})
+            r["last"], r["n"] = now, r["n"] + 1
+            if t not in r["tools"] and len(r["tools"]) < 8:
+                r["tools"].append(t)
+        self._taint_update(upd)
         return True
+
+    def observe_subagent(self, parent: str, child: str) -> bool:
+        """Hermes started `child` for `parent`. Untrusted content flows both ways between a delegating session and its subagents (the task goes down, the result comes back),
+        so a family of sessions shares taint."""
+        if self.policy.provenance == "off" or not parent or not child:
+            return False
+        now, p, c = self.clock(), self._sid(parent), self._sid(child)
+        self._taint_update(lambda st: st["edges"].append([c, p, now]))
+        return True
+
+    def _family(self, session: str, st: Dict[str, Any]) -> set:
+        ttl_floor = self.clock() - self.policy.taint_session_ttl_s
+        edges = [(c, p) for c, p, at in st["edges"] if at >= ttl_floor]
+        fam, frontier = {self._sid(session)}, {self._sid(session)}
+        for _ in range(8):
+            nxt = {x for c, p in edges for x in ((p,) if c in frontier else ()) + ((c,) if p in frontier else ())} - fam
+            if not nxt:
+                break
+            fam |= nxt
+            frontier = nxt
+        return fam
+
+    def _last_judged_at(self) -> int:
+        vs = [e["body"].get("at", 0) for e in self.ledger().find("transition_verdict")]
+        return max(vs) if vs else 0
+
+    def taint_scope(self, session: str = "", cross: bool = False) -> List[str]:
+        """Tool names of untrusted-content observations that apply to a write.
+
+        A write made by a KNOWN session (a writer tool's own result) is judged against that session's family (itself, its parent and its subagents) for the session's lifetime:
+        poisoned content stays in the context for as long as the session lives, so there is no one-hour expiry (`taint_session_ttl_s`, default a day, since the last observation).
+        `cross=True` is for an effect of UNKNOWN origin found by a sweep (a shell redirect, a forked reviewer, another tool): it inherits every session's observation in the last
+        `taint_window_s` that came after the last judged effect, because the writer could have been any of them. An empty `session` is always cross."""
+        try:
+            with open(self._taint_path()) as fh:
+                st = json.load(fh)
+            sessions = st["sessions"]
+        except (OSError, ValueError, KeyError, TypeError):
+            return []
+        now = self.clock()
+        recs = []
+        if session:  # the session's own family always applies, for the session's lifetime
+            fam = self._family(session, st)
+            recs += [r for sid, r in sessions.items() if sid in fam and r["last"] >= now - self.policy.taint_session_ttl_s]
+        if cross or not session:  # plus, for an effect of unknown origin, every session's recent observation since the last judged effect
+            floor = max(now - self.policy.taint_window_s, self._last_judged_at() if session else 0)
+            recs += [r for r in sessions.values() if r["last"] >= floor]
+        return sorted({t for r in recs for t in r["tools"]})
 
     def _lifecycle_path(self) -> str:
         return os.path.join(self.base, "lifecycle.json")
@@ -486,18 +558,6 @@ class Kernel:
             return []
         floor = self.clock() - self.policy.taint_window_s
         return sorted({e["n"] for e in events if e.get("at", 0) >= floor})
-
-    def taint_scope(self, session: str = "") -> List[str]:
-        """Tool names of in-window observations that apply to a write by `session`. An unknown session (out-of-band writer, forked reviewer)
-        conservatively inherits every in-window observation; a known session sees its own and those of sessions whose id was unknown."""
-        try:
-            with open(self._taint_path()) as fh:
-                events = json.load(fh)
-        except (OSError, ValueError):
-            return []
-        floor = self.clock() - self.policy.taint_window_s
-        me = sha256_hex((session or "").encode())[:16]
-        return sorted(e["t"] for e in events if e.get("at", 0) >= floor and (not session or e.get("s") == me or e.get("s") == sha256_hex(b"")[:16]))
 
     def _reconcile(self, taint: List[str], announced: List[str]) -> Dict[str, Any]:
         led = self.ledger()
