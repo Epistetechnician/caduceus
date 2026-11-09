@@ -139,6 +139,9 @@
 .chip.held { color: var(--held); background: var(--held-bg); border-color: transparent; }
 .chip.bad { color: var(--bad); background: var(--bad-bg); border-color: transparent; }
 .chip.ok { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.chip.flag { color: var(--bad, #e0705a); border-color: color-mix(in srgb, var(--bad, #e0705a) 55%, transparent); }
+.chip.note { color: var(--muted, #9bb); }
+.reason.advisory { border-style: dashed; }
 .chip.brass { color: var(--brass-2); border-color: color-mix(in srgb, var(--brass) 45%, transparent); }
 .chip.surface { text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; }
 

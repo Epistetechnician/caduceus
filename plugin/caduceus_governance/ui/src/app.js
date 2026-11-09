@@ -12,6 +12,8 @@ function CaduceusApp(root, host) {
   var TABS = [["gate", "Gate", "gate"], ["ledger", "Ledger", "ledger"], ["state", "State", "layers"], ["devices", "Devices", "key"]];
   var SURFACE = { skills: "Skills", memory: "Memory", config: "Config" };
   var REASONS = {
+    "review:Quarantine": ["Operator reviews every change", "Your policy asks for a person to read every change of this kind, whoever wrote it and wherever the idea came from."],
+    "authority:Quarantine": ["Wording that outranks or hides", "The text tells the agent to skip oversight, stay quiet or outrank the user. A rough tripwire, not a judgement of intent."],
     "provenance:Quarantine": ["After untrusted content", "The agent had read content from the web, a browser or an MCP tool in this session. Text from there can steer what an agent writes down, so every write made after it waits for a person."],
     "injection:Quarantine": ["Looks like an instruction override", "The text matches a known pattern for overriding rules, hiding things from the user, or piping a download into a shell."],
     "secrets:Fail": ["Contains a secret", "A key, token or private key block is in the change. Secrets never become part of what the agent remembers."],
@@ -392,6 +394,7 @@ function CaduceusApp(root, host) {
     if (it.stale) chips.push(h("span", { class: "chip" }, "HEAD moved"));
     (it.reasons || []).slice(0, 3).forEach(function (c) { chips.push(h("span", { class: "chip held", text: reasonInfo(c)[0] })); });
     if (it.taint_tools && it.taint_tools.length) chips.push(h("span", { class: "chip brass", text: "after " + it.taint_tools.join(", ") }));
+    if (it.advisory) chips.push(h("span", { class: "chip " + (it.advisory.flag ? "flag" : "note"), text: it.advisory.flag ? "Reviewer flagged" : "Reviewer: no flag" }));
     var cur = !!(S.sel && S.sel.digest === it.digest);
     return h("button", { class: "held-card" + (it.stale ? " stale" : ""), type: "button", "aria-current": cur ? "true" : null, onclick: function () { S.sel = { surface: it.surface, digest: it.digest }; S.note = ""; loadReview(it); go("gate"); } },
       h("div", { class: "top" }, h("span", { text: "Held" }), h("span", { text: ago(it.at) })),
@@ -420,6 +423,9 @@ function CaduceusApp(root, host) {
       h("h2", { text: titleOf(it) }), h("p", { class: "lede", text: "Held " + (ago(it.at) || "earlier") + " · " + plural(it.n_paths || 0, "file") })];
     var why = h("div", { class: "why" });
     (it.reasons || []).forEach(function (c) { var r = reasonInfo(c); why.appendChild(h("div", { class: "reason" }, h("b", { text: r[0] }), h("span", { text: r[1] }))); });
+    var adv = it.advisory;
+    if (adv) why.appendChild(h("div", { class: "reason advisory" }, h("b", { text: (adv.flag ? "A reviewer flagged this" : "A reviewer saw nothing wrong") + (adv.reviewer ? " (" + adv.reviewer + ")" : "") }),
+      h("span", { text: (adv.codes && adv.codes.length ? adv.codes.join(", ").replace(/_/g, " ") + ". " : "") + (adv.summary || "") + " A reviewer's note is advice only: it cannot release or decline this change, and a clean note is not an approval." })));
     var body = [h("div", { class: "rule" }, h("i"), h("span", { text: "Why it was held" }), h("i")), why, h("div", { class: "rule" }, h("i"), h("span", { text: "What changes" }), h("i"))];
     if (!rev || rev.loading) body.push(h("div", { class: "skel" }));
     else if (rev.err) body.push(h("div", { class: "banner bad" }, icon("alert"), h("span", { text: "Could not load the diff: " + rev.err })));

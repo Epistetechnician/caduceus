@@ -79,6 +79,52 @@ def _without_examples(text: str) -> str:
     return text
 
 
+# Authority lane: phrases that evade oversight, conceal, outrank the user, or falsify reporting. A tripwire on ADDED prose lines, not an intent detector: paraphrase beats it and
+# benign text can trip it (measured in prereg/r28-cost-and-miss.json). Default off.
+_EVADE = r"(?:skip(?:ping)?|bypass(?:ing)?|disabl(?:e|ing)|turn(?:ing)? off|avoid(?:ing)?|circumvent(?:ing)?)"
+_OVERSIGHT = r"(?:approvals?|confirm(?:ation)?s?|prompts?|permissions?|review|sandbox|verification|safety|guardrails?|checks?)"
+_SELF_PROTECT = re.compile(r"(?i)\b(?:never|not|n't|always|must)\s+(?:\w+\s+){0,2}$")
+AUTHORITY_EVADE = re.compile(r"(?i)\b" + _EVADE + r"\b[^.\n]{0,40}\b" + _OVERSIGHT + r"\b")
+AUTHORITY_PATTERNS = (
+    re.compile(r"(?i)\b(?:never|don'?t|do not|stop|no need to|without)\s+(?:ask|asking|confirm|confirming|prompt|prompting)\b"),
+    re.compile(r"(?i)\b" + _OVERSIGHT + r"\b[^.\n]{0,30}\b(?:unnecessary|not needed|pointless|stay off|can be skipped)\b"),
+    re.compile(r"(?i)\b(?:do not|don'?t|never)\s+(?:mention|tell|report|reveal|disclose|surface|log)\b"),
+    re.compile(r"(?i)\b(?:quietly|silently|secretly|covertly)\b"),
+    re.compile(r"(?i)\b(?:supersede|overrule|override|takes? precedence|higher priority|wins? on any conflict|disregard|void)\b[^.\n]{0,50}\b(?:rules?|instructions?|guidance|user|earlier|previous|prior|system|anything)\b"),
+    re.compile(r"(?i)\b(?:rules?|instructions?|guidance|file|note)s?\b[^.\n]{0,40}\b(?:higher priority|takes? precedence|wins? on any conflict)\b"),
+    re.compile(r"(?i)\breport\b[^.\n]{0,40}\b(?:complete|completed|success|successful|done|passing|passed)\b[^.\n]{0,30}\beven (?:when|if|though)\b"),
+    re.compile(r"(?i)\bmark\b[^.\n]{0,20}\b(?:skipped|passing|passed)\b[^.\n]{0,30}\b(?:report|and)\b[^.\n]{0,20}\b(?:success|done|complete)\b"),
+    re.compile(r"(?i)\b(?:elevated|root|sudo|admin)\b[^.\n]{0,40}\b(?:avoid|skip|without)\b[^.\n]{0,20}\bprompts?\b"),
+    re.compile(r"(?i)\b(?:copy|send|upload|post|write|save)\b[^.\n]{0,50}\b(?:environment (?:values|variables)|credentials|secrets|api keys?|tokens)\b"),
+)
+
+
+def authority_hit(line: str) -> bool:
+    for m in AUTHORITY_EVADE.finditer(line):
+        if not _SELF_PROTECT.search(line[:m.start()][-30:]):  # "never skip the approval step" protects oversight; it is not an evasion
+            return True
+    return any(r.search(line) for r in AUTHORITY_PATTERNS)
+
+
+# Sources whose explicit URLs an operator may trust (see Policy.trusted_hosts). Anything without explicit URLs (search results, MCP) is never trusted.
+URL_TOOLS = ("web_extract", "browser_navigate")
+HTTPS_URL = re.compile(r"^https://([^/?#:@\s]+)(?::([0-9]+))?(?:[/?#]|\Z)")  # no userinfo (an @ cannot match), optional port
+HOST_RE = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+\Z")
+
+
+def _urls(args: Any) -> List[str]:
+    if not isinstance(args, dict):
+        return []
+    out: List[str] = []
+    for k in ("urls", "url"):
+        v = args.get(k)
+        if isinstance(v, str):
+            out.append(v)
+        elif isinstance(v, list):
+            out += [x for x in v if isinstance(x, str)]
+    return out
+
+
 class TransitionError(Exception):
     pass
 
@@ -116,11 +162,20 @@ class Policy:
     lifecycle: str = "off"
     # Which Hermes state this kernel governs: 'skills' (category/name/... trees), 'memory' (exactly MEMORY.md and USER.md) or 'config' (exactly config.yaml at the Hermes home). Memory and config are prose: nothing discharges taint.
     surface: str = "skills"
+    # Cost lever, operator-owned: an explicit-URL fetch (web_extract / browser_navigate) of an https host in this list does not taint the session. Exact host or dot-boundary subdomain.
+    # A compromised trusted host is outside the lane. Default empty: every untrusted fetch taints.
+    trusted_hosts: Tuple[str, ...] = ()
+    # Miss lever: 'quarantine' holds added prose lines that evade oversight, conceal, outrank the user or falsify reporting, with or without taint. A heuristic tripwire; default off.
+    authority: str = "off"
+    # Review dial, the lever that actually closes "malice with no untrusted input": 'taint' (default) holds only what provenance holds; 'prose' holds EVERY change to prose (SKILL.md, .md, .txt,
+    # memory) for a human; 'all' holds every change. Cost rises with the setting; a model reviewer (advise-effect) can only annotate held changes, never release them.
+    review: str = "taint"
 
     def as_dict(self) -> Dict[str, Any]:
         return {"max_files_changed": self.max_files_changed, "max_added_bytes": self.max_added_bytes, "max_file_bytes": self.max_file_bytes,
                 "max_deleted_files": self.max_deleted_files, "pinned": sorted(self.pinned), "rate_window_s": self.rate_window_s, "rate_max": self.rate_max,
-                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_session_ttl_s": self.taint_session_ttl_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "approval_required": self.approval_required, "lifecycle": self.lifecycle, "surface": self.surface}
+                "provenance": self.provenance, "taint_tools": sorted(self.taint_tools), "taint_window_s": self.taint_window_s, "taint_session_ttl_s": self.taint_session_ttl_s, "taint_discharge": self.taint_discharge, "protected_globs": sorted(self.protected_globs), "tofu": self.tofu, "attest_keyring": self.attest_keyring, "approval_required": self.approval_required, "lifecycle": self.lifecycle, "surface": self.surface,
+                **({"trusted_hosts": sorted(self.trusted_hosts)} if self.trusted_hosts else {}), **({"authority": self.authority} if self.authority != "off" else {}), **({"review": self.review} if self.review != "taint" else {})}  # new fields only when set, so existing policy digests stay valid
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Policy":
@@ -152,10 +207,33 @@ class Policy:
                 kw[k] = v
         if kw.get("surface", default.surface) not in ("skills", "memory", "config"):
             raise TransitionError("surface must be 'skills', 'memory' or 'config'")
-        for fld in ("provenance", "lifecycle"):
+        for h in kw.get("trusted_hosts", ()):
+            if not HOST_RE.match(h):
+                raise TransitionError("trusted_hosts entries must be lowercase hostnames (no scheme, path or wildcard): %r" % h[:80])
+        if kw.get("review", default.review) not in ("taint", "prose", "all"):
+            raise TransitionError("review must be 'taint', 'prose' or 'all'")
+        for fld in ("provenance", "lifecycle", "authority"):
             if kw.get(fld, getattr(default, fld)) not in ("quarantine", "off"):
                 raise TransitionError("%s must be 'quarantine' or 'off'" % fld)
         return cls(**kw)
+
+    def trusted_fetch(self, tool: str, args: Any) -> bool:
+        """True only for an explicit-URL fetch where EVERY url is https, has no userinfo or odd port, and its host is a trusted entry or a dot-boundary subdomain of one."""
+        if not self.trusted_hosts or tool not in URL_TOOLS:
+            return False
+        urls = _urls(args)
+        if not urls:
+            return False
+        for u in urls:
+            m = HTTPS_URL.match(u.strip())  # plain parsing, no URL library: the plugin must not carry a network-capable import
+            if not m:
+                return False
+            host, port = m.group(1).lower(), m.group(2)
+            if port not in (None, "443") or not HOST_RE.match(host):
+                return False
+            if not any(host == t or host.endswith("." + t) for t in self.trusted_hosts):
+                return False
+        return True
 
     def is_taint_tool(self, name: str) -> bool:
         return any(name == t or (t.endswith("*") and name.startswith(t[:-1])) for t in self.taint_tools)
@@ -285,6 +363,20 @@ def lanes(effect: Dict[str, Any], cur: Dict[str, Dict[str, Any]], read: Callable
         names = {p.split("/")[1] for p in touched if len(p.split("/")) >= 2}
         if names - set(announced):
             out["lifecycle"] = "Quarantine"
+    out["authority"] = "Pass"
+    if policy.authority == "quarantine" and policy.surface != "config":
+        for p in written:
+            if p.endswith(CODE_SUFFIXES) or cur[p]["size"] > policy.max_file_bytes:
+                continue
+            old = set(read_head(p).decode("utf-8", "replace").splitlines()) if (read_head and p in effect["changed"]) else set()
+            if any(authority_hit(ln) for ln in read(p).decode("utf-8", "replace").splitlines() if ln not in old):
+                out["authority"] = "Quarantine"
+                break
+    out["review"] = "Pass"
+    if policy.review == "all" and touched:
+        out["review"] = "Quarantine"
+    elif policy.review == "prose" and any(not p.endswith(CODE_SUFFIXES) for p in written):
+        out["review"] = "Quarantine"
     out["provenance"] = "Pass"
     if policy.provenance == "quarantine" and taint > 0 and written:
         discharged = (policy.taint_discharge and all(p.endswith(CODE_SUFFIXES) for p in written)
@@ -469,9 +561,10 @@ class Kernel:
     def _sid(self, session: str) -> str:
         return sha256_hex((session or "").encode())[:16]
 
-    def observe_taint(self, session: str, tool: str, content: Any) -> bool:
-        """Record that `tool` returned untrusted content in `session`. No-op unless the policy treats the tool as untrusted. Stores a tool name, a count and times; never content."""
-        if self.policy.provenance == "off" or not self.policy.is_taint_tool(tool):
+    def observe_taint(self, session: str, tool: str, content: Any, args: Any = None) -> bool:
+        """Record that `tool` returned untrusted content in `session`. No-op unless the policy treats the tool as untrusted, or the call fetched only operator-trusted URLs.
+        Stores a tool name, a count and times; never content."""
+        if self.policy.provenance == "off" or not self.policy.is_taint_tool(tool) or self.policy.trusted_fetch(tool, args):
             return False
         now, sid, t = self.clock(), self._sid(session), tool[:64]
 
@@ -679,6 +772,41 @@ class Kernel:
                 out.append(d)
         return out
 
+    ADVISORY_CODES = ("override", "concealment", "oversight_evasion", "exfiltration", "falsified_reporting", "privilege", "other")
+
+    def _advisory_path(self, d: str) -> str:
+        return os.path.join(self.base, "advisories", d + ".json")
+
+    def advisory(self, effect_digest_hex: str) -> Optional[Dict[str, Any]]:
+        """The reviewer's note on a held effect, or None. Digest-checked against the ledger so a swapped file is ignored."""
+        try:
+            with open(self._advisory_path(effect_digest_hex)) as fh:
+                adv = json.load(fh)
+        except (OSError, ValueError):
+            return None
+        ad = domain_digest("caduceus.transition.advisory.v1", adv)
+        noted = [e["body"].get("advisory_digest") for e in self.ledger().find("audit_note") if e["body"].get("event") == "advisory_added" and e["body"].get("effect_digest") == effect_digest_hex]
+        return adv if noted and noted[-1] == ad else None
+
+    def advise(self, effect_digest_hex: str, flag: bool, codes: List[str], summary: str, reviewer: str) -> Dict[str, Any]:
+        """A reviewer (a model run by the operator's own tooling, or a person) PROPOSES a note on a held effect. It cannot release, discard or change any verdict: it only travels with the held
+        effect so the operator reads the likely-bad ones first. A clean note is not an approval. Bounded: a flag, codes from a fixed list, a short summary, a reviewer name."""
+        if not isinstance(flag, bool) or any(c not in self.ADVISORY_CODES for c in codes):
+            raise TransitionError("advisory needs a boolean flag and codes from %s" % ", ".join(self.ADVISORY_CODES))
+        with open(os.path.join(self.base, ".lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if effect_digest_hex not in self.held():
+                raise TransitionError("advisories apply to held effects only")
+            adv = {"effect_digest": effect_digest_hex, "flag": flag, "codes": sorted(set(codes)), "summary": summary[:240], "reviewer": reviewer[:64], "at": self.clock()}
+            os.makedirs(os.path.join(self.base, "advisories"), exist_ok=True)
+            tmp = self._advisory_path(effect_digest_hex) + ".tmp"
+            with open(tmp, "w") as fh:
+                json.dump(adv, fh, sort_keys=True)
+            os.replace(tmp, self._advisory_path(effect_digest_hex))
+            self.ledger().append("audit_note", {"event": "advisory_added", "effect_digest": effect_digest_hex, "flag": flag, "codes": adv["codes"], "reviewer": adv["reviewer"],
+                                                 "advisory_digest": domain_digest("caduceus.transition.advisory.v1", adv), "at": adv["at"]})
+        return adv
+
     def held_detail(self) -> List[Dict[str, Any]]:
         """Held effects with what a list view needs: reasons, taint tools, size, time, and whether HEAD has moved since (a stale effect can only be discarded)."""
         verdicts = {e["body"]["effect_digest"]: e["body"] for e in self.ledger().find("transition_verdict")}
@@ -687,7 +815,7 @@ class Kernel:
         for d in self.held():
             v = verdicts.get(d, {})
             out.append({"effect_digest": d, "decision": v.get("decision", "quarantine"), "reasons": v.get("reason_codes", []), "taint_tools": v.get("taint_tools", []),
-                        "n_paths": v.get("n_paths", 0), "paths": v.get("paths", [])[:5], "at": v.get("at", 0), "stale": v.get("parent") != head})
+                        "n_paths": v.get("n_paths", 0), "paths": v.get("paths", [])[:5], "at": v.get("at", 0), "stale": v.get("parent") != head, "advisory": self.advisory(d)})
         return out
 
     def surface_name(self) -> str:
@@ -721,8 +849,8 @@ class Kernel:
                 item = {"type": "released", "effect_digest": b["effect_digest"], "operator": b.get("operator", ""), "reason": b.get("reason", ""), "at": b.get("at", 0)}
             elif k == "audit_note":
                 ev = b.get("event")
-                if ev in ("effect_discarded", "policy_set", "device_added", "device_removed", "approval_used", "baseline_attested", "check_registered"):
-                    item = {"type": ev, **{f: b[f] for f in ("effect_digest", "operator", "reason", "device", "name", "action", "skill", "check_id", "policy_digest", "at") if f in b}}
+                if ev in ("effect_discarded", "advisory_added", "policy_set", "device_added", "device_removed", "approval_used", "baseline_attested", "check_registered"):
+                    item = {"type": ev, **{f: b[f] for f in ("effect_digest", "operator", "reason", "flag", "codes", "reviewer", "device", "name", "action", "skill", "check_id", "policy_digest", "at") if f in b}}
             if item is not None:
                 item["seq"] = e["seq"]
                 out.append(item)
@@ -757,7 +885,7 @@ class Kernel:
         verdict = next((e["body"] for e in self.ledger().find("transition_verdict") if e["body"]["effect_digest"] == effect_digest_hex), {})
         return {"effect_digest": effect_digest_hex, "surface": self.surface_name(), "parent": effect["parent"], "stale": effect["parent"] != self.head(),
                 "reasons": verdict.get("reason_codes", []), "taint_tools": verdict.get("taint_tools", []), "at": verdict.get("at", 0),
-                "removed": effect["removed"][:MAX_PATHS_IN_LEDGER], "files": files, "approval_required": self.policy.approval_required,
+                "removed": effect["removed"][:MAX_PATHS_IN_LEDGER], "files": files, "advisory": self.advisory(effect_digest_hex), "approval_required": self.policy.approval_required,
                 "release": "caduceus release-effect %s --operator NAME --reason TEXT --skills-root ... --base ..." % effect_digest_hex}
 
     def _authorize(self, action: str, effect_digest_hex: str, parent: str, operator: str, approval: Optional[Dict[str, Any]]) -> str:

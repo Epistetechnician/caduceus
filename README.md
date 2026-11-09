@@ -83,6 +83,10 @@ Check the ledger with `python3 -m caduceus diagnostics --ledger ~/.hermes/caduce
 
 A dashboard tab, a Desktop pane and a phone-ready page share one app: review what is waiting at the gate (diffs always rendered as text), see the ledger, and **release or decline with a signature from your phone**.
 Enrol a device with `caduceus device-add`; require signatures with `caduceus policy-set` (`approval_required: true`). Details, the approval model, what is and is not verified: `docs/UI.md`.
+
+**Tuning the cost and the miss** (`caduceus policy-set`, all ledgered, none editable by the agent): `trusted_hosts: ["docs.python.org"]` stops explicit-URL fetches of those https hosts from tainting a session (a compromised trusted host is then outside the lane);
+`review: "prose"` (or `"all"`) sends every prose (or every) change to a person, which is the only setting that catches malice with no untrusted input, at the price of reading everything; `caduceus advise-effect` lets a reviewer model or person annotate a held change,
+and can never release it. An `authority` phrase lane exists but is off and should stay off: it held 41% of real skills (`docs/CLAIMS.md`).
 Try it with a seeded throw-away home: `~/.hermes/hermes-agent/venv/bin/python scripts/ui_dev_server.py`.
 
 ## Read next

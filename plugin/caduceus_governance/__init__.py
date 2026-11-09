@@ -176,7 +176,7 @@ def _reconcile(base: str, session_id: str = "", surface: str = "skills", cross: 
     return k.reconcile(taint=k.taint_scope(session_id, cross) if k.policy.provenance != "off" else [], announced=k.lifecycle_scope() if k.policy.lifecycle != "off" else [])
 
 
-def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str = "", **kwargs: Any) -> None:
+def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str = "", args: Any = None, **kwargs: Any) -> None:
     """Provenance: remember that untrusted content (web, browser, MCP) entered this session. Stores a tool name, a digest prefix and a time; never content."""
     base = os.path.join(_home(), "caduceus")
     if _mode(base) != "boundary":
@@ -186,7 +186,7 @@ def _on_post_tool_call(tool_name: str = "", result: Any = None, session_id: str 
 
         if control.load(base).enabled("admission"):
             for surface in _surfaces(base):
-                _kernel(base, surface).observe_taint(session_id or "", tool_name, result)
+                _kernel(base, surface).observe_taint(session_id or "", tool_name, result, args)
     except Exception as exc:  # noqa: BLE001 - observer; a missed observation only weakens the lane, and the next reconcile still judges the effect
         logger.warning("caduceus taint observe error: %s", type(exc).__name__)
     return None

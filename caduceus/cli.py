@@ -143,6 +143,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     rl.add_argument("--surface", choices=("skills", "memory", "config"), default="skills")
     rl.add_argument("--keyring", help="ed25519 keyring whose signer signs this release (needed when the policy sets approval_required and you approve from this machine)")
     rl.add_argument("--signer")
+    av = sub.add_parser("advise-effect", help="attach a reviewer's note to a held effect (a flag, codes, a short summary). It cannot release or discard anything; the operator still decides")
+    av.add_argument("effect_digest")
+    av.add_argument("--skills-root", required=True)
+    av.add_argument("--base", required=True)
+    av.add_argument("--reviewer", required=True)
+    av.add_argument("--flag", choices=("yes", "no"), required=True)
+    av.add_argument("--codes", default="", help="comma-separated: override,concealment,oversight_evasion,exfiltration,falsified_reporting,privilege,other")
+    av.add_argument("--summary", default="")
+    av.add_argument("--surface", choices=("skills", "memory", "config"), default="skills")
     dc = sub.add_parser("discard-effect", help="operator declines a held effect for good (HEAD is untouched)")
     dc.add_argument("effect_digest")
     dc.add_argument("--skills-root", required=True)
@@ -228,7 +237,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap_.add_argument("request")
 
     args = ap.parse_args(argv)
-    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "export-public", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "status", "review-effect", "discard-effect", "device-add", "device-list", "device-remove", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
+    if args.cmd in ("corpus", "diagnostics", "control", "add-signer", "export-public", "sign", "admit-source", "admit-call", "reconcile", "release-effect", "advise-effect", "status", "review-effect", "discard-effect", "device-add", "device-list", "device-remove", "policy-set", "policy-show", "openshell-policy", "attest-baseline", "holdout-release", "holdout-certify", "check-add", "propose", "apply", "drill"):
         return _ops(args)
     if args.cmd in ("preregister", "run-paired"):
         return _experiment(args)
@@ -414,6 +423,16 @@ def _ops(args) -> int:
         try:
             k = _kernel_for(args)
             _print(k.status() if args.cmd == "status" else k.review(args.effect_digest))
+        except TransitionError as exc:
+            print("refused: %s" % exc, file=sys.stderr)
+            return 3
+        return 0
+    if args.cmd == "advise-effect":
+        from .transition import TransitionError
+
+        try:
+            codes = [x for x in args.codes.split(",") if x]
+            _print(_kernel_for(args).advise(args.effect_digest, args.flag == "yes", codes, args.summary, args.reviewer))
         except TransitionError as exc:
             print("refused: %s" % exc, file=sys.stderr)
             return 3
