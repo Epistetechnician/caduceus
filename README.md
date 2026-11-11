@@ -89,6 +89,11 @@ Enrol a device with `caduceus device-add`; require signatures with `caduceus pol
 and can never release it. An `authority` phrase lane exists but is off and should stay off: it held 41% of real skills (`docs/CLAIMS.md`).
 Try it with a seeded throw-away home: `~/.hermes/hermes-agent/venv/bin/python scripts/ui_dev_server.py`.
 
+## Related work
+
+Hermes core has `skills.write_approval`, which stages **every** skill and memory write for a human; Caduceus holds only what a rule flags and adds out-of-band detection, executable checks, a verifiable ledger and rollback. A measured comparison is in `docs/CLAIMS.md` (r30).
+Neighbouring catalog plugins, read from their catalog entries and not run here: `agent-security-guard` and `camel-guard` (gate actions after untrusted content), `skill-lineage` (records which sources fed a skill edit, never blocks), `provenance-gate` (flags unquoted "the user decided" claims), `prompt-firewall` and `hermes-room` (sanitise tool results), `passkey-gate` (phone-signed approvals), `hermes-chronos` (filesystem rollback). No head-to-head against these has been run.
+
 ## Read next
 
 * `docs/PRD.md` - design baseline (v2.1) with research and code references
