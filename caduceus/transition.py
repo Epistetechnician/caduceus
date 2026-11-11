@@ -467,7 +467,8 @@ class Kernel:
                 if sha256_hex(data) != e["sha256"]:
                     raise TransitionError("file changed while retaining blobs: " + rel)
                 tmp = self._blob(e["sha256"]) + ".tmp"
-                with open(tmp, "wb") as fh:
+                fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)  # blobs can hold config.yaml with api_key values: owner-only
+                with os.fdopen(fd, "wb") as fh:
                     fh.write(data)
                 os.replace(tmp, self._blob(e["sha256"]))
 
@@ -504,20 +505,37 @@ class Kernel:
             full = os.path.join(self.root, *rel.split("/"))
             if cur.get(rel) == e:
                 continue
-            if os.path.islink(full) or os.path.isfile(full):
-                os.remove(full)
-            elif os.path.isdir(full):
+            old_mode = None
+            if os.path.isfile(full) and not os.path.islink(full):
+                old_mode = os.stat(full).st_mode & 0o777  # keep the mode Hermes gave the file (config.yaml is 0600)
+            elif os.path.isdir(full) and not os.path.islink(full):
                 shutil.rmtree(full)
             if e["kind"] != "file":
+                if os.path.islink(full) or os.path.isfile(full):
+                    os.remove(full)
                 continue  # only regular files are ever admitted into HEAD
             os.makedirs(os.path.dirname(full), exist_ok=True)
             with open(self._blob(e["sha256"]), "rb") as fh:
                 data = fh.read()
             if sha256_hex(data) != e["sha256"]:
                 raise TransitionError("blob corrupted: " + rel)
-            with open(full, "wb") as fh:
-                fh.write(data)
-            os.chmod(full, 0o755 if e["exec"] else 0o644)
+            if old_mode is None:  # a file that did not exist: skills keep the usual modes, memory and config surfaces are owner-only
+                mode = (0o755 if e["exec"] else 0o644) if self.policy.surface == "skills" else 0o600
+            else:
+                mode = old_mode & ~0o111
+                if e["exec"]:
+                    mode |= (old_mode & 0o444) >> 2
+            tmp = full + ".caduceus-tmp"
+            fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            try:
+                with os.fdopen(fd, "wb") as fh:
+                    fh.write(data)
+                os.chmod(tmp, mode)
+                os.replace(tmp, full)  # a reader never sees a half-written file; replaces a symlink itself, never follows it
+            except BaseException:
+                if os.path.lexists(tmp):
+                    os.remove(tmp)
+                raise
         for dirpath, dirnames, filenames in (os.walk(self.root, topdown=False) if self.only is None else ()):  # prune directories emptied by the restore
             if dirpath != self.root and not os.listdir(dirpath) and not _skip(os.path.relpath(dirpath, self.root).replace(os.sep, "/")):
                 os.rmdir(dirpath)

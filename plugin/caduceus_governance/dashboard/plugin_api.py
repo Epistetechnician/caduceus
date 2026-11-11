@@ -33,7 +33,11 @@ PLUGIN_ID = "caduceus-governance"
 
 
 def _home() -> str:
-    return os.environ.get("HERMES_HOME") or os.path.expanduser("~/.hermes")
+    try:  # profile-aware: one gateway process can serve several profiles, so the env of the launch profile is not enough
+        from hermes_constants import get_hermes_home
+        return str(get_hermes_home())
+    except Exception:  # outside Hermes (tests, the standalone page)
+        return os.environ.get("HERMES_HOME") or os.path.expanduser("~/.hermes")
 
 
 def _cfg():
